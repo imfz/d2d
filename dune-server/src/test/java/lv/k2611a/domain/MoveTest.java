@@ -13,7 +13,7 @@ import lv.k2611a.service.GameServiceImpl;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/lv/k2611a/testContext.xml"})
+@ContextConfiguration(locations = {"classpath:testContext.xml"})
 public class MoveTest {
 
     @Autowired
