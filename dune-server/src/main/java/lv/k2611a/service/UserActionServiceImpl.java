@@ -21,8 +21,8 @@ public class UserActionServiceImpl implements UserActionService {
 
     @Override
     public synchronized List<GameStateChanger> drainActions() {
-        List<GameStateChanger> actions = new ArrayList<GameStateChanger>(this.actions);
-        this.actions.clear();
+        List<GameStateChanger> actions = this.actions;
+        this.actions = new ArrayList<GameStateChanger>();
         return actions;
     }
 }

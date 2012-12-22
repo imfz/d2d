@@ -1,6 +1,5 @@
 package lv.k2611a.domain.goals;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import lv.k2611a.domain.Map;
@@ -16,18 +15,6 @@ public class Move implements Goal {
     private int goalY;
     private List<Node> path;
     private AStar aStarCache = new AStar();
-
-    @Override
-    public Goal copy() {
-        Move copy = new Move(goalX, goalY);
-        if (path != null) {
-            copy.path = new ArrayList<Node>(path);
-        }
-        if (aStarCache != null) {
-            copy.aStarCache = aStarCache.copy();
-        }
-        return copy;
-    }
 
     public Move(int goalX, int goalY) {
         this.goalX = goalX;

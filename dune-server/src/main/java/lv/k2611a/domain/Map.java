@@ -30,26 +30,6 @@ public class Map {
         buildings = new ArrayList<Building>();
     }
 
-    public Map(Map map) {
-        this.width = map.width;
-        this.height = map.height;
-        this.tiles = new Tile[map.tiles.length][];
-        for (int i = 0; i < map.tiles.length; i++) {
-            this.tiles[i] = new Tile[map.tiles[i].length];
-            for (int j = 0; j < map.tiles[i].length; j++) {
-                this.tiles[i][j] = map.tiles[i][j].copy();
-            }
-        }
-        this.units = new ArrayList<Unit>();
-        for (Unit unit : map.units) {
-            this.units.add(unit.copy());
-        }
-        this.buildings = new ArrayList<Building>();
-        for (Building building : map.buildings) {
-            this.buildings.add(building.copy());
-        }
-    }
-
     public Tile getTile(int x, int y) {
         if (x < 0) {
             return null;

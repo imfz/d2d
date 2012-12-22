@@ -17,22 +17,6 @@ public class Unit {
     private int ticksMovingToNextCell;
     private int hp;
 
-    public Unit copy() {
-        Unit copy = new Unit();
-        copy.unitType = unitType;
-        copy.x = x;
-        copy.y = y;
-        copy.id = id;
-        copy.viewDirection = viewDirection;
-        copy.ticksMovingToNextCell = ticksMovingToNextCell;
-        copy.goals = new ArrayList<Goal>();
-        copy.hp = hp;
-        for (Goal goal : goals) {
-            copy.goals.add(goal.copy());
-        }
-        return copy;
-    }
-
     public UnitType getUnitType() {
         return unitType;
     }

@@ -6,8 +6,19 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.servlet.ServletHandler;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class App {
+
+    public static final ClassPathXmlApplicationContext springContext;
+    public static final AutowireCapableBeanFactory autowireCapableBeanFactory;
+
+    static {
+        springContext = new ClassPathXmlApplicationContext("application-context.xml");
+        autowireCapableBeanFactory = springContext.getAutowireCapableBeanFactory();
+    }
+
     public static void main(String[] arg) throws Exception {
         int port = arg.length > 1 ? Integer.parseInt(arg[1]) : 8080;
         Server server = new Server(port);

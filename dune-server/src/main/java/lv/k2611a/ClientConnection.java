@@ -42,7 +42,7 @@ public class ClientConnection implements WebSocket.OnTextMessage, Runnable {
 
     private String username;
 
-    private BlockingQueue<NetworkPacket> queue = new LinkedBlockingQueue<NetworkPacket>();
+    private BlockingQueue<Response> queue = new LinkedBlockingQueue<Response>();
 
     private ExecutorService exec = Executors.newFixedThreadPool(1);
 
@@ -69,9 +69,9 @@ public class ClientConnection implements WebSocket.OnTextMessage, Runnable {
         NetworkPacket networkPacket = gson.fromJson(data, NetworkPacket.class);
         Request request = null;
         try {
+            localConnection.set(this);
             request = (Request) gson.fromJson(networkPacket.getPayload(), Class.forName("lv.k2611a.network.req." + networkPacket.getMessageName()));
             autowireCapableBeanFactory.autowireBean(request);
-            localConnection.set(this);
             request.process();
         } catch (Exception e) {
             e.printStackTrace();
@@ -87,22 +87,31 @@ public class ClientConnection implements WebSocket.OnTextMessage, Runnable {
         long timeStart = System.currentTimeMillis();
         while (!Thread.interrupted()) {
             try {
-                NetworkPacket networkPacket = queue.poll(2, TimeUnit.SECONDS);
-                if (networkPacket != null) {
-                    String toSend = gson.toJson(networkPacket);
-                    byteCount += toSend.length() * 2;
-                    _connection.sendMessage(toSend);
-                }
                 if (!_connection.isOpen()) {
                     break;
                 }
+                Response response = queue.poll(2, TimeUnit.SECONDS);
+                if (response == null) {
+                    continue;
+                }
+                NetworkPacket networkPacket = new NetworkPacket();
+                networkPacket.setMessageName(response.getClass().getSimpleName());
+                networkPacket.setPayload(gson.toJson(response));
+                String toSend = gson.toJson(networkPacket);
+                byteCount += toSend.length() * 2;
+                _connection.sendMessage(toSend);
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error("Exception happened while working with websocket", e);
+                break;
             } catch (InterruptedException e) {
                 break;
             } catch (RuntimeException e) {
+                log.error("Exception happened while working with websocket", e);
                 break;
             }
+        }
+        if (_connection.isOpen()) {
+            _connection.close();
         }
         long timeEnd = System.currentTimeMillis();
         long timePassed = timeEnd - timeStart;
@@ -114,10 +123,7 @@ public class ClientConnection implements WebSocket.OnTextMessage, Runnable {
     }
 
     public void sendMessage(Response response) {
-        NetworkPacket networkPacket = new NetworkPacket();
-        networkPacket.setMessageName(response.getClass().getSimpleName());
-        networkPacket.setPayload(gson.toJson(response));
-        queue.add(networkPacket);
+        queue.add(response);
     }
 
     public String getUsername() {

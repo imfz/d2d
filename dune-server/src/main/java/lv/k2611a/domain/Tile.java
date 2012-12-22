@@ -19,12 +19,6 @@ public class Tile {
         this.tileType = tileType;
     }
 
-    public Tile copy() {
-        Tile newTile = new Tile(x, y);
-        newTile.setTileType(tileType);
-        return newTile;
-    }
-
     public int getX() {
         return x;
     }

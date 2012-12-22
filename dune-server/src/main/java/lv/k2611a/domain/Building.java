@@ -7,16 +7,6 @@ public class Building {
     private int y;
     private int hp;
 
-    public Building copy() {
-        Building copy = new Building();
-        copy.type = type;
-        copy.x = x;
-        copy.y = y;
-        copy.id = id;
-        copy.hp = hp;
-        return copy;
-    }
-
     public BuildingType getType() {
         return type;
     }

@@ -20,6 +20,7 @@ import lv.k2611a.domain.Tile;
 import lv.k2611a.domain.Unit;
 import lv.k2611a.domain.UnitType;
 import lv.k2611a.domain.goals.Move;
+import lv.k2611a.jmx.ServerMonitor;
 import lv.k2611a.network.BuildingDTO;
 import lv.k2611a.network.MapDTO;
 import lv.k2611a.network.TileDTO;
@@ -37,6 +38,7 @@ public class GameServiceImpl implements GameService {
     private static final Logger log = LoggerFactory.getLogger(GameServiceImpl.class);
     public static final int TICK_LENGTH = 1000 / 20;
 
+
     @Autowired
     private SessionsService sessionsService;
 
@@ -45,6 +47,9 @@ public class GameServiceImpl implements GameService {
 
     @Autowired
     private UserActionService userActionService;
+
+    @Autowired
+    private ServerMonitor serverMonitor;
 
     private volatile Map map = MapGenerator.generateMap(128, 128);
     private volatile long tickCount = 0;
@@ -122,7 +127,6 @@ public class GameServiceImpl implements GameService {
     @Scheduled(fixedRate = TICK_LENGTH)
     public synchronized void tick() {
         long startTime = System.currentTimeMillis();
-        Map map = new Map(this.map);
 
         tickCount++;
 
@@ -130,13 +134,14 @@ public class GameServiceImpl implements GameService {
         processGoals(map);
         sendIncrementalUpdate();
 
-        this.map = map;
         long endTime = System.currentTimeMillis();
         long duration = endTime - startTime;
 
         if (duration > TICK_LENGTH) {
             log.warn("Server is lagging, tick duration exceeded " + TICK_LENGTH + ", was " + duration + " tick count " + tickCount);
         }
+
+        //serverMonitor.reportTickTime(duration);
 
     }
 
