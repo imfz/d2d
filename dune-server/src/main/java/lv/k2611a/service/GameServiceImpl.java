@@ -48,7 +48,6 @@ public class GameServiceImpl implements GameService {
 
     private volatile Map map = MapGenerator.generateMap(128, 128);
     private volatile long tickCount = 0;
-    private List<BuildingDTO> buildings;
 
     @PostConstruct
     public void init() {
@@ -75,8 +74,16 @@ public class GameServiceImpl implements GameService {
 
     }
 
+    public Map getMap() {
+        return map;
+    }
+
+    public void setMap(Map map) {
+        this.map = map;
+    }
+
     @Override
-    public synchronized UpdateMap getMap() {
+    public synchronized UpdateMap getFullMapUpdate() {
         MapDTO mapDTO = new MapDTO();
         List<TileDTO> tileDTOList = getMapTiles();
         List<UnitDTO> unitDTOList = getMapUnits();
@@ -179,5 +186,15 @@ public class GameServiceImpl implements GameService {
             buildingDTOList.add(BuildingDTO.fromBuilding(building));
         }
         return buildingDTOList;
+    }
+
+    @Override
+    public long getTickCount() {
+        return tickCount;
+    }
+
+    @Override
+    public void setTickCount(long tickCount) {
+        this.tickCount = tickCount;
     }
 }

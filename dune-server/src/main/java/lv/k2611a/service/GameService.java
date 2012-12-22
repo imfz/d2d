@@ -1,10 +1,11 @@
 package lv.k2611a.service;
 
-import javax.annotation.PostConstruct;
-
-import lv.k2611a.network.MapDTO;
 import lv.k2611a.network.resp.UpdateMap;
 
 public interface GameService {
-    UpdateMap getMap();
+    UpdateMap getFullMapUpdate();
+
+    long getTickCount();
+
+    void setTickCount(long tickCount);
 }

@@ -2,7 +2,6 @@ package lv.k2611a.domain;
 
 import org.junit.Test;
 
-import lv.k2611a.util.MapGenerator;
 import lv.k2611a.util.Node;
 
 import static junit.framework.Assert.assertEquals;

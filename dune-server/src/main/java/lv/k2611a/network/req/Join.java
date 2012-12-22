@@ -3,7 +3,6 @@ package lv.k2611a.network.req;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import lv.k2611a.ClientConnection;
-import lv.k2611a.network.MapDTO;
 import lv.k2611a.network.resp.Joined;
 import lv.k2611a.network.resp.UpdateMap;
 import lv.k2611a.service.GameService;
@@ -30,7 +29,7 @@ public class Join implements Request {
     @Override
     public void process() {
         ClientConnection.getCurrentConnection().setUsername(nickname);
-        UpdateMap updateMap = mapService.getMap();
+        UpdateMap updateMap = mapService.getFullMapUpdate();
         ClientConnection.getCurrentConnection().sendMessage(updateMap);
 
         Joined joined = new Joined();

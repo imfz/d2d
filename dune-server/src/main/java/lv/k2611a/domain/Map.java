@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
-import org.springframework.http.converter.xml.MarshallingHttpMessageConverter;
-
 import lv.k2611a.util.Node;
 
 public class Map {
@@ -210,5 +208,14 @@ public class Map {
                 tile1.setUsed(-1);
             }
         }
+    }
+
+    public Unit getUnit(int id) {
+        for (Unit unit : units) {
+            if (unit.getId() == id) {
+                return unit;
+            }
+        }
+        return null;
     }
 }
