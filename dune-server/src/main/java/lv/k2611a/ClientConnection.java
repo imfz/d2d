@@ -83,7 +83,7 @@ public class ClientConnection implements WebSocket.OnTextMessage, Runnable {
 
     @Override
     public void run() {
-        int byteCount = 0;
+        long byteCount = 0;
         long timeStart = System.currentTimeMillis();
         while (!Thread.interrupted()) {
             try {
