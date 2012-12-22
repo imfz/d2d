@@ -141,7 +141,7 @@ public class GameServiceImpl implements GameService {
             log.warn("Server is lagging, tick duration exceeded " + TICK_LENGTH + ", was " + duration + " tick count " + tickCount);
         }
 
-        //serverMonitor.reportTickTime(duration);
+        serverMonitor.reportTickTime(duration);
 
     }
 

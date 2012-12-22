@@ -15,17 +15,17 @@ public class ServerMonitorImpl implements ServerMonitor {
     private LastNCounter last200Counter = new LastNCounter(200);
 
     @ManagedAttribute
-    public Double averageTickTimeLast5Ticks() {
+    public Double getAverageTickTimeLast5Ticks() {
        return last5Counter.averageTickTime();
     }
 
     @ManagedAttribute
-    public Double averageTickTimeLast40Ticks() {
+    public Double getAverageTickTimeLast40Ticks() {
         return last40Counter.averageTickTime();
     }
 
     @ManagedAttribute
-    public Double averageTickTimeLast200Ticks() {
+    public Double getAverageTickTimeLast200Ticks() {
         return last200Counter.averageTickTime();
     }
 
