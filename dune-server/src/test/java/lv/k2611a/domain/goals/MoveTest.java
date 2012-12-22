@@ -11,16 +11,20 @@ public class MoveTest {
     @Test
     public void testAStar() {
         Map map = new Map(50,50);
-        Move move = new Move(49,49);
-        assertEquals(49, move.calcShortestPath(0,0,map,-1).size());
-        assertEquals(49, move.calcShortestPath(0,49,map,-1).size());
-        assertEquals(49, move.calcShortestPath(49,0,map,-1).size());
+        assertEquals(49, getPathLengthTo(map, 0,0));
+        assertEquals(49, getPathLengthTo(map, 0, 49));
+        assertEquals(49, getPathLengthTo(map, 49, 0));
 
-        assertEquals(1, move.calcShortestPath(48,49,map,-1).size());
-        assertEquals(1, move.calcShortestPath(49,48,map,-1).size());
-        assertEquals(1, move.calcShortestPath(48,48,map,-1).size());
+        assertEquals(1, getPathLengthTo(map, 48, 49));
+        assertEquals(1, getPathLengthTo(map, 49, 48));
+        assertEquals(1, getPathLengthTo(map, 48, 48));
 
-        assertEquals(0, move.calcShortestPath(49, 49, map,-1).size());
+        assertEquals(0, getPathLengthTo(map, 49, 49));
+    }
+
+    private int getPathLengthTo(Map map, int x, int y) {
+        map.clearUsageFlag();
+        return new Move(x,y ).calcShortestPath(49,49,map,-1).size();
     }
 
     @Test
