@@ -1,0 +1,129 @@
+<html>
+
+<head>
+
+    <link rel="stylesheet" type="text/css" href="css/style.css"/>
+
+    <script src="js/jquery-1.8.3.min.js"></script>
+    <script src="js/jquery.json-2.4.min.js"></script>
+    <script src="js/log.js"></script>
+    <script src="js/engine.js"></script>
+    <script src="js/minimapengine.js"></script>
+    <script src="js/map.js"></script>
+    <script src="js/chat.js"></script>
+    <script src="js/network.js"></script>
+    <script src="js/handler.js"></script>
+    <script src="js/rightmenu.js"></script>
+    <script>
+
+        var gameLog;
+        var engine;
+        var minimapEngine;
+        var map;
+        var chat;
+        var networking;
+        var handler;
+        var rightmenu;
+
+
+        $(window).load(
+                function () {
+                    var thing = { plugin:'jquery-json', version:2.4 };
+
+                    console.log("Initialized");
+                    gameLog = new GameLog();
+                    engine = new GameEngine();
+                    minimapEngine = new MinimapGameEngine();
+                    map = new GameMap();
+                    handler = new Handler(map, gameLog);
+                    networking = new Networking();
+                    chat = new Chat();
+                    rightmenu = new RightMenu();
+
+                    var canvas = document.getElementById("canvas");
+                    engine.setCanvas(canvas);
+                    engine.setMainSprite(document.getElementById("main_sprite"));
+                    engine.setUnitSprite(document.getElementById("unit_sprite"));
+                    engine.setBuildingsSprite(document.getElementById("buildings_sprite"));
+                    engine.setMap(map);
+                    engine.bindEvents();
+
+                    var minimapCanvas = document.getElementById("minimap");
+                    minimapEngine.setCanvas(minimapCanvas);
+                    minimapEngine.setMap(map);
+                    minimapEngine.setEngine(engine);
+                    minimapEngine.bindEvents();
+
+                    var rightMenuCanvas = document.getElementById("rightmenu");
+                    rightmenu.setCanvas(rightMenuCanvas);
+                    rightmenu.setMainSprite(document.getElementById("buys_sprite"));
+                    rightmenu.bindEvents();
+
+                    gameLog.redraw();
+
+                    networking.init();
+
+                    chat.init();
+
+                    engine.render();
+
+                    minimapEngine.render();
+
+                    rightmenu.setOptions([
+                        {type:BUY_OPTION_SILO},
+                        {type:BUY_OPTION_REFINERY},
+                        {type:BUY_OPTION_REPAIR_DEPO},
+                        {type:BUY_OPTION_AIRBASE},
+                        {type:BUY_OPTION_FACTORY}
+                    ]);
+
+
+                }
+        )
+
+
+    </script>
+</head>
+
+<body>
+<div id="columns">
+    <div id="leftcol">
+        <canvas id="canvas" width="630" height="441">
+            This text is displayed if your browser does not support HTML5 canvas
+        </canvas>
+
+        <div id='chat'></div>
+        <div id='input'>
+            <div id='join'>
+                Username:&nbsp;<input id='username' type='text'/><input id='joinB' class='button' type='submit'
+                                                                        name='join'
+                                                                        value='Join'/>
+            </div>
+            <div id='joined' class='hidden'>
+                Chat:&nbsp;<input id='phrase' type='text'/>
+                <input id='sendB' class='button' type='submit' name='join' value='Send'/>
+            </div>
+        </div>
+
+    </div>
+    <div id="rightcol" style="text-align:center; ">
+        <canvas id="minimap" width="200" height="200">
+            This text is displayed if your browser does not support HTML5 canvas
+        </canvas>
+        <div style="height:5px"></div>
+        <div style="margin:auto; overflow:auto; height:330px">
+            <canvas id="rightmenu" width="182" height="330">
+                This text is displayed if your browser does not support HTML5 canvas
+            </canvas>
+        </div>
+
+        <div id="gameLog"></div>
+    </div>
+</div>
+<img src="images/main_sprite.jpg" id="main_sprite" style="display: none">
+<img src="images/units.png" id="unit_sprite" style="display: none">
+<img src="images/buys.jpg" id="buys_sprite" style="display: none">
+<img src="images/buildings.jpg" id="buildings_sprite" style="display: none">
+</body>
+
+</html>
