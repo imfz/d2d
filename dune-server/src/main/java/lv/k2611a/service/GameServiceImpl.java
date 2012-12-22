@@ -9,17 +9,19 @@ import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import lv.k2611a.App;
 import lv.k2611a.domain.Building;
 import lv.k2611a.domain.BuildingType;
 import lv.k2611a.domain.Map;
 import lv.k2611a.domain.Tile;
 import lv.k2611a.domain.Unit;
 import lv.k2611a.domain.UnitType;
-import lv.k2611a.domain.goals.Move;
+import lv.k2611a.domain.unitgoals.Move;
 import lv.k2611a.jmx.ServerMonitor;
 import lv.k2611a.network.BuildingDTO;
 import lv.k2611a.network.MapDTO;
@@ -38,6 +40,8 @@ public class GameServiceImpl implements GameService {
     private static final Logger log = LoggerFactory.getLogger(GameServiceImpl.class);
     public static final int TICK_LENGTH = 1000 / 20;
 
+    @Autowired
+    private AutowireCapableBeanFactory autowireCapableBeanFactory;
 
     @Autowired
     private SessionsService sessionsService;
@@ -130,8 +134,10 @@ public class GameServiceImpl implements GameService {
 
         tickCount++;
 
+        mapFillTileUsage(map);
         processUserClicks(map);
-        processGoals(map);
+        processBuildingGoals(map);
+        processUnitsGoals(map);
         sendIncrementalUpdate();
 
         long endTime = System.currentTimeMillis();
@@ -145,8 +151,17 @@ public class GameServiceImpl implements GameService {
 
     }
 
+    private void processBuildingGoals(Map map) {
+        for (Building building : map.getBuildings()) {
+            if (building.getCurrentGoal() != null) {
+                building.getCurrentGoal().process(building,map);
+            }
+        }
+    }
+
     private void processUserClicks(Map map) {
         for (GameStateChanger gameStateChanger : userActionService.drainActions()) {
+            autowireCapableBeanFactory.autowireBean(gameStateChanger);
             gameStateChanger.changeGameState(map);
         }
     }
@@ -162,12 +177,20 @@ public class GameServiceImpl implements GameService {
 
     }
 
-    private void processGoals(Map map) {
+    private void processUnitsGoals(Map map) {
+        for (Unit unit : map.getUnits()) {
+            if (unit.getCurrentGoal() != null) {
+                unit.getCurrentGoal().process(unit, map);
+            }
+        }
+    }
+
+    private void mapFillTileUsage(Map map) {
         map.clearUsageFlag();
         for (Building building : map.getBuildings()) {
             for (int x = 0; x < building.getType().getWidth(); x++) {
                 for (int y = 0; y < building.getType().getHeight(); y++) {
-                    map.setUsed(x,y,-2);
+                    map.setUsed(x + building.getX(),y + building.getY(),-2);
                 }
             }
         }
@@ -176,11 +199,6 @@ public class GameServiceImpl implements GameService {
             if (unit.getTicksMovingToNextCell() > 0) {
                 Point unitMovingTo = unit.getViewDirection().apply(new Point(unit.getX(), unit.getY()));
                 map.setUsed(unitMovingTo.getX(), unitMovingTo.getY(), unit.getId());
-            }
-        }
-        for (Unit unit : map.getUnits()) {
-            if (unit.getCurrentGoal() != null) {
-                unit.getCurrentGoal().process(unit, map);
             }
         }
     }

@@ -1,11 +1,23 @@
 package lv.k2611a.domain;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public enum UnitType {
     BATTLE_TANK(1, 40, 100),
     SIEGE_TANK(2, 60, 120),
     LAUNCHER(3, 30, 50),
     DEVASTATOR(4, 100, 200)
     ;
+
+    static {
+        Set<Integer> idsOnJs = new HashSet<Integer>();
+        for (UnitType unitType : values()) {
+            if (!idsOnJs.add(unitType.getIdOnJS())) {
+                throw new AssertionError("Duplicate js id");
+            }
+        }
+    }
 
     private final int idOnJS;
     private final int speed; // ticks for cell

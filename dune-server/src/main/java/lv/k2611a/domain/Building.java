@@ -1,11 +1,22 @@
 package lv.k2611a.domain;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import lv.k2611a.domain.buildinggoals.BuildingGoal;
+
 public class Building {
     private long id;
     private BuildingType type;
     private int x;
     private int y;
     private int hp;
+    private List<BuildingGoal> goals = new ArrayList<BuildingGoal>();
+    private int ticksAccumulated;
+
+    // constr. yard only
+    private boolean awaitingClick;
+    private BuildingType buildingTypeBuilt;
 
     public BuildingType getType() {
         return type;
@@ -46,5 +57,46 @@ public class Building {
 
     public void setHp(int hp) {
         this.hp = hp;
+    }
+
+
+    public void addGoal(BuildingGoal goal) {
+        goals.add(goal);
+    }
+
+    public BuildingGoal getCurrentGoal() {
+        if (!goals.isEmpty()) {
+            return goals.get(0);
+        }
+        return null;
+
+    }
+
+    public void removeGoal(BuildingGoal goal) {
+        goals.remove(goal);
+    }
+
+    public int getTicksAccumulated() {
+        return ticksAccumulated;
+    }
+
+    public boolean isAwaitingClick() {
+        return awaitingClick;
+    }
+
+    public void setTicksAccumulated(int ticksAccumulated) {
+        this.ticksAccumulated = ticksAccumulated;
+    }
+
+    public void setAwaitingClick(boolean awaitingClick) {
+        this.awaitingClick = awaitingClick;
+    }
+
+    public BuildingType getBuildingTypeBuilt() {
+        return buildingTypeBuilt;
+    }
+
+    public void setBuildingTypeBuilt(BuildingType buildingTypeBuilt) {
+        this.buildingTypeBuilt = buildingTypeBuilt;
     }
 }

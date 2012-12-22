@@ -27,6 +27,13 @@ public class Tile {
         return y;
     }
 
+    public boolean isPassable() {
+        if (usedBy == -1) {
+            return true;
+        }
+        return false;
+    }
+
     public boolean isPassable(long myId) {
         if (usedBy == -1) {
             return true;

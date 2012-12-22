@@ -62,6 +62,16 @@ public class Map {
         return buildings;
     }
 
+    public List<Building> getBuildingByType(BuildingType buildingType) {
+        List<Building> result = new ArrayList<Building>();
+        for (Building building : buildings) {
+            if (building.getType() == buildingType) {
+                result.add(building);
+            }
+        }
+        return result;
+    }
+
     public List<Tile> getTileNeighbours(int x, int y) {
         List<Tile> tileList = new ArrayList<Tile>();
         if (x > 0) {
@@ -171,6 +181,14 @@ public class Map {
         return !tile.isPassable(unitId);
     }
 
+    public boolean isObstacle(int x, int y) {
+        Tile tile = getTile(x, y);
+        if (tile == null) {
+            return true;
+        }
+        return !tile.isPassable();
+    }
+
     public boolean isObstacle(int x, int y, long unitId) {
         return !getTile(x,y).isPassable(unitId);
     }
@@ -194,6 +212,15 @@ public class Map {
         for (Unit unit : units) {
             if (unit.getId() == id) {
                 return unit;
+            }
+        }
+        return null;
+    }
+
+    public Building getBuilding(int id) {
+        for (Building building : buildings) {
+            if (building.getId() == id) {
+                return building;
             }
         }
         return null;

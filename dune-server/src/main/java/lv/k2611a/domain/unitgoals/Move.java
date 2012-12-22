@@ -1,4 +1,4 @@
-package lv.k2611a.domain.goals;
+package lv.k2611a.domain.unitgoals;
 
 import java.util.List;
 
@@ -9,7 +9,7 @@ import lv.k2611a.util.AStar;
 import lv.k2611a.util.Node;
 import lv.k2611a.util.Point;
 
-public class Move implements Goal {
+public class Move implements UnitGoal {
 
     private int goalX;
     private int goalY;
@@ -32,12 +32,6 @@ public class Move implements Goal {
 
     public int getGoalY() {
         return goalY;
-    }
-
-    @Override
-    public void onSet(Unit unit) {
-        unit.setTicksMovingToNextCell(0);
-        path = null;
     }
 
     @Override

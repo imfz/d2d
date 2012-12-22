@@ -21,5 +21,9 @@
           class="lv.k2611a.service.IdGeneratorServiceImpl">
     </bean>
 
+    <bean id="userActionsService"
+          class="lv.k2611a.service.UserActionServiceImpl">
+    </bean>
+
 
 </beans>

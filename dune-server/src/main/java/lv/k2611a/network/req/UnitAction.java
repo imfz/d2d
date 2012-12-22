@@ -4,17 +4,11 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import lv.k2611a.domain.Map;
 import lv.k2611a.domain.Unit;
-import lv.k2611a.domain.goals.Move;
-import lv.k2611a.service.UserActionService;
+import lv.k2611a.domain.unitgoals.Move;
 
-public class UnitAction implements Request, GameStateChanger{
-
-    @Autowired
-    private UserActionService userActionService;
+public class UnitAction extends AbstractGameStateChanger {
 
     private int x;
     private int y;
@@ -44,10 +38,6 @@ public class UnitAction implements Request, GameStateChanger{
         this.ids = ids;
     }
 
-    @Override
-    public void process() {
-        userActionService.registerAction(this);
-    }
 
     @Override
     public void changeGameState(Map map) {

@@ -1,9 +1,8 @@
-package lv.k2611a.domain.goals;
+package lv.k2611a.domain.unitgoals;
 
 import lv.k2611a.domain.Map;
 import lv.k2611a.domain.Unit;
 
-public interface Goal {
-    void onSet(Unit unit);
+public interface UnitGoal {
     void process(Unit unit, Map map);
 }

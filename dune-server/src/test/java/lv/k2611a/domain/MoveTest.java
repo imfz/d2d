@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import lv.k2611a.domain.goals.Move;
+import lv.k2611a.domain.unitgoals.Move;
 import lv.k2611a.service.GameServiceImpl;
 
 import static org.junit.Assert.assertEquals;
@@ -28,7 +28,7 @@ public class MoveTest {
     public void unitSpeedWorksCorrectly() {
         Map map = new Map(2,1);
         Unit unit = new Unit();
-        unit.setGoal(new Move(1,0));
+        unit.setGoal(new Move(1, 0));
         int ID = 1;
         unit.setId(ID);
         unit.setUnitType(UnitType.LAUNCHER);
@@ -61,7 +61,7 @@ public class MoveTest {
         Map map = new Map(mapWidth,mapHeight);
         for (int horizontalLineNumber = 0; horizontalLineNumber < mapHeight; horizontalLineNumber++) {
             Unit unit = new Unit();
-            unit.setGoal(new Move(mapWidth - 1,horizontalLineNumber));
+            unit.setGoal(new Move(mapWidth - 1, horizontalLineNumber));
             unit.setId(horizontalLineNumber);
             unit.setUnitType(UnitType.BATTLE_TANK);
             unit.setX(0);
@@ -104,7 +104,7 @@ public class MoveTest {
         Map map = new Map(mapWidth,mapHeight);
         for (int verticalLineNumber = 0; verticalLineNumber < mapHeight; verticalLineNumber++) {
             Unit unit = new Unit();
-            unit.setGoal(new Move(verticalLineNumber, mapHeight-1));
+            unit.setGoal(new Move(verticalLineNumber, mapHeight - 1));
             unit.setId(verticalLineNumber);
             unit.setUnitType(UnitType.BATTLE_TANK);
             unit.setX(verticalLineNumber);
