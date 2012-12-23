@@ -91,7 +91,9 @@ MinimapGameEngine.prototype.render = function () {
         var unit = this.map.units[i];
         var x = Math.round(unit.x / this.map.getWidth() * this.canvas.width );
         var y = Math.round(unit.y / this.map.getHeight() * this.canvas.height);
-        putpixel(imgd, x,y, 214, 0, 0, 255, this.canvas.height, pix);
+        var color = sprites.getPlayerColor(unit.ownerId);
+
+        putpixel(imgd, x,y, color.r, color.g, color.b, 255, this.canvas.height, pix);
     }
 
     for (var i = 0; i < this.map.buildings.length; i++) {
@@ -100,7 +102,8 @@ MinimapGameEngine.prototype.render = function () {
         var y = Math.round(building.y / this.map.getHeight() * this.canvas.height);
         for (var w = x; w < x + building.width; w++) {
             for (var h = y; h < y + building.height; h++) {
-                putpixel(imgd, w,h, 214, 0, 0, 255, this.canvas.height, pix);
+                var color = sprites.getPlayerColor(building.ownerId);
+                putpixel(imgd, w,h, color.r, color.g, color.b, 255, this.canvas.height, pix);
             }
         }
 
