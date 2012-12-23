@@ -6,10 +6,10 @@ import java.util.Set;
 
 public enum BuildingType {
 
-    SILO(1,2,2,50,10),
-    POWERPLANT(2,2,2,50,10),
-    REPAIRSHOP(3,3,2,50,10),
-    CONSTRUCTIONYARD(7,2,2,50,10) {
+    SILO(1,2,2,50,50, 10),
+    POWERPLANT(2,2,2,50,100, 10),
+    REPAIRSHOP(3,3,2,50,100, 10),
+    CONSTRUCTIONYARD(7,2,2,50,150, 10) {
         @Override
         public EnumSet<ConstructionOption> getConstructionOptions() {
             EnumSet<ConstructionOption> constructionOptions = EnumSet.of(
@@ -35,13 +35,15 @@ public enum BuildingType {
     private final int height;
     private final int hp;
     private final int ticksToBuild;
+    private int costPerTick;
 
-    private BuildingType(int idOnJS, int width, int height, int hp, int ticksToBuild) {
+    private BuildingType(int idOnJS, int width, int height, int hp, int ticksToBuild, int costPerTick) {
         this.idOnJS = idOnJS;
         this.width = width;
         this.height = height;
         this.hp = hp;
         this.ticksToBuild = ticksToBuild;
+        this.costPerTick = costPerTick;
     }
 
     public int getIdOnJS() {
@@ -62,6 +64,18 @@ public enum BuildingType {
 
     public int getTicksToBuild() {
         return ticksToBuild;
+    }
+
+    public int getCostPerTick() {
+        return costPerTick;
+    }
+
+    public int getCost() {
+        return costPerTick * ticksToBuild;
+    }
+
+    public void setCostPerTick(int costPerTick) {
+        this.costPerTick = costPerTick;
     }
 
     public EnumSet<ConstructionOption> getConstructionOptions() {

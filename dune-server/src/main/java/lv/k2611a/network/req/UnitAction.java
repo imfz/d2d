@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import lv.k2611a.ClientConnection;
 import lv.k2611a.domain.Map;
 import lv.k2611a.domain.Unit;
 import lv.k2611a.domain.unitgoals.Move;
@@ -47,7 +48,9 @@ public class UnitAction extends AbstractGameStateChanger {
         }
         for (Unit unit : map.getUnits()) {
             if (unitIds.contains(unit.getId())) {
-                unit.setGoal(new Move(x, y));
+                if (unit.getOwnerId() == playerId) {
+                    unit.setGoal(new Move(x, y));
+                }
             }
         }
     }

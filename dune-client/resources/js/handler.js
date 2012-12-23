@@ -1,8 +1,9 @@
-function Handler(map, gameLog, rightMenu, engine) {
+function Handler(map, gameLog, rightMenu, engine, moneyTab) {
     this.map = map;
     this.gameLog = gameLog;
     this.rightMenu = rightMenu;
     this.engine = engine;
+    this.moneyTab = moneyTab;
 }
 
 Handler.prototype.addMessageToChat = function(from, text) {
@@ -96,6 +97,10 @@ Handler.prototype.handleJoined = function(data) {
 
 Handler.prototype.handleLeft = function(data) {
     this.addMessageToChat("SYSTEM", data.nickname + " has left the game");
+};
+
+Handler.prototype.handleUpdateMoney = function(data) {
+    this.moneyTab.setMoney(data.money);
 };
 
 Handler.prototype.handleUpdateConstructionOptions = function(data) {

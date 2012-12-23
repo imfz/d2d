@@ -1,6 +1,7 @@
 var connection = {
-    start : function(name) {
+    start : function(name, playerId) {
         this._username = name;
+        this._playerId = playerId;
         var location = "ws://localhost:8080/chat";
         this._ws = new WebSocket(location, "chat");
         this._ws.onopen = this.onopen;
@@ -13,12 +14,13 @@ var connection = {
         document.getElementById('join').className = 'hidden';
         document.getElementById('joined').className = '';
         document.getElementById('phrase').focus();
-        that.sendJoin(that._username);
+        that.sendJoin(that._username, that._playerId);
     },
 
-    sendJoin: function(username) {
+    sendJoin: function(username, playerId) {
         var joinRequest = new Object();
         joinRequest.nickname = username;
+        joinRequest.playerId = playerId;
         this.sendNetworkRequest("Join",joinRequest);
     },
 

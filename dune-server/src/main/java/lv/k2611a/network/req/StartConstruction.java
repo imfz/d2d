@@ -1,5 +1,6 @@
 package lv.k2611a.network.req;
 
+import lv.k2611a.ClientConnection;
 import lv.k2611a.domain.Building;
 import lv.k2611a.domain.BuildingType;
 import lv.k2611a.domain.Map;
@@ -13,6 +14,9 @@ public class StartConstruction extends AbstractGameStateChanger {
     public void changeGameState(Map map) {
         Building building = map.getBuilding(builderId);
         if (building == null) {
+            return;
+        }
+        if (building.getOwnerId() != this.playerId) {
             return;
         }
         if (!(building.getType() == BuildingType.CONSTRUCTIONYARD)) {

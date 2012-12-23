@@ -20,6 +20,7 @@ import lv.k2611a.domain.Building;
 import lv.k2611a.domain.BuildingType;
 import lv.k2611a.domain.ConstructionOption;
 import lv.k2611a.domain.Map;
+import lv.k2611a.domain.Player;
 import lv.k2611a.domain.Tile;
 import lv.k2611a.domain.Unit;
 import lv.k2611a.domain.UnitType;
@@ -34,6 +35,7 @@ import lv.k2611a.network.req.GameStateChanger;
 import lv.k2611a.network.resp.UpdateConstructionOptions;
 import lv.k2611a.network.resp.UpdateMap;
 import lv.k2611a.network.resp.UpdateMapIncremental;
+import lv.k2611a.network.resp.UpdateMoney;
 import lv.k2611a.util.MapGenerator;
 import lv.k2611a.util.Point;
 
@@ -67,16 +69,20 @@ public class GameServiceImpl implements GameService {
 
         Building building = new Building();
         building.setId(idGeneratorService.generateBuildingId());
+        building.setOwnerId(1);
         building.setX(1);
         building.setY(110);
         building.setType(BuildingType.POWERPLANT);
+        building.setOwnerId(1);
         map.getBuildings().add(building);
 
         building = new Building();
         building.setId(idGeneratorService.generateBuildingId());
+        building.setOwnerId(1);
         building.setX(1);
         building.setY(120);
         building.setType(BuildingType.CONSTRUCTIONYARD);
+        building.setOwnerId(1);
         map.getBuildings().add(building);
 
         Random r = new Random();
@@ -84,6 +90,7 @@ public class GameServiceImpl implements GameService {
             for (int i = 0; i < 100; i++) {
                 Unit unit = new Unit();
                 unit.setId(idGeneratorService.generateUnitId());
+                unit.setOwnerId(1);
                 unit.setX(j);
                 unit.setY(i);
                 unit.setGoal(new Move(100 + j, i));
@@ -120,6 +127,15 @@ public class GameServiceImpl implements GameService {
         return updateMap;
     }
 
+    @Override
+    public synchronized boolean isOwner(int buildingId, int playerId) {
+        Building building = map.getBuilding(buildingId);
+        if (building == null) {
+            return false;
+        }
+        return building.getOwnerId() == playerId;
+    }
+
     private List<TileDTO> getMapTiles() {
         List<TileDTO> tileDTOList = new ArrayList<TileDTO>();
         for (int x = 0; x < map.getWidth(); x++) {
@@ -151,6 +167,7 @@ public class GameServiceImpl implements GameService {
         processUnitsGoals(map);
         sendIncrementalUpdate();
         sendAvalaibleConstructionOptionsUpdate();
+        sendUpdateMoney();
 
         long endTime = System.currentTimeMillis();
         long duration = endTime - startTime;
@@ -161,6 +178,16 @@ public class GameServiceImpl implements GameService {
 
         serverMonitor.reportTickTime(duration);
 
+    }
+
+    private void sendUpdateMoney() {
+        for (ClientConnection clientConnection : sessionsService.getMembers()) {
+            int playerId = clientConnection.getPlayerId();
+            Player player = map.getPlayerById(playerId);
+            UpdateMoney updateMoney = new UpdateMoney();
+            updateMoney.setMoney(player.getMoney());
+            clientConnection.sendMessage(updateMoney);
+        }
     }
 
     private void sendAvalaibleConstructionOptionsUpdate() {

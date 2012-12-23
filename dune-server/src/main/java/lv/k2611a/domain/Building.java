@@ -13,6 +13,7 @@ public class Building {
     private int hp;
     private List<BuildingGoal> goals = new ArrayList<BuildingGoal>();
     private int ticksAccumulated;
+    private int ownerId;
 
     // constr. yard only
     private boolean awaitingClick;
@@ -98,5 +99,13 @@ public class Building {
 
     public void setBuildingTypeBuilt(BuildingType buildingTypeBuilt) {
         this.buildingTypeBuilt = buildingTypeBuilt;
+    }
+
+    public int getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(int ownerId) {
+        this.ownerId = ownerId;
     }
 }

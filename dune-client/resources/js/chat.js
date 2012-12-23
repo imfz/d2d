@@ -24,13 +24,13 @@ Chat.prototype.init = function () {
     document.getElementById('username').onkeyup = function (ev) {
         var keyc = getKeyCode(ev);
         if (keyc == 13 || keyc == 10) {
-            connection.start($F('username'));
+            connection.start($F('username'), $F('playerId'));
             return false;
         }
         return true;
     };
     document.getElementById('joinB').onclick = function (event) {
-        connection.start($F('username'));
+        connection.start($F('username'), $F('playerId'));
         return false;
     };
     document.getElementById('phrase').setAttribute('autocomplete', 'OFF');

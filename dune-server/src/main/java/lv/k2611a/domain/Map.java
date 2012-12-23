@@ -7,7 +7,11 @@ import java.util.List;
 import lv.k2611a.util.Node;
 
 public class Map {
+
+    private static final int MAX_PLAYER_COUNT = 16;
+
     private Tile[][] tiles;
+    private Player[] players;
     private int width;
     private int height;
     private List<Unit> units;
@@ -28,6 +32,10 @@ public class Map {
         }
         units = new ArrayList<Unit>();
         buildings = new ArrayList<Building>();
+        players = new Player[MAX_PLAYER_COUNT];
+        for (int i = 0; i < MAX_PLAYER_COUNT; i++) {
+            players[i] = new Player();
+        }
     }
 
     public Tile getTile(int x, int y) {
@@ -224,5 +232,9 @@ public class Map {
             }
         }
         return null;
+    }
+
+    public Player getPlayerById(int id) {
+        return this.players[id];
     }
 }

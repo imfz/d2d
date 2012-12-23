@@ -2,6 +2,7 @@ package lv.k2611a.network.req;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import lv.k2611a.ClientConnection;
 import lv.k2611a.domain.Building;
 import lv.k2611a.domain.BuildingType;
 import lv.k2611a.domain.Map;
@@ -25,6 +26,9 @@ public class PlaceBuilding extends AbstractGameStateChanger {
         if (!conYard.isAwaitingClick()) {
             return;
         }
+        if (conYard.getOwnerId() != playerId) {
+            return;
+        }
         BuildingType buildingTypeBuilt = conYard.getBuildingTypeBuilt();
 
         for (int x = 0; x < buildingTypeBuilt.getWidth(); x++) {
@@ -40,6 +44,7 @@ public class PlaceBuilding extends AbstractGameStateChanger {
         building.setX(x);
         building.setY(y);
         building.setId(idGeneratorService.generateBuildingId());
+        building.setOwnerId(conYard.getOwnerId());
         map.getBuildings().add(building);
 
         conYard.setAwaitingClick(false);

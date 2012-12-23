@@ -31,7 +31,12 @@ public class ClientConnection implements WebSocket.OnTextMessage, Runnable {
     private static final ThreadLocal<ClientConnection> localConnection = new ThreadLocal<ClientConnection>();
 
     public static ClientConnection getCurrentConnection() {
-        return localConnection.get();
+        ClientConnection clientConnection = localConnection.get();
+        return clientConnection;
+    }
+
+    public static void setCurrentConnection(ClientConnection clientConnection) {
+         localConnection.set(clientConnection);
     }
 
     @Autowired
@@ -41,6 +46,8 @@ public class ClientConnection implements WebSocket.OnTextMessage, Runnable {
     private AutowireCapableBeanFactory autowireCapableBeanFactory;
 
     private String username;
+
+    private int playerId;
 
     private Integer selectedBuildingId;
 
@@ -145,5 +152,13 @@ public class ClientConnection implements WebSocket.OnTextMessage, Runnable {
 
     public void setSelectedBuildingId(Integer selectedBuildingId) {
         this.selectedBuildingId = selectedBuildingId;
+    }
+
+    public int getPlayerId() {
+        return playerId;
+    }
+
+    public void setPlayerId(int playerId) {
+        this.playerId = playerId;
     }
 }

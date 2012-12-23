@@ -14,6 +14,7 @@
     <script src="js/network.js"></script>
     <script src="js/handler.js"></script>
     <script src="js/rightmenu.js"></script>
+    <script src="js/moneytab.js"></script>
     <script>
 
         var gameLog;
@@ -24,6 +25,7 @@
         var networking;
         var handler;
         var rightmenu;
+        var moneyTab;
 
 
         $(window).load(
@@ -38,7 +40,8 @@
                     networking = new Networking();
                     chat = new Chat();
                     rightmenu = new RightMenu();
-                    handler = new Handler(map, gameLog, rightmenu, engine);
+                    moneyTab = new MoneyTab();
+                    handler = new Handler(map, gameLog, rightmenu, engine, moneyTab);
 
                     var canvas = document.getElementById("canvas");
                     engine.setCanvas(canvas);
@@ -98,9 +101,9 @@
         <div id='chat'></div>
         <div id='input'>
             <div id='join'>
-                Username:&nbsp;<input id='username' type='text'/><input id='joinB' class='button' type='submit'
-                                                                        name='join'
-                                                                        value='Join'/>
+                Username:&nbsp;<input id='username' type='text'/>
+                PlayerId:&nbsp;<input id='playerId' type='text' value="1"/>
+                <input id='joinB' class='button' type='submit' name='join' value='Join'/>
             </div>
             <div id='joined' class='hidden'>
                 Chat:&nbsp;<input id='phrase' type='text'/>
@@ -110,6 +113,7 @@
 
     </div>
     <div id="rightcol" style="text-align:center; ">
+        <div id="moneyTab"></div>
         <canvas id="minimap" width="200" height="200">
             This text is displayed if your browser does not support HTML5 canvas
         </canvas>

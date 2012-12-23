@@ -33,6 +33,10 @@ public class StartConstructionTest {
     @Before
     public void setup() {
         gameService.setTickCount(0);
+        // all building should cost 0
+        for (BuildingType buildingType : BuildingType.values()) {
+            buildingType.setCostPerTick(0);
+        }
     }
 
     @Test
@@ -42,6 +46,7 @@ public class StartConstructionTest {
 
         Building constructionYard = new Building();
         constructionYard.setId(CONSTRUCTION_YARD_ID);
+        constructionYard.setOwnerId(1);
         constructionYard.setType(BuildingType.POWERPLANT);
         constructionYard.setX(1);
         constructionYard.setY(1);
@@ -51,6 +56,7 @@ public class StartConstructionTest {
         StartConstruction startConstruction = new StartConstruction();
         startConstruction.setBuilderId(CONSTRUCTION_YARD_ID);
         startConstruction.setEntityToBuildId(BuildingType.POWERPLANT.getIdOnJS());
+        startConstruction.setPlayerId(1);
         userActionService.registerAction(startConstruction);
 
         for (int i = 0; i < BuildingType.POWERPLANT.getTicksToBuild(); i++) {
@@ -77,6 +83,44 @@ public class StartConstructionTest {
         gameService.tick();
     }
 
+    @Test
+    public void testConstructionWithMoneyScenario() {
+        Map map = new Map(64,64);
+        gameService.setMap(map);
+
+        Building constructionYard = new Building();
+        constructionYard.setId(CONSTRUCTION_YARD_ID);
+        constructionYard.setOwnerId(1);
+        constructionYard.setType(BuildingType.CONSTRUCTIONYARD);
+        constructionYard.setX(1);
+        constructionYard.setY(1);
+        constructionYard.setHp(100);
+        map.getBuildings().add(constructionYard);
+
+        BuildingType.POWERPLANT.setCostPerTick(10);
+
+        map.getPlayerById(1).setMoney(BuildingType.POWERPLANT.getTicksToBuild() * BuildingType.POWERPLANT.getCostPerTick() - 1);
+
+        StartConstruction startConstruction = new StartConstruction();
+        startConstruction.setBuilderId(CONSTRUCTION_YARD_ID);
+        startConstruction.setEntityToBuildId(BuildingType.POWERPLANT.getIdOnJS());
+        startConstruction.setPlayerId(1);
+        userActionService.registerAction(startConstruction);
+
+
+        for (int i = 0; i < BuildingType.POWERPLANT.getTicksToBuild(); i++) {
+            gameService.tick();
+            assertEquals("building should not be build without money", false, map.getBuilding(CONSTRUCTION_YARD_ID).isAwaitingClick());
+        }
+
+        // one last final tick
+        map.getPlayerById(1).setMoney(map.getPlayerById(1).getMoney() + 1);
+        gameService.tick();
+
+        assertEquals("building should be built", true, map.getBuilding(CONSTRUCTION_YARD_ID).isAwaitingClick());
+        assertEquals("tick count should reset", 0, map.getBuilding(CONSTRUCTION_YARD_ID).getTicksAccumulated());
+        assertEquals("building goal should be empty", null, map.getBuilding(CONSTRUCTION_YARD_ID).getCurrentGoal());
+    }
 
     @Test
     public void testConstructionScenario() {
@@ -85,6 +129,7 @@ public class StartConstructionTest {
 
         Building constructionYard = new Building();
         constructionYard.setId(CONSTRUCTION_YARD_ID);
+        constructionYard.setOwnerId(1);
         constructionYard.setType(BuildingType.CONSTRUCTIONYARD);
         constructionYard.setX(1);
         constructionYard.setY(1);
@@ -93,6 +138,7 @@ public class StartConstructionTest {
 
         Building anotherConstructionYard = new Building();
         anotherConstructionYard.setId(ANOTHER_CONSTRUCTION_YARD_ID);
+        anotherConstructionYard.setOwnerId(1);
         anotherConstructionYard.setType(BuildingType.CONSTRUCTIONYARD);
         anotherConstructionYard.setX(3);
         anotherConstructionYard.setY(3);
@@ -102,6 +148,7 @@ public class StartConstructionTest {
         StartConstruction startConstruction = new StartConstruction();
         startConstruction.setBuilderId(CONSTRUCTION_YARD_ID);
         startConstruction.setEntityToBuildId(BuildingType.POWERPLANT.getIdOnJS());
+        startConstruction.setPlayerId(1);
         userActionService.registerAction(startConstruction);
 
         for (int i = 0; i < BuildingType.POWERPLANT.getTicksToBuild()-1; i++) {
@@ -121,6 +168,7 @@ public class StartConstructionTest {
         placeBuilding.setBuilderId(ANOTHER_CONSTRUCTION_YARD_ID);
         placeBuilding.setX(5);
         placeBuilding.setY(5);
+        placeBuilding.setPlayerId(1);
         userActionService.registerAction(placeBuilding);
         gameService.tick();
 
@@ -131,6 +179,7 @@ public class StartConstructionTest {
         placeBuilding.setBuilderId(CONSTRUCTION_YARD_ID);
         placeBuilding.setX(2);
         placeBuilding.setY(2);
+        placeBuilding.setPlayerId(1);
         userActionService.registerAction(placeBuilding);
         gameService.tick();
 
@@ -147,6 +196,7 @@ public class StartConstructionTest {
         placeBuilding.setBuilderId(CONSTRUCTION_YARD_ID);
         placeBuilding.setX(15);
         placeBuilding.setY(15);
+        placeBuilding.setPlayerId(1);
         userActionService.registerAction(placeBuilding);
         gameService.tick();
 
@@ -157,6 +207,7 @@ public class StartConstructionTest {
         placeBuilding.setBuilderId(CONSTRUCTION_YARD_ID);
         placeBuilding.setX(63);
         placeBuilding.setY(63);
+        placeBuilding.setPlayerId(1);
         userActionService.registerAction(placeBuilding);
         gameService.tick();
 
@@ -167,6 +218,7 @@ public class StartConstructionTest {
         placeBuilding.setBuilderId(CONSTRUCTION_YARD_ID);
         placeBuilding.setX(5);
         placeBuilding.setY(5);
+        placeBuilding.setPlayerId(1);
         userActionService.registerAction(placeBuilding);
         gameService.tick();
 

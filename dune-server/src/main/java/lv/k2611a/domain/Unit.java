@@ -16,6 +16,7 @@ public class Unit {
     private List<UnitGoal> goals = new ArrayList<UnitGoal>();
     private int ticksMovingToNextCell;
     private int hp;
+    private int ownerId;
 
     public UnitType getUnitType() {
         return unitType;
@@ -89,5 +90,13 @@ public class Unit {
 
     public int getHp() {
         return hp;
+    }
+
+    public int getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(int ownerId) {
+        this.ownerId = ownerId;
     }
 }

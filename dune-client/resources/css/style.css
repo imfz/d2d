@@ -50,6 +50,11 @@ input#username {
     background-color: #e0f0f0;
 }
 
+input#playerId {
+    width: 14em;
+    background-color: #e0f0f0;
+}
+
 div.hidden {
     display: none;
 }
