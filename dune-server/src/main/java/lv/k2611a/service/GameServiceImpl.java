@@ -9,6 +9,7 @@ import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -200,16 +201,24 @@ public class GameServiceImpl implements GameService {
 
     private void processBuildingGoals(Map map) {
         for (Building building : map.getBuildings()) {
-            if (building.getCurrentGoal() != null) {
-                building.getCurrentGoal().process(building,map);
+            try {
+                if (building.getCurrentGoal() != null) {
+                    building.getCurrentGoal().process(building,map);
+                }
+            } catch (RuntimeException e) {
+                log.error("Exception while proccessing building goal",e);
             }
         }
     }
 
     private void processUserClicks(Map map) {
         for (GameStateChanger gameStateChanger : userActionService.drainActions()) {
-            autowireCapableBeanFactory.autowireBean(gameStateChanger);
-            gameStateChanger.changeGameState(map);
+            try {
+                autowireCapableBeanFactory.autowireBean(gameStateChanger);
+                gameStateChanger.changeGameState(map);
+            } catch (BeansException e) {
+                log.error("Exception while processing user action",e);
+            }
         }
     }
 
@@ -226,8 +235,12 @@ public class GameServiceImpl implements GameService {
 
     private void processUnitsGoals(Map map) {
         for (Unit unit : map.getUnits()) {
-            if (unit.getCurrentGoal() != null) {
-                unit.getCurrentGoal().process(unit, map);
+            try {
+                if (unit.getCurrentGoal() != null) {
+                    unit.getCurrentGoal().process(unit, map);
+                }
+            } catch (Exception e) {
+                log.error("Exception while processing unit goal",e);
             }
         }
     }
