@@ -6,6 +6,8 @@ public class UpdateConstructionOptions implements Response {
     private int builderId;
     private boolean readyToBuild;
     private OptionDTO[] options;
+    private int percentsDone;
+    private int currentlyBuildingId;
 
     public OptionDTO[] getOptions() {
         return options;
@@ -29,5 +31,21 @@ public class UpdateConstructionOptions implements Response {
 
     public void setReadyToBuild(boolean readyToBuild) {
         this.readyToBuild = readyToBuild;
+    }
+
+    public int getPercentsDone() {
+        return percentsDone;
+    }
+
+    public void setPercentsDone(int percentsDone) {
+        this.percentsDone = percentsDone;
+    }
+
+    public int getCurrentlyBuildingId() {
+        return currentlyBuildingId;
+    }
+
+    public void setCurrentlyBuildingId(int currentlyBuildingId) {
+        this.currentlyBuildingId = currentlyBuildingId;
     }
 }

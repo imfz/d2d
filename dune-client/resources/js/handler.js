@@ -112,5 +112,5 @@ Handler.prototype.handleUpdateConstructionOptions = function(data) {
             }
         }
     }
-    this.rightMenu.setOptions(data.builderId, data.options);
+    this.rightMenu.setOptions(data.builderId, data.options, data.percentsDone, data.currentlyBuildingId, data.readyToBuild);
 };

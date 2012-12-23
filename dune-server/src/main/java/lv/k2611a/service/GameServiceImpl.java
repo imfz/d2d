@@ -24,6 +24,7 @@ import lv.k2611a.domain.Player;
 import lv.k2611a.domain.Tile;
 import lv.k2611a.domain.Unit;
 import lv.k2611a.domain.UnitType;
+import lv.k2611a.domain.buildinggoals.CreateBuilding;
 import lv.k2611a.domain.unitgoals.Move;
 import lv.k2611a.jmx.ServerMonitor;
 import lv.k2611a.network.BuildingDTO;
@@ -213,8 +214,23 @@ public class GameServiceImpl implements GameService {
                 }
                 UpdateConstructionOptions updateConstructionOptions = new UpdateConstructionOptions();
                 updateConstructionOptions.setBuilderId(clientConnection.getSelectedBuildingId());
-                if (!(building.isAwaitingClick() || building.getCurrentGoal() != null)) {
+                if (!(building.isAwaitingClick())) {
                     updateConstructionOptions.setReadyToBuild(true);
+                } else {
+                    updateConstructionOptions.setCurrentlyBuildingId(building.getBuildingTypeBuilt().getIdOnJS());
+                    updateConstructionOptions.setPercentsDone(100);
+                }
+                if (building.getCurrentGoal() != null) {
+                    if (building.getCurrentGoal() instanceof CreateBuilding) {
+                        CreateBuilding createBuilding = (CreateBuilding) building.getCurrentGoal();
+                        BuildingType buildingTypeBuilt = createBuilding.getBuildingType();
+                        if (buildingTypeBuilt != null) {
+                            updateConstructionOptions.setCurrentlyBuildingId(buildingTypeBuilt.getIdOnJS());
+                            double done = (double) building.getTicksAccumulated() / buildingTypeBuilt.getTicksToBuild();
+                            int percentsDone = (int) Math.round(done * 100);
+                            updateConstructionOptions.setPercentsDone(percentsDone);
+                        }
+                    }
                 }
                 updateConstructionOptions.setOptions(options.toArray(new OptionDTO[options.size()]));
                 clientConnection.sendMessage(updateConstructionOptions);
@@ -228,10 +244,10 @@ public class GameServiceImpl implements GameService {
         for (Building building : map.getBuildings()) {
             try {
                 if (building.getCurrentGoal() != null) {
-                    building.getCurrentGoal().process(building,map);
+                    building.getCurrentGoal().process(building, map);
                 }
             } catch (RuntimeException e) {
-                log.error("Exception while proccessing building goal",e);
+                log.error("Exception while proccessing building goal", e);
             }
         }
     }
@@ -242,7 +258,7 @@ public class GameServiceImpl implements GameService {
                 autowireCapableBeanFactory.autowireBean(gameStateChanger);
                 gameStateChanger.changeGameState(map);
             } catch (RuntimeException e) {
-                log.error("Exception while processing user action",e);
+                log.error("Exception while processing user action", e);
             }
         }
     }
@@ -265,7 +281,7 @@ public class GameServiceImpl implements GameService {
                     unit.getCurrentGoal().process(unit, map);
                 }
             } catch (Exception e) {
-                log.error("Exception while processing unit goal",e);
+                log.error("Exception while processing unit goal", e);
             }
         }
     }
@@ -275,7 +291,7 @@ public class GameServiceImpl implements GameService {
         for (Building building : map.getBuildings()) {
             for (int x = 0; x < building.getType().getWidth(); x++) {
                 for (int y = 0; y < building.getType().getHeight(); y++) {
-                    map.setUsed(x + building.getX(),y + building.getY(),-2);
+                    map.setUsed(x + building.getX(), y + building.getY(), -2);
                 }
             }
         }
