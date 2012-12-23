@@ -11,6 +11,7 @@ public class UnitDTO {
     private double travelled;
     private int hp;
     private int maxHp;
+    private int ownerId;
 
     public int getUnitType() {
         return unitType;
@@ -76,6 +77,14 @@ public class UnitDTO {
         this.maxHp = maxHp;
     }
 
+    public int getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(int ownerId) {
+        this.ownerId = ownerId;
+    }
+
     public static UnitDTO fromUnit(Unit unit) {
         UnitDTO dto = new UnitDTO();
         dto.setUnitType(unit.getUnitType().getIdOnJS());
@@ -86,6 +95,7 @@ public class UnitDTO {
         dto.setId(unit.getId());
         dto.setViewDirection(unit.getViewDirection().getIdOnJS());
         dto.setTravelled((double)unit.getTicksMovingToNextCell() / unit.getUnitType().getSpeed());
+        dto.setOwnerId(unit.getOwnerId());
         return dto;
     }
 }

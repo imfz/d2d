@@ -13,6 +13,7 @@ public class BuildingDTO {
     private int height;
     private boolean constructionComplete;
     private int entityBuiltId;
+    private int ownerId;
 
     public long getId() {
         return id;
@@ -94,6 +95,14 @@ public class BuildingDTO {
         this.entityBuiltId = entityBuiltId;
     }
 
+    public int getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(int ownerId) {
+        this.ownerId = ownerId;
+    }
+
     public static BuildingDTO fromBuilding(Building building) {
         BuildingDTO dto = new BuildingDTO();
         dto.setType(building.getType().getIdOnJS());
@@ -108,6 +117,7 @@ public class BuildingDTO {
         if (building.getBuildingTypeBuilt() != null) {
             dto.setEntityBuiltId(building.getBuildingTypeBuilt().getIdOnJS());
         }
+        dto.setOwnerId(building.getOwnerId());
         return dto;
     }
 }

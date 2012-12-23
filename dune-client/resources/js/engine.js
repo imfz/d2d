@@ -167,7 +167,7 @@ GameEngine.prototype.bindEvents = function () {
             } else {
                 var mapX = Math.floor((x / TILE_WIDTH) + that.x);
                 var mapY = Math.floor((y / TILE_HEIGHT) + that.y);
-                connection.sendBuildingPlacement(mapX,mapY,that.builderId);
+                connection.sendBuildingPlacement(mapX, mapY, that.builderId);
             }
             that.xMouseDown = null;
             that.yMouseDown = null;
@@ -618,15 +618,17 @@ GameEngine.prototype.render = function () {
                     this.okButtonSprite.width, this.okButtonSprite.height
             );
         }
-        var shownBuildingInfo = new Object();
-        shownBuildingInfo.id = building.id;
-        shownBuildingInfo.x = xToDrawTo;
-        shownBuildingInfo.y = yToDrawTo;
-        shownBuildingInfo.width = buildingConfig.width;
-        shownBuildingInfo.height = buildingConfig.height;
-        shownBuildingInfo.placementEnabled = building.constructionComplete;
-        shownBuildingInfo.buildingTypeBuilt = building.buildingTypeBuilt;
-        this.shownBuildings.push(shownBuildingInfo);
+        if (building.ownerId == connection._playerId) {
+            var shownBuildingInfo = new Object();
+            shownBuildingInfo.id = building.id;
+            shownBuildingInfo.x = xToDrawTo;
+            shownBuildingInfo.y = yToDrawTo;
+            shownBuildingInfo.width = buildingConfig.width;
+            shownBuildingInfo.height = buildingConfig.height;
+            shownBuildingInfo.placementEnabled = building.constructionComplete;
+            shownBuildingInfo.buildingTypeBuilt = building.buildingTypeBuilt;
+            this.shownBuildings.push(shownBuildingInfo);
+        }
     }
 
     // +1 to handle units moving from/into screen
@@ -665,11 +667,13 @@ GameEngine.prototype.render = function () {
             context.closePath();
             context.fill();
 
-            var shownUnitInfo = new Object();
-            shownUnitInfo.id = unit.id;
-            shownUnitInfo.x = movingCoord.x;
-            shownUnitInfo.y = movingCoord.y;
-            this.shownUnits.push(shownUnitInfo);
+            if (building.ownerId == connection._playerId) {
+                var shownUnitInfo = new Object();
+                shownUnitInfo.id = unit.id;
+                shownUnitInfo.x = movingCoord.x;
+                shownUnitInfo.y = movingCoord.y;
+                this.shownUnits.push(shownUnitInfo);
+            }
         }
     }
 
