@@ -1,6 +1,7 @@
 package lv.k2611a.service;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Random;
 
@@ -15,8 +16,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import lv.k2611a.App;
+import lv.k2611a.ClientConnection;
 import lv.k2611a.domain.Building;
 import lv.k2611a.domain.BuildingType;
+import lv.k2611a.domain.ConstructionOption;
 import lv.k2611a.domain.Map;
 import lv.k2611a.domain.Tile;
 import lv.k2611a.domain.Unit;
@@ -25,9 +28,11 @@ import lv.k2611a.domain.unitgoals.Move;
 import lv.k2611a.jmx.ServerMonitor;
 import lv.k2611a.network.BuildingDTO;
 import lv.k2611a.network.MapDTO;
+import lv.k2611a.network.OptionDTO;
 import lv.k2611a.network.TileDTO;
 import lv.k2611a.network.UnitDTO;
 import lv.k2611a.network.req.GameStateChanger;
+import lv.k2611a.network.resp.UpdateConstructionOptions;
 import lv.k2611a.network.resp.UpdateMap;
 import lv.k2611a.network.resp.UpdateMapIncremental;
 import lv.k2611a.util.MapGenerator;
@@ -66,6 +71,13 @@ public class GameServiceImpl implements GameService {
         building.setX(1);
         building.setY(110);
         building.setType(BuildingType.POWERPLANT);
+        map.getBuildings().add(building);
+
+        building = new Building();
+        building.setId(idGeneratorService.generateBuildingId());
+        building.setX(1);
+        building.setY(120);
+        building.setType(BuildingType.CONSTRUCTIONYARD);
         map.getBuildings().add(building);
 
         Random r = new Random();
@@ -139,6 +151,7 @@ public class GameServiceImpl implements GameService {
         processBuildingGoals(map);
         processUnitsGoals(map);
         sendIncrementalUpdate();
+        sendAvalaibleConstructionOptionsUpdate();
 
         long endTime = System.currentTimeMillis();
         long duration = endTime - startTime;
@@ -149,6 +162,40 @@ public class GameServiceImpl implements GameService {
 
         serverMonitor.reportTickTime(duration);
 
+    }
+
+    private void sendAvalaibleConstructionOptionsUpdate() {
+        for (ClientConnection clientConnection : sessionsService.getMembers()) {
+            Integer selectedBuildingId = clientConnection.getSelectedBuildingId();
+            if (selectedBuildingId != null) {
+                Building building = map.getBuilding(selectedBuildingId);
+                if (building == null) {
+                    clientConnection.sendMessage(new UpdateConstructionOptions());
+                    continue;
+                }
+                EnumSet<ConstructionOption> constructionOptions = EnumSet.noneOf(ConstructionOption.class);
+                if (!(building.isAwaitingClick() || building.getCurrentGoal() != null)) {
+                    constructionOptions = building.getType().getConstructionOptions();
+                }
+
+                List<OptionDTO> options = new ArrayList<OptionDTO>();
+                for (ConstructionOption constructionOption : constructionOptions) {
+                    OptionDTO option = new OptionDTO();
+                    option.setType(constructionOption.getIdOnJS());
+                    option.setEntityToBuildId(constructionOption.getEntityToBuildIdOnJs());
+                    options.add(option);
+                }
+                UpdateConstructionOptions updateConstructionOptions = new UpdateConstructionOptions();
+                updateConstructionOptions.setBuilderId(clientConnection.getSelectedBuildingId());
+                if (!(building.isAwaitingClick() || building.getCurrentGoal() != null)) {
+                    updateConstructionOptions.setReadyToBuild(true);
+                }
+                updateConstructionOptions.setOptions(options.toArray(new OptionDTO[options.size()]));
+                clientConnection.sendMessage(updateConstructionOptions);
+            } else {
+                clientConnection.sendMessage(new UpdateConstructionOptions());
+            }
+        }
     }
 
     private void processBuildingGoals(Map map) {

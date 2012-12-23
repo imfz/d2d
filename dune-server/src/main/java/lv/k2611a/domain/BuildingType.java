@@ -1,14 +1,25 @@
 package lv.k2611a.domain;
 
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 
 public enum BuildingType {
 
     SILO(1,2,2,50,10),
-    REFINERY(2,3,2,50,10),
-    POWERPLANT(3,2,2,50,10),
-    CONSTRUCTIONYARD(4,2,2,50,10);
+    POWERPLANT(2,2,2,50,10),
+    REPAIRSHOP(3,3,2,50,10),
+    CONSTRUCTIONYARD(7,2,2,50,10) {
+        @Override
+        public EnumSet<ConstructionOption> getConstructionOptions() {
+            EnumSet<ConstructionOption> constructionOptions = EnumSet.of(
+                    ConstructionOption.REPAIRSHOP,
+                    ConstructionOption.POWERPLANT,
+                    ConstructionOption.SILO
+            );
+            return constructionOptions;
+        }
+    };
 
     static {
         Set<Integer> idsOnJs = new HashSet<Integer>();
@@ -51,6 +62,10 @@ public enum BuildingType {
 
     public int getTicksToBuild() {
         return ticksToBuild;
+    }
+
+    public EnumSet<ConstructionOption> getConstructionOptions() {
+        return EnumSet.noneOf(ConstructionOption.class);
     }
 
     public static BuildingType getByJsId(int idInIs) {

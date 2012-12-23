@@ -50,7 +50,7 @@ public class StartConstructionTest {
 
         StartConstruction startConstruction = new StartConstruction();
         startConstruction.setBuilderId(CONSTRUCTION_YARD_ID);
-        startConstruction.setBuildingType(BuildingType.POWERPLANT.getIdOnJS());
+        startConstruction.setEntityToBuildId(BuildingType.POWERPLANT.getIdOnJS());
         userActionService.registerAction(startConstruction);
 
         for (int i = 0; i < BuildingType.POWERPLANT.getTicksToBuild(); i++) {
@@ -70,7 +70,7 @@ public class StartConstructionTest {
 
         StartConstruction startConstruction = new StartConstruction();
         startConstruction.setBuilderId(CONSTRUCTION_YARD_ID);
-        startConstruction.setBuildingType(BuildingType.POWERPLANT.getIdOnJS());
+        startConstruction.setEntityToBuildId(BuildingType.POWERPLANT.getIdOnJS());
         userActionService.registerAction(startConstruction);
 
         gameService.tick();
@@ -101,7 +101,7 @@ public class StartConstructionTest {
 
         StartConstruction startConstruction = new StartConstruction();
         startConstruction.setBuilderId(CONSTRUCTION_YARD_ID);
-        startConstruction.setBuildingType(BuildingType.POWERPLANT.getIdOnJS());
+        startConstruction.setEntityToBuildId(BuildingType.POWERPLANT.getIdOnJS());
         userActionService.registerAction(startConstruction);
 
         for (int i = 0; i < BuildingType.POWERPLANT.getTicksToBuild()-1; i++) {

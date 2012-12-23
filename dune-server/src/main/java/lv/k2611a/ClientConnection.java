@@ -42,6 +42,8 @@ public class ClientConnection implements WebSocket.OnTextMessage, Runnable {
 
     private String username;
 
+    private Integer selectedBuildingId;
+
     private BlockingQueue<Response> queue = new LinkedBlockingQueue<Response>();
 
     private ExecutorService exec = Executors.newFixedThreadPool(1);
@@ -137,5 +139,11 @@ public class ClientConnection implements WebSocket.OnTextMessage, Runnable {
         this.username = username;
     }
 
+    public Integer getSelectedBuildingId() {
+        return selectedBuildingId;
+    }
 
+    public void setSelectedBuildingId(Integer selectedBuildingId) {
+        this.selectedBuildingId = selectedBuildingId;
+    }
 }

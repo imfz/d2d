@@ -7,7 +7,7 @@ import lv.k2611a.domain.buildinggoals.CreateBuilding;
 
 public class StartConstruction extends AbstractGameStateChanger {
     private int builderId;
-    private int buildingType;
+    private int entityToBuildId;
 
     @Override
     public void changeGameState(Map map) {
@@ -19,7 +19,7 @@ public class StartConstruction extends AbstractGameStateChanger {
             return;
         }
         CreateBuilding createBuilding = new CreateBuilding();
-        createBuilding.setBuildingType(BuildingType.getByJsId(buildingType));
+        createBuilding.setBuildingType(BuildingType.getByJsId(entityToBuildId));
         building.addGoal(createBuilding);
     }
 
@@ -31,11 +31,11 @@ public class StartConstruction extends AbstractGameStateChanger {
         this.builderId = builderId;
     }
 
-    public int getBuildingType() {
-        return buildingType;
+    public int getEntityToBuildId() {
+        return entityToBuildId;
     }
 
-    public void setBuildingType(int buildingType) {
-        this.buildingType = buildingType;
+    public void setEntityToBuildId(int entityToBuildId) {
+        this.entityToBuildId = entityToBuildId;
     }
 }

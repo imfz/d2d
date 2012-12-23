@@ -6,11 +6,13 @@ public class BuildingDTO {
     private long id;
     private int x;
     private int y;
-    private int buildingType;
+    private int type;
     private int hp;
     private int maxHp;
     private int width;
     private int height;
+    private boolean constructionComplete;
+    private int entityBuiltId;
 
     public long getId() {
         return id;
@@ -36,12 +38,12 @@ public class BuildingDTO {
         this.y = y;
     }
 
-    public int getBuildingType() {
-        return buildingType;
+    public int getType() {
+        return type;
     }
 
-    public void setBuildingType(int buildingType) {
-        this.buildingType = buildingType;
+    public void setType(int type) {
+        this.type = type;
     }
 
     public int getHp() {
@@ -76,9 +78,25 @@ public class BuildingDTO {
         this.height = height;
     }
 
+    public boolean isConstructionComplete() {
+        return constructionComplete;
+    }
+
+    public void setConstructionComplete(boolean constructionComplete) {
+        this.constructionComplete = constructionComplete;
+    }
+
+    public int getEntityBuiltId() {
+        return entityBuiltId;
+    }
+
+    public void setEntityBuiltId(int entityBuiltId) {
+        this.entityBuiltId = entityBuiltId;
+    }
+
     public static BuildingDTO fromBuilding(Building building) {
         BuildingDTO dto = new BuildingDTO();
-        dto.setBuildingType(building.getType().getIdOnJS());
+        dto.setType(building.getType().getIdOnJS());
         dto.setHp(building.getHp());
         dto.setMaxHp(building.getType().getHp());
         dto.setId(building.getId());
@@ -86,6 +104,10 @@ public class BuildingDTO {
         dto.setY(building.getY());
         dto.setWidth(building.getType().getWidth());
         dto.setHeight(building.getType().getHeight());
+        dto.setConstructionComplete(building.isAwaitingClick());
+        if (building.getBuildingTypeBuilt() != null) {
+            dto.setEntityBuiltId(building.getBuildingTypeBuilt().getIdOnJS());
+        }
         return dto;
     }
 }

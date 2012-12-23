@@ -36,6 +36,28 @@ var connection = {
         this.sendNetworkRequest("UnitAction", unitAction);
     },
 
+    sendBuildingSelection : function(id) {
+        var selectBuilding = new Object();
+        selectBuilding.selectedId = id;
+        this.sendNetworkRequest("SelectBuilding", selectBuilding);
+    },
+
+
+    sendBuildingPlacement : function(x,y,builderId) {
+        var placeBuilding = new Object();
+        placeBuilding.x = x;
+        placeBuilding.y = y;
+        placeBuilding.builderId = builderId;
+        this.sendNetworkRequest("PlaceBuilding", placeBuilding);
+    },
+
+    sendStartConstruction : function(builderId, entityToBuildId) {
+        var startConstruction = new Object();
+        startConstruction.builderId = builderId;
+        startConstruction.entityToBuildId = entityToBuildId;
+        this.sendNetworkRequest("StartConstruction", startConstruction);
+    },
+
     sendNetworkRequest:function (messageName ,messageObj) {
         var networkPacket = new Object();
         networkPacket.messageName = messageName;

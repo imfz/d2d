@@ -128,15 +128,42 @@ RightMenu.prototype.bindEvents = function () {
     });
 };
 
-RightMenu.prototype.setOptions = function (options) {
+RightMenu.prototype.setOptions = function (builderId, options) {
+    if (!options) {
+        options = new Array();
+    }
+    if (!this.options) {
+        this.options = new Array();
+    }
+    if (options.length == this.options.length) {
+        var foundDiff = false;
+        for (var i = 0; i < options.length; i++) {
+            if (options[i].type != this.options[i].type) {
+                foundDiff = true;
+            }
+        }
+        if (!foundDiff) {
+            return;
+        }
+    }
     this.options = options;
     var context = this.canvas.getContext("2d");
     context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.canvas.height = options.length * BUY_OPTION_HEIGHT;
     for (var i = 0; i < options.length; i++) {
         var option = options[i];
+        option.onclick = sendStartConnectionClosure(builderId, option.entityToBuildId);
         var buyOptionConfig = this.getBuyOptionConfig(option.type);
         context.drawImage(this.mainSprite, buyOptionConfig.x, buyOptionConfig.y, BUY_OPTION_WIDTH, BUY_OPTION_HEIGHT, 0, i * BUY_OPTION_HEIGHT, BUY_OPTION_WIDTH, BUY_OPTION_HEIGHT);
 
     }
 };
+
+function sendStartConnectionClosure(builderId, entityToBuildId) {
+    var thatBuilderId = builderId;
+    var thatEntityToBuildId = entityToBuildId;
+    return function() {
+        connection.sendStartConstruction(thatBuilderId, thatEntityToBuildId);
+    }
+
+}

@@ -1,6 +1,8 @@
-function Handler(map, gameLog) {
+function Handler(map, gameLog, rightMenu, engine) {
     this.map = map;
     this.gameLog = gameLog;
+    this.rightMenu = rightMenu;
+    this.engine = engine;
 }
 
 Handler.prototype.addMessageToChat = function(from, text) {
@@ -94,4 +96,16 @@ Handler.prototype.handleJoined = function(data) {
 
 Handler.prototype.handleLeft = function(data) {
     this.addMessageToChat("SYSTEM", data.nickname + " has left the game");
+};
+
+Handler.prototype.handleUpdateConstructionOptions = function(data) {
+    // reset building mouse cursor here, after building
+    if (engine.placementEnabled) {
+        if (engine.builderId == data.builderId) {
+            if (data.readyToBuild) {
+                this.engine.placementEnabled = false;
+            }
+        }
+    }
+    this.rightMenu.setOptions(data.builderId, data.options);
 };
