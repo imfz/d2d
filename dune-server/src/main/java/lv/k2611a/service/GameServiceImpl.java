@@ -9,14 +9,12 @@ import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import lv.k2611a.App;
 import lv.k2611a.ClientConnection;
 import lv.k2611a.domain.Building;
 import lv.k2611a.domain.BuildingType;
@@ -216,7 +214,7 @@ public class GameServiceImpl implements GameService {
             try {
                 autowireCapableBeanFactory.autowireBean(gameStateChanger);
                 gameStateChanger.changeGameState(map);
-            } catch (BeansException e) {
+            } catch (RuntimeException e) {
                 log.error("Exception while processing user action",e);
             }
         }
