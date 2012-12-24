@@ -3,14 +3,19 @@ var BUY_OPTION_WIDTH = 182;
 
 function RightMenu() {
     this.builderid = -1;
+    this.currentlyBuildingOptionId = -1;
     var that = this;
-    $("#rightmenucancelbutton").click(function() {
+    $("#rightmenucancelbutton").click(function () {
         connection.sendCancelConstruction(that.builderId);
     });
 }
 
 RightMenu.prototype.setCanvas = function (canvas) {
     this.canvas = canvas;
+};
+
+RightMenu.prototype.setCurrentlyBuildingCanvas = function (currentlyBuildingCanvas) {
+    this.currentlyBuildingCanvas = currentlyBuildingCanvas;
 };
 
 RightMenu.prototype.setMainSprite = function (mainSprite) {
@@ -109,7 +114,7 @@ RightMenu.prototype.bindEvents = function () {
     });
 };
 
-RightMenu.prototype.setOptions = function (builderId, options, percentsDone, currentlyBuildingId, readyToBuild) {
+RightMenu.prototype.setOptions = function (builderId, options, percentsDone, currentlyBuildingId, currentlyBuildingOptionId) {
     if (!options) {
         options = new Array();
     }
@@ -129,10 +134,14 @@ RightMenu.prototype.setOptions = function (builderId, options, percentsDone, cur
         if (this.currentlyBuildingId != currentlyBuildingId) {
             foundDiff = true;
         }
+        if (this.currentlyBuildingOptionId != currentlyBuildingOptionId) {
+            foundDiff = true;
+        }
     } else {
         foundDiff = true;
     }
     this.currentlyBuildingId = currentlyBuildingId;
+    this.currentlyBuildingOptionId = currentlyBuildingOptionId;
     this.percentsDone = percentsDone;
     this.builderId = builderId;
 
@@ -142,15 +151,22 @@ RightMenu.prototype.setOptions = function (builderId, options, percentsDone, cur
     }
 };
 
-RightMenu.prototype.redraw = function() {
+RightMenu.prototype.redraw = function () {
     var context = this.canvas.getContext("2d");
     context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     $("#rightmenuprogress").html("");
-    $("#rightmenucancel").css("display","none");
+    $("#rightmenucancel").css("display", "none");
+    this.currentlyBuildingCanvas.height = 0;
+    this.canvas.height = 0;
     if (this.currentlyBuildingId > 0) {
         $("#rightmenuprogress").html('<div class="progress progress-success"><div class="bar" style="width: ' + this.percentsDone + '%"></div></div>');
-        $("#rightmenucancel").css("display","block");
-        this.canvas.height = 0;
+        $("#rightmenucancel").css("display", "block");
+        if (this.currentlyBuildingOptionId >= 0) {
+            this.currentlyBuildingCanvas.height = BUY_OPTION_HEIGHT;
+            var ctx = this.currentlyBuildingCanvas.getContext("2d");
+            var buildingOptionConfig = this.getBuyOptionConfig(this.currentlyBuildingOptionId);
+            ctx.drawImage(this.mainSprite, buildingOptionConfig.x, buildingOptionConfig.y, BUY_OPTION_WIDTH, BUY_OPTION_HEIGHT, 0, 0, BUY_OPTION_WIDTH, BUY_OPTION_HEIGHT);
+        }
     } else {
         this.canvas.height = this.options.length * BUY_OPTION_HEIGHT;
         for (var i = 0; i < this.options.length; i++) {

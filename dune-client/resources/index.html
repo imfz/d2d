@@ -65,6 +65,7 @@
 
                     var rightMenuCanvas = document.getElementById("rightmenu");
                     rightmenu.setCanvas(rightMenuCanvas);
+                    rightmenu.setCurrentlyBuildingCanvas(document.getElementById("currentlyBuildingCanvas"));
                     rightmenu.setMainSprite(document.getElementById("buys_sprite"));
                     rightmenu.bindEvents();
 
@@ -121,15 +122,19 @@
             This text is displayed if your browser does not support HTML5 canvas
         </canvas>
         <div style="height:5px"></div>
-        <div id="rightmenuprogress">
-        </div>
-        <div id="rightmenucancel" style="display: none">
-            <a href="#" id="rightmenucancelbutton" class="btn btn-danger"><i class="icon-white icon-remove"></i>Cancel</a>
-        </div>
-        <div style="margin:auto; overflow:auto; height:330px">
+
+        <div style="margin:auto; overflow:auto; width:182px; height:330px">
+            <canvas id="currentlyBuildingCanvas" width="182" height="110">
+                This text is displayed if your browser does not support HTML5 canvas
+            </canvas>
             <canvas id="rightmenu" width="182" height="330">
                 This text is displayed if your browser does not support HTML5 canvas
             </canvas>
+            <div id="rightmenuprogress">
+            </div>
+            <div id="rightmenucancel" style="display: none">
+                <a href="#" id="rightmenucancelbutton" class="btn btn-danger"><i class="icon-white icon-remove"></i>Cancel</a>
+            </div>
         </div>
 
         <div id="gameLog"></div>

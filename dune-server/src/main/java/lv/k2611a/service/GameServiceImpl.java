@@ -218,6 +218,7 @@ public class GameServiceImpl implements GameService {
                     updateConstructionOptions.setReadyToBuild(true);
                 } else {
                     updateConstructionOptions.setCurrentlyBuildingId(building.getBuildingTypeBuilt().getIdOnJS());
+                    updateConstructionOptions.setCurrentlyBuildingOptionId(getConstructionOption(building.getType().getConstructionOptions(), building.getBuildingTypeBuilt()));
                     updateConstructionOptions.setPercentsDone(100);
                 }
                 if (building.getCurrentGoal() != null) {
@@ -226,6 +227,7 @@ public class GameServiceImpl implements GameService {
                         BuildingType buildingTypeBuilt = createBuilding.getBuildingType();
                         if (buildingTypeBuilt != null) {
                             updateConstructionOptions.setCurrentlyBuildingId(buildingTypeBuilt.getIdOnJS());
+                            updateConstructionOptions.setCurrentlyBuildingOptionId(getConstructionOption(building.getType().getConstructionOptions(), buildingTypeBuilt));
                             double done = (double) building.getTicksAccumulated() / buildingTypeBuilt.getTicksToBuild();
                             int percentsDone = (int) Math.round(done * 100);
                             updateConstructionOptions.setPercentsDone(percentsDone);
@@ -238,6 +240,15 @@ public class GameServiceImpl implements GameService {
                 clientConnection.sendMessage(new UpdateConstructionOptions());
             }
         }
+    }
+
+    private int getConstructionOption(EnumSet<ConstructionOption> constructionOptions, BuildingType buildingTypeBuilt) {
+        for (ConstructionOption constructionOption : constructionOptions) {
+            if (constructionOption.getEntityToBuildIdOnJs() == buildingTypeBuilt.getIdOnJS()) {
+                return constructionOption.getIdOnJS();
+            }
+        }
+        return -1;
     }
 
     private void processBuildingGoals(Map map) {
