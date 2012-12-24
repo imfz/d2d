@@ -42,6 +42,7 @@ public class Move implements UnitGoal {
         }
         if (path.isEmpty()) {
             unit.removeGoal(this);
+            unit.setTicksMovingToNextCell(0);
             return;
         }
         int ticksToNextCell = unit.getUnitType().getSpeed();
@@ -73,6 +74,7 @@ public class Move implements UnitGoal {
         }
         if (path.isEmpty()) {
             unit.removeGoal(null);
+            unit.setTicksMovingToNextCell(0);
         }
 
     }
