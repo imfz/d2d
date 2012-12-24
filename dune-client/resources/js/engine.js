@@ -84,6 +84,14 @@ GameEngine.prototype.bindEvents = function () {
                 that.y += 1;
             }
             break;
+        case 27:
+            // handle ESC button
+            if (that.placementEnabled) {
+                that.placementEnabled = false;
+                return;
+            }
+            that.selectedUnitId = [];
+            break;
         case 72:
             // handle H button
             that.centerOnMain();
@@ -201,8 +209,8 @@ GameEngine.prototype.centerOnCoordinates = function (x, y) {
     // because x,y represent topright corner, and the desired coordinates represent the middle of the screen
     var mapX = x;
     var mapY = y;
-    mapX  = Math.round(mapX - this.widthInTiles / 2);
-    mapY = Math.round(mapY- this.heightInTiles / 2);
+    mapX = Math.round(mapX - this.widthInTiles / 2);
+    mapY = Math.round(mapY - this.heightInTiles / 2);
 
     if (mapX < 0) {
         mapX = 0;
@@ -211,10 +219,10 @@ GameEngine.prototype.centerOnCoordinates = function (x, y) {
         mapY = 0;
     }
     if (mapX >= this.map.width) {
-        mapX = this.map.width-1;
+        mapX = this.map.width - 1;
     }
     if (mapY >= this.map.height) {
-        mapY = this.map.height-1;
+        mapY = this.map.height - 1;
     }
     if (mapX >= this.map.width - this.widthInTiles) {
         mapX = this.map.width - this.widthInTiles;
@@ -287,13 +295,27 @@ GameEngine.prototype.render = function () {
     var currentTime = new Date().getTime();
     this.frameCount++;
     var fps = this.frameCount / (currentTime - this.startTime) * 1000;
-    var okButtonEnabled = false;
-    if (this.frameCount % (OK_BUTTON_ENABLED_TICKS + OK_BUTTON_DISABLED_TICKS) > OK_BUTTON_DISABLED_TICKS) {
-        okButtonEnabled = true;
-    }
+
     //console.log("Rendering frame " + this.frameCount + " with fps " + fps + " x : " + this.x + " y : " + this.y );
-    var context = canvas.getContext("2d");
+    var context = this.canvas.getContext("2d");
     context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+    var buildings = this.map.getBuildings(this.x - 1, this.y - 1, this.x + this.widthInTiles + 1, this.y + this.heightInTiles + 1);
+    var units = this.map.getUnits(this.x - 1, this.y - 1, this.x + this.widthInTiles + 1, this.y + this.heightInTiles + 1);
+
+    this.renderTiles(units,buildings);
+    this.renderBuildings(buildings);
+    this.renderUnits(units);
+    this.renderRectangle();
+
+    var that = this;
+    setTimeout(function () {
+        that.render()
+    }, 1000 / TARGET_FPS);
+};
+
+GameEngine.prototype.renderTiles = function (units,buildings) {
+    var context = this.canvas.getContext("2d");
     var currentMouseMapX = Math.floor(this.xCurrentMouse / TILE_WIDTH + this.x);
     var currentMouseMapY = Math.floor(this.yCurrentMouse / TILE_HEIGHT + this.y);
     for (var x = this.x; x < this.x + this.widthInTiles; x++) {
@@ -306,15 +328,31 @@ GameEngine.prototype.render = function () {
             if (this.placementEnabled) {
                 if (x >= currentMouseMapX && x < currentMouseMapX + this.placementWidth) {
                     if (y >= currentMouseMapY && y < currentMouseMapY + this.placementHeight) {
-                        context.drawImage(this.bgGreenSprite, 0, 0, TILE_WIDTH, TILE_HEIGHT, (x - this.x) * TILE_WIDTH, (y - this.y) * TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT);
+                        if (this.map.isTileOkForBuilding(x, y,units,buildings)) {
+                            context.drawImage(this.bgGreenSprite,
+                                    0, 0, TILE_WIDTH, TILE_HEIGHT,
+                                    (x - this.x) * TILE_WIDTH, (y - this.y) * TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT
+                            );
+                        } else {
+                            context.drawImage(this.bgRedSprite,
+                                    0, 0, TILE_WIDTH, TILE_HEIGHT,
+                                    (x - this.x) * TILE_WIDTH, (y - this.y) * TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT
+                            )
+                        }
                     }
                 }
             }
 
         }
     }
+};
 
-    var buildings = this.map.getBuildings(this.x - 1, this.y - 1, this.x + this.widthInTiles + 1, this.y + this.heightInTiles + 1);
+GameEngine.prototype.renderBuildings = function (buildings) {
+    var okButtonEnabled = false;
+    if (this.frameCount % (OK_BUTTON_ENABLED_TICKS + OK_BUTTON_DISABLED_TICKS) > OK_BUTTON_DISABLED_TICKS) {
+        okButtonEnabled = true;
+    }
+    var context = this.canvas.getContext("2d");
 
     this.shownBuildings = new Array();
     for (var i = 0; i < buildings.length; i++) {
@@ -323,7 +361,6 @@ GameEngine.prototype.render = function () {
         var xToDrawTo = (building.x - this.x) * TILE_WIDTH;
         var yToDrawTo = (building.y - this.y) * TILE_HEIGHT;
         context.drawImage(this.buildingsSprite, buildingConfig.x, buildingConfig.y, buildingConfig.width, buildingConfig.height, xToDrawTo, yToDrawTo, buildingConfig.width, buildingConfig.height);
-
         // construction complete image
         if (building.constructionComplete && okButtonEnabled) {
             context.drawImage(this.okButtonSprite,
@@ -347,10 +384,13 @@ GameEngine.prototype.render = function () {
             this.shownBuildings.push(shownBuildingInfo);
         }
     }
+    return building;
+};
 
-    // +1 to handle units moving from/into screen
+GameEngine.prototype.renderUnits = function (units) {
+    var context = this.canvas.getContext("2d");
     this.shownUnits = new Array();
-    var units = this.map.getUnits(this.x - 1, this.y - 1, this.x + this.widthInTiles + 1, this.y + this.heightInTiles + 1);
+    // +1 to handle units moving from/into screen
     for (var i = 0; i < units.length; i++) {
         var unit = units[i];
         var unitConfig = sprites.getUnitConfig(unit);
@@ -384,7 +424,7 @@ GameEngine.prototype.render = function () {
             context.closePath();
             context.fill();
 
-            if (building.ownerId == connection._playerId) {
+            if (unit.ownerId == connection._playerId) {
                 var shownUnitInfo = new Object();
                 shownUnitInfo.id = unit.id;
                 shownUnitInfo.x = movingCoord.x;
@@ -393,7 +433,10 @@ GameEngine.prototype.render = function () {
             }
         }
     }
+};
 
+GameEngine.prototype.renderRectangle = function () {
+    var context = this.canvas.getContext("2d");
     if (!this.placementEnabled) {
         // green selection rectangle
         if (this.xMouseDown) {
@@ -410,12 +453,7 @@ GameEngine.prototype.render = function () {
             }
         }
     }
-
-    var that = this;
-    setTimeout(function () {
-        that.render()
-    }, 1000 / TARGET_FPS);
-}
+};
 
 
 
