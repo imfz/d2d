@@ -65,23 +65,31 @@ GameEngine.prototype.bindEvents = function () {
                 arrow = {left:37, up:38, right:39, down:40 };
         switch (keyCode) {
         case arrow.left:
-            if (that.x > 0) {
-                that.x -= 1;
+            if (e.ctrlKey) {
+                that.setCoordinates(that.x - that.widthInTiles, that.y);
+            } else {
+                that.setCoordinates(that.x - 1, that.y);
             }
             break;
         case arrow.up:
-            if (that.y > 0) {
-                that.y -= 1;
+            if (e.ctrlKey) {
+                that.setCoordinates(that.x, that.y - that.heightInTiles);
+            } else {
+                that.setCoordinates(that.x, that.y - 1);
             }
             break;
         case arrow.right:
-            if (that.x + that.widthInTiles < that.map.getWidth()) {
-                that.x += 1;
+            if (e.ctrlKey) {
+                that.setCoordinates(that.x + that.widthInTiles, that.y);
+            } else {
+                that.setCoordinates(that.x + 1, that.y);
             }
             break;
         case arrow.down:
-            if (that.y + that.heightInTiles < that.map.getHeight()) {
-                that.y += 1;
+            if (e.ctrlKey) {
+                that.setCoordinates(that.x, that.y + that.heightInTiles);
+            } else {
+                that.setCoordinates(that.x, that.y + 1);
             }
             break;
         case 27:
@@ -205,13 +213,9 @@ GameEngine.prototype.centerOnMain = function () {
     }
 };
 
-GameEngine.prototype.centerOnCoordinates = function (x, y) {
-    // because x,y represent topright corner, and the desired coordinates represent the middle of the screen
+GameEngine.prototype.setCoordinates = function (x, y) {
     var mapX = x;
     var mapY = y;
-    mapX = Math.round(mapX - this.widthInTiles / 2);
-    mapY = Math.round(mapY - this.heightInTiles / 2);
-
     if (mapX < 0) {
         mapX = 0;
     }
@@ -232,6 +236,15 @@ GameEngine.prototype.centerOnCoordinates = function (x, y) {
     }
     this.x = mapX;
     this.y = mapY;
+}
+
+GameEngine.prototype.centerOnCoordinates = function (x, y) {
+    // because x,y represent topright corner, and the desired coordinates represent the middle of the screen
+    var mapX = x;
+    var mapY = y;
+    mapX = Math.round(mapX - this.widthInTiles / 2);
+    mapY = Math.round(mapY - this.heightInTiles / 2);
+    this.setCoordinates(mapX, mapY);
 };
 
 GameEngine.prototype.shiftMovingUnit = function (x, y, travelled, viewDirection) {
@@ -303,7 +316,7 @@ GameEngine.prototype.render = function () {
     var buildings = this.map.getBuildings(this.x - 1, this.y - 1, this.x + this.widthInTiles + 1, this.y + this.heightInTiles + 1);
     var units = this.map.getUnits(this.x - 1, this.y - 1, this.x + this.widthInTiles + 1, this.y + this.heightInTiles + 1);
 
-    this.renderTiles(units,buildings);
+    this.renderTiles(units, buildings);
     this.renderBuildings(buildings);
     this.renderUnits(units);
     this.renderRectangle();
@@ -314,7 +327,7 @@ GameEngine.prototype.render = function () {
     }, 1000 / TARGET_FPS);
 };
 
-GameEngine.prototype.renderTiles = function (units,buildings) {
+GameEngine.prototype.renderTiles = function (units, buildings) {
     var context = this.canvas.getContext("2d");
     var currentMouseMapX = Math.floor(this.xCurrentMouse / TILE_WIDTH + this.x);
     var currentMouseMapY = Math.floor(this.yCurrentMouse / TILE_HEIGHT + this.y);
@@ -328,7 +341,7 @@ GameEngine.prototype.renderTiles = function (units,buildings) {
             if (this.placementEnabled) {
                 if (x >= currentMouseMapX && x < currentMouseMapX + this.placementWidth) {
                     if (y >= currentMouseMapY && y < currentMouseMapY + this.placementHeight) {
-                        if (this.map.isTileOkForBuilding(x, y,units,buildings)) {
+                        if (this.map.isTileOkForBuilding(x, y, units, buildings)) {
                             context.drawImage(this.bgGreenSprite,
                                     0, 0, TILE_WIDTH, TILE_HEIGHT,
                                     (x - this.x) * TILE_WIDTH, (y - this.y) * TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT
