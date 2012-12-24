@@ -2,10 +2,10 @@ package lv.k2611a.network.req;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import lv.k2611a.ClientConnection;
 import lv.k2611a.domain.Building;
 import lv.k2611a.domain.BuildingType;
 import lv.k2611a.domain.Map;
+import lv.k2611a.domain.TileType;
 import lv.k2611a.service.IdGeneratorService;
 
 public class PlaceBuilding extends AbstractGameStateChanger {
@@ -34,6 +34,9 @@ public class PlaceBuilding extends AbstractGameStateChanger {
         for (int x = 0; x < buildingTypeBuilt.getWidth(); x++) {
             for (int y = 0; y < buildingTypeBuilt.getHeight(); y++) {
                 if (map.isObstacle(this.x + x,this.y + y)) {
+                    return;
+                }
+                if (map.getTile(this.x + x,this.y + y).getTileType() != TileType.ROCK) {
                     return;
                 }
             }

@@ -10,6 +10,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import lv.k2611a.domain.Building;
 import lv.k2611a.domain.BuildingType;
 import lv.k2611a.domain.Map;
+import lv.k2611a.domain.TileType;
 import lv.k2611a.domain.Unit;
 import lv.k2611a.domain.UnitType;
 import lv.k2611a.service.GameServiceImpl;
@@ -41,7 +42,7 @@ public class StartConstructionTest {
 
     @Test
     public void testOnlyConstructionYardCanBuild() {
-        Map map = new Map(64,64);
+        Map map = new Map(64,64, TileType.ROCK);
         gameService.setMap(map);
 
         Building constructionYard = new Building();
@@ -71,7 +72,7 @@ public class StartConstructionTest {
 
     @Test
     public void testNonExistingConstructionYardDoesntCauseError() {
-        Map map = new Map(64,64);
+        Map map = new Map(64,64, TileType.ROCK);
         gameService.setMap(map);
 
         StartConstruction startConstruction = new StartConstruction();
@@ -85,7 +86,7 @@ public class StartConstructionTest {
 
     @Test
     public void testConstructionWithMoneyScenario() {
-        Map map = new Map(64,64);
+        Map map = new Map(64,64, TileType.ROCK);
         gameService.setMap(map);
 
         Building constructionYard = new Building();
@@ -125,7 +126,7 @@ public class StartConstructionTest {
 
     @Test
     public void testConstructionCancelledOnLastTickMoneyReturnedScenario() {
-        Map map = new Map(64,64);
+        Map map = new Map(64,64, TileType.ROCK);
         gameService.setMap(map);
 
         Building constructionYard = new Building();
@@ -176,7 +177,7 @@ public class StartConstructionTest {
 
     @Test
     public void testConstructionCancelledWhenBuildingReadyTickMoneyReturnedScenario() {
-        Map map = new Map(64,64);
+        Map map = new Map(64,64, TileType.ROCK);
         gameService.setMap(map);
 
         Building constructionYard = new Building();
@@ -228,7 +229,7 @@ public class StartConstructionTest {
 
     @Test
     public void testConstructionScenario() {
-        Map map = new Map(64,64);
+        Map map = new Map(64,64, TileType.ROCK);
         gameService.setMap(map);
 
         Building constructionYard = new Building();
@@ -320,6 +321,19 @@ public class StartConstructionTest {
 
         placeBuilding = new PlaceBuilding();
         placeBuilding.setBuilderId(CONSTRUCTION_YARD_ID);
+        placeBuilding.setX(58);
+        placeBuilding.setY(58);
+        placeBuilding.setPlayerId(1);
+        map.getTile(59,59).setTileType(TileType.SAND);
+        userActionService.registerAction(placeBuilding);
+        gameService.tick();
+
+        assertEquals("building should not be built on the sand", 2, map.getBuildings().size());
+        assertEquals("con yard should not be empty", true, map.getBuilding(CONSTRUCTION_YARD_ID).isAwaitingClick());
+
+
+        placeBuilding = new PlaceBuilding();
+        placeBuilding.setBuilderId(CONSTRUCTION_YARD_ID);
         placeBuilding.setX(5);
         placeBuilding.setY(5);
         placeBuilding.setPlayerId(1);
@@ -332,4 +346,6 @@ public class StartConstructionTest {
         assertEquals("con yard should be empty", false, map.getBuilding(CONSTRUCTION_YARD_ID).isAwaitingClick());
 
     }
+
+
 }

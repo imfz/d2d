@@ -18,6 +18,11 @@ public class Map {
     private List<Building> buildings;
 
     public Map(int width, int height) {
+        this(width,height,TileType.SAND);
+    }
+
+
+    public Map(int width, int height, TileType tileType) {
         this.width = width;
         this.height = height;
         tiles = new Tile[height][];
@@ -27,7 +32,7 @@ public class Map {
                     tiles[y] = new Tile[width];
                 }
                 tiles[y][x] = new Tile(x, y);
-                tiles[y][x].setTileType(TileType.SAND);
+                tiles[y][x].setTileType(tileType);
             }
         }
         units = new ArrayList<Unit>();

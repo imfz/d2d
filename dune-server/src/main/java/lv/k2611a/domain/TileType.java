@@ -16,6 +16,7 @@ public enum TileType {
     }
 
     private int idOnJS;
+    private boolean allowsBuildings = false;
 
     private TileType(int idOnJS) {
         this.idOnJS = idOnJS;
@@ -23,5 +24,9 @@ public enum TileType {
 
     public int getIdOnJS() {
         return idOnJS;
+    }
+
+    public boolean isAllowsBuildings() {
+        return allowsBuildings;
     }
 }
