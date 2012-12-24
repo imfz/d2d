@@ -63,9 +63,6 @@
                     minimapEngine.setEngine(engine);
                     minimapEngine.bindEvents();
 
-                    var rightMenuCanvas = document.getElementById("rightmenu");
-                    rightmenu.setCanvas(rightMenuCanvas);
-                    rightmenu.setCurrentlyBuildingCanvas(document.getElementById("currentlyBuildingCanvas"));
                     rightmenu.setMainSprite(document.getElementById("buys_sprite"));
                     rightmenu.bindEvents();
 
@@ -123,17 +120,18 @@
         </canvas>
         <div style="height:5px"></div>
 
-        <div style="margin:auto; overflow:auto; width:182px; height:330px">
-            <canvas id="currentlyBuildingCanvas" width="182" height="110">
-                This text is displayed if your browser does not support HTML5 canvas
-            </canvas>
-            <canvas id="rightmenu" width="182" height="330">
-                This text is displayed if your browser does not support HTML5 canvas
-            </canvas>
-            <div id="rightmenuprogress">
+        <div id="allrightmenu" style="margin:auto; overflow:auto; width:210px; height:390px">
+            <div class="rightmenulist">
+                <ul id="rightmenulistul" class="thumbnails">
+                </ul>
             </div>
-            <div id="rightmenucancel" style="display: none">
-                <a href="#" id="rightmenucancelbutton" class="btn btn-danger"><i class="icon-white icon-remove"></i>Cancel</a>
+            <div id="rightmenucurrent">
+                <div id="currentlyBuildingCanvas"></div>
+                <div id="rightmenuprogress" style="margin: 0px auto; width:182px; text-align: center;">
+                </div>
+                <div id="rightmenucancel" style="display: none">
+                    <a href="#" id="rightmenucancelbutton" class="btn btn-danger"><i class="icon-white icon-remove"></i>Cancel</a>
+                </div>
             </div>
         </div>
 

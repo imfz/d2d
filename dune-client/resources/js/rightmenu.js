@@ -10,14 +10,6 @@ function RightMenu() {
     });
 }
 
-RightMenu.prototype.setCanvas = function (canvas) {
-    this.canvas = canvas;
-};
-
-RightMenu.prototype.setCurrentlyBuildingCanvas = function (currentlyBuildingCanvas) {
-    this.currentlyBuildingCanvas = currentlyBuildingCanvas;
-};
-
 RightMenu.prototype.setMainSprite = function (mainSprite) {
     this.mainSprite = mainSprite;
 };
@@ -99,7 +91,7 @@ RightMenu.prototype.getBuyOptionConfig = function (type) {
 
 RightMenu.prototype.bindEvents = function () {
     var that = this;
-    $(this.canvas).bind("contextmenu", function (e) {
+    $("#allrightmenu").bind("contextmenu", function (e) {
         return false;
     });
     $(this.canvas).click(function (e) {
@@ -152,28 +144,53 @@ RightMenu.prototype.setOptions = function (builderId, options, percentsDone, cur
 };
 
 RightMenu.prototype.redraw = function () {
-    var context = this.canvas.getContext("2d");
-    context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    $("#rightmenulistul").empty();
     $("#rightmenuprogress").html("");
     $("#rightmenucancel").css("display", "none");
-    this.currentlyBuildingCanvas.height = 0;
-    this.canvas.height = 0;
+    $("#currentlyBuildingCanvas").html("");
     if (this.currentlyBuildingId > 0) {
-        $("#rightmenuprogress").html('<div class="progress progress-success"><div class="bar" style="width: ' + this.percentsDone + '%"></div></div>');
+        $("#rightmenuprogress").append(
+                $('<div class="progress progress-success"></div>')
+                        .css({width:182})
+                        .append(
+                        $('<div class="bar"></div>')
+                                .css({width:String(this.percentsDone) + "%"})
+                )
+
+        );
         $("#rightmenucancel").css("display", "block");
         if (this.currentlyBuildingOptionId >= 0) {
-            this.currentlyBuildingCanvas.height = BUY_OPTION_HEIGHT;
-            var ctx = this.currentlyBuildingCanvas.getContext("2d");
+            var currentlyBuildingCanvas = $('<canvas></canvas>').attr({width:BUY_OPTION_WIDTH, height:BUY_OPTION_HEIGHT});
+            $("#currentlyBuildingCanvas").append(currentlyBuildingCanvas);
+            var currentlyBuildingCanvasEl = currentlyBuildingCanvas[0];
+            currentlyBuildingCanvasEl.height = BUY_OPTION_HEIGHT;
+            var ctx = currentlyBuildingCanvasEl.getContext("2d");
             var buildingOptionConfig = this.getBuyOptionConfig(this.currentlyBuildingOptionId);
             ctx.drawImage(this.mainSprite, buildingOptionConfig.x, buildingOptionConfig.y, BUY_OPTION_WIDTH, BUY_OPTION_HEIGHT, 0, 0, BUY_OPTION_WIDTH, BUY_OPTION_HEIGHT);
         }
     } else {
-        this.canvas.height = this.options.length * BUY_OPTION_HEIGHT;
         for (var i = 0; i < this.options.length; i++) {
             var option = this.options[i];
-            option.onclick = sendStartConnectionClosure(this.builderId, option.entityToBuildId);
+            var canvas = $('<canvas height="' + BUY_OPTION_HEIGHT + '" width=" ' + BUY_OPTION_WIDTH + ' ">');
+            $("#rightmenulistul").
+                    append(
+                    $('<li class="span2"></li>')
+                            .css({ height:BUY_OPTION_HEIGHT - 5 })
+                            .css({ width:BUY_OPTION_WIDTH + 10 })
+                            .append(
+                            $('<a href="#" class="thumbnail"></a>')
+                                    .append(canvas)
+                    )
+            );
+
+            canvasEl = canvas[0];
+            var context = canvasEl.getContext("2d");
+            context.clearRect(0, 0, canvasEl.width, canvasEl.height);
+
             var buyOptionConfig = this.getBuyOptionConfig(option.type);
-            context.drawImage(this.mainSprite, buyOptionConfig.x, buyOptionConfig.y, BUY_OPTION_WIDTH, BUY_OPTION_HEIGHT, 0, i * BUY_OPTION_HEIGHT, BUY_OPTION_WIDTH, BUY_OPTION_HEIGHT);
+            context.drawImage(this.mainSprite, buyOptionConfig.x, buyOptionConfig.y, BUY_OPTION_WIDTH, BUY_OPTION_HEIGHT, 0, 0, BUY_OPTION_WIDTH, BUY_OPTION_HEIGHT);
+
+            canvas.click(sendStartConnectionClosure(this.builderId, option.entityToBuildId));
         }
     }
 };
