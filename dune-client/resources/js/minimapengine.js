@@ -21,32 +21,26 @@ MinimapGameEngine.prototype.bindEvents = function() {
     $(this.canvas).mousedown(function(e){
         var x = Math.floor((e.pageX-$(that.canvas).offset().left));
         var y = Math.floor((e.pageY-$(that.canvas).offset().top));
-        var mapX = Math.round(x / that.canvas.width * that.map.getWidth() - that.engine.widthInTiles / 2);
-        var mapY = Math.round(y / that.canvas.height * that.map.getHeight() - that.engine.heightInTiles / 2);
-        if (mapX < 0) {
-            mapX = 0;
-        }
-        if (mapY < 0) {
-            mapY = 0;
-        }
-        if (mapX >= that.map.width) {
-            mapX = that.map.width-1;
-        }
-        if (mapY >= that.map.height) {
-            mapY = that.map.height-1;
-        }
+        var mapX = Math.round(x / that.canvas.width * that.map.getWidth());
+        var mapY = Math.round(y / that.canvas.height * that.map.getHeight());
+
         switch (event.which) {
         case 1:
-            if (mapX >= that.map.width - that.engine.widthInTiles) {
-                mapX = that.map.width - that.engine.widthInTiles;
-            }
-            if (mapY >= that.map.height - that.engine.heightInTiles) {
-                mapY = that.map.height - that.engine.heightInTiles;
-            }
-            that.engine.x = mapX;
-            that.engine.y = mapY;
+            that.engine.centerOnCoordinates(mapX,mapY);
             break;
         case 3:
+            if (mapX < 0) {
+                mapX = 0;
+            }
+            if (mapY < 0) {
+                mapY = 0;
+            }
+            if (mapX >= that.map.width) {
+                mapX = that.map.width-1;
+            }
+            if (mapY >= that.map.height) {
+                mapY = that.map.height-1;
+            }
             connection.sendUnitAction(that.engine.selectedUnitId,Math.round(mapX),Math.round(mapY));
             break;
         }

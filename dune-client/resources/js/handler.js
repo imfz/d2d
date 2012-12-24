@@ -4,6 +4,7 @@ function Handler(map, gameLog, rightMenu, engine, moneyTab) {
     this.rightMenu = rightMenu;
     this.engine = engine;
     this.moneyTab = moneyTab;
+    this.centeredOnMain = false;
 }
 
 Handler.prototype.addMessageToChat = function(from, text) {
@@ -51,6 +52,10 @@ Handler.prototype.handleUpdateMap = function(data) {
     this.map.setBuildings(data.map.buildings);
     console.log("Map loaded. Processing saved updates");
     this.processSavedUpdates();
+    if (!this.centeredOnMain) {
+        this.centeredOnMain = true;
+        this.engine.centerOnMain();
+    }
 
 };
 

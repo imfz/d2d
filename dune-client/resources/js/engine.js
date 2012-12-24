@@ -1,4 +1,3 @@
-
 var TILE_HEIGHT = 63;
 var TILE_WIDTH = 63;
 var OK_BUTTON_ENABLED_TICKS = 30;
@@ -84,6 +83,10 @@ GameEngine.prototype.bindEvents = function () {
             if (that.y + that.heightInTiles < that.map.getHeight()) {
                 that.y += 1;
             }
+            break;
+        case 72:
+            // handle H button
+            that.centerOnMain();
             break;
         }
 
@@ -181,6 +184,45 @@ GameEngine.prototype.bindEvents = function () {
     $(this.canvas).bind("contextmenu", function (e) {
         return false;
     });
+};
+
+GameEngine.prototype.centerOnMain = function () {
+    for (var i = 0; i < this.map.buildings.length; i++) {
+        var building = this.map.buildings[i];
+        if (building.type == BUILDING_TYPE_CONSTRUCTION_YARD) {
+            this.centerOnCoordinates(building.x, building.y);
+            return;
+        }
+    }
+};
+
+GameEngine.prototype.centerOnCoordinates = function (x, y) {
+    // because x,y represent topright corner, and the desired coordinates represent the middle of the screen
+    var mapX = x;
+    var mapY = y;
+    mapX  = Math.round(mapX - this.widthInTiles / 2);
+    mapY = Math.round(mapY- this.heightInTiles / 2);
+
+    if (mapX < 0) {
+        mapX = 0;
+    }
+    if (mapY < 0) {
+        mapY = 0;
+    }
+    if (mapX >= this.map.width) {
+        mapX = this.map.width-1;
+    }
+    if (mapY >= this.map.height) {
+        mapY = this.map.height-1;
+    }
+    if (mapX >= this.map.width - this.widthInTiles) {
+        mapX = this.map.width - this.widthInTiles;
+    }
+    if (mapY >= this.map.height - this.heightInTiles) {
+        mapY = this.map.height - this.heightInTiles;
+    }
+    this.x = mapX;
+    this.y = mapY;
 };
 
 GameEngine.prototype.shiftMovingUnit = function (x, y, travelled, viewDirection) {
