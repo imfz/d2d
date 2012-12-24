@@ -2,7 +2,11 @@ var BUY_OPTION_HEIGHT = 110;
 var BUY_OPTION_WIDTH = 182;
 
 function RightMenu() {
-
+    this.builderid = -1;
+    var that = this;
+    $("#rightmenucancelbutton").click(function() {
+        connection.sendCancelConstruction(that.builderId);
+    });
 }
 
 RightMenu.prototype.setCanvas = function (canvas) {
@@ -112,8 +116,8 @@ RightMenu.prototype.setOptions = function (builderId, options, percentsDone, cur
     if (!this.options) {
         this.options = new Array();
     }
+    var foundDiff = false;
     if (options.length == this.options.length) {
-        var foundDiff = false;
         for (var i = 0; i < options.length; i++) {
             if (options[i].type != this.options[i].type) {
                 foundDiff = true;
@@ -125,30 +129,37 @@ RightMenu.prototype.setOptions = function (builderId, options, percentsDone, cur
         if (this.currentlyBuildingId != currentlyBuildingId) {
             foundDiff = true;
         }
-        if (!foundDiff) {
-            return;
-        }
+    } else {
+        foundDiff = true;
     }
     this.currentlyBuildingId = currentlyBuildingId;
     this.percentsDone = percentsDone;
-    this.options = options;
+    this.builderId = builderId;
+
+    if (foundDiff) {
+        this.options = options;
+        this.redraw();
+    }
+};
+
+RightMenu.prototype.redraw = function() {
     var context = this.canvas.getContext("2d");
     context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    if (currentlyBuildingId > 0) {
-        $("#rightmenuprogress").html('<div class="progress progress-success"><div class="bar" style="width: ' + percentsDone + '%"></div></div>');
+    $("#rightmenuprogress").html("");
+    $("#rightmenucancel").css("display","none");
+    if (this.currentlyBuildingId > 0) {
+        $("#rightmenuprogress").html('<div class="progress progress-success"><div class="bar" style="width: ' + this.percentsDone + '%"></div></div>');
+        $("#rightmenucancel").css("display","block");
         this.canvas.height = 0;
     } else {
-        $("#rightmenuprogress").html("");
-        this.canvas.height = options.length * BUY_OPTION_HEIGHT;
-        for (var i = 0; i < options.length; i++) {
-            var option = options[i];
-            option.onclick = sendStartConnectionClosure(builderId, option.entityToBuildId);
+        this.canvas.height = this.options.length * BUY_OPTION_HEIGHT;
+        for (var i = 0; i < this.options.length; i++) {
+            var option = this.options[i];
+            option.onclick = sendStartConnectionClosure(this.builderId, option.entityToBuildId);
             var buyOptionConfig = this.getBuyOptionConfig(option.type);
             context.drawImage(this.mainSprite, buyOptionConfig.x, buyOptionConfig.y, BUY_OPTION_WIDTH, BUY_OPTION_HEIGHT, 0, i * BUY_OPTION_HEIGHT, BUY_OPTION_WIDTH, BUY_OPTION_HEIGHT);
-
         }
     }
-
 };
 
 function sendStartConnectionClosure(builderId, entityToBuildId) {

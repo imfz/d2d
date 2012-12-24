@@ -158,10 +158,11 @@ GameEngine.prototype.bindEvents = function () {
         that.yMouseDown = null;
     });
     $(this.canvas).mousedown(function (e) {
+        var x = Math.floor((e.pageX - $(that.canvas).offset().left));
+        var y = Math.floor((e.pageY - $(that.canvas).offset().top));
         switch (event.which) {
         case 1:
-            var x = Math.floor((e.pageX - $(that.canvas).offset().left));
-            var y = Math.floor((e.pageY - $(that.canvas).offset().top));
+            // remember mousedown for rectangle selection
             that.xMouseDown = x;
             that.yMouseDown = y;
             break;
@@ -170,11 +171,9 @@ GameEngine.prototype.bindEvents = function () {
                 that.placementEnabled = false;
                 return;
             }
-            var x = Math.floor((e.pageX - $(that.canvas).offset().left));
-            var y = Math.floor((e.pageY - $(that.canvas).offset().top));
-            var mapX = (x / TILE_WIDTH) + that.x;
-            var mapY = (y / TILE_HEIGHT) + that.y;
-            connection.sendUnitAction(that.selectedUnitId, Math.floor(mapX), Math.floor(mapY));
+            var mapX = Math.floor((x / TILE_WIDTH) + that.x);
+            var mapY = Math.floor((y / TILE_HEIGHT) + that.y);
+            connection.sendUnitAction(that.selectedUnitId, mapX, mapY);
             break;
         }
         return false;

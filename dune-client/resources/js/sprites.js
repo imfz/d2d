@@ -1,7 +1,6 @@
 function Sprites() {
 
-}
-;
+};
 
 Sprites.prototype.getTileConfig = function (targetTileX, targetTileY, map) {
     if (targetTileX >= map.getWidth()) {

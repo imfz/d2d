@@ -35,8 +35,6 @@ MinimapGameEngine.prototype.bindEvents = function() {
         if (mapY >= that.map.height) {
             mapY = that.map.height-1;
         }
-        console.log("map width" + that.map.width);
-        console.log("map height" + that.map.height);
         switch (event.which) {
         case 1:
             if (mapX >= that.map.width - that.engine.widthInTiles) {
@@ -45,8 +43,6 @@ MinimapGameEngine.prototype.bindEvents = function() {
             if (mapY >= that.map.height - that.engine.heightInTiles) {
                 mapY = that.map.height - that.engine.heightInTiles;
             }
-            console.log("mapX "+ mapX);
-            console.log("mapY "+ mapY);
             that.engine.x = mapX;
             that.engine.y = mapY;
             break;

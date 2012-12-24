@@ -44,6 +44,12 @@ var connection = {
         this.sendNetworkRequest("SelectBuilding", selectBuilding);
     },
 
+    sendCancelConstruction: function(builderId) {
+        var cancelConstruction = new Object();
+        cancelConstruction.builderId = builderId;
+        this.sendNetworkRequest("CancelConstruction", cancelConstruction);
+    },
+
 
     sendBuildingPlacement : function(x,y,builderId) {
         var placeBuilding = new Object();

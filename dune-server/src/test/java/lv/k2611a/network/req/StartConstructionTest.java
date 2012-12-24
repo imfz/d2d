@@ -120,6 +120,110 @@ public class StartConstructionTest {
         assertEquals("building should be built", true, map.getBuilding(CONSTRUCTION_YARD_ID).isAwaitingClick());
         assertEquals("tick count should reset", 0, map.getBuilding(CONSTRUCTION_YARD_ID).getTicksAccumulated());
         assertEquals("building goal should be empty", null, map.getBuilding(CONSTRUCTION_YARD_ID).getCurrentGoal());
+        assertEquals(0,map.getPlayerById(1).getMoney());
+    }
+
+    @Test
+    public void testConstructionCancelledOnLastTickMoneyReturnedScenario() {
+        Map map = new Map(64,64);
+        gameService.setMap(map);
+
+        Building constructionYard = new Building();
+        constructionYard.setId(CONSTRUCTION_YARD_ID);
+        constructionYard.setOwnerId(1);
+        constructionYard.setType(BuildingType.CONSTRUCTIONYARD);
+        constructionYard.setX(1);
+        constructionYard.setY(1);
+        constructionYard.setHp(100);
+        map.getBuildings().add(constructionYard);
+
+        BuildingType.POWERPLANT.setCostPerTick(10);
+
+        int moneyRequiredToBuyPowerPlant = BuildingType.POWERPLANT.getTicksToBuild() * BuildingType.POWERPLANT.getCostPerTick();
+        map.getPlayerById(1).setMoney(moneyRequiredToBuyPowerPlant);
+
+        StartConstruction startConstruction = new StartConstruction();
+        startConstruction.setBuilderId(CONSTRUCTION_YARD_ID);
+        startConstruction.setEntityToBuildId(BuildingType.POWERPLANT.getIdOnJS());
+        startConstruction.setPlayerId(1);
+        userActionService.registerAction(startConstruction);
+
+
+        for (int i = 0; i < BuildingType.POWERPLANT.getTicksToBuild()-1; i++) {
+            gameService.tick();
+            assertEquals("building should not be build", false, map.getBuilding(CONSTRUCTION_YARD_ID).isAwaitingClick());
+        }
+
+        // cancel construction
+        CancelConstruction cancelConstruction = new CancelConstruction();
+        cancelConstruction.setBuilderId(CONSTRUCTION_YARD_ID);
+        cancelConstruction.setPlayerId(1);
+        userActionService.registerAction(cancelConstruction);
+        // one last final tick
+        gameService.tick();
+
+        assertEquals("building should not be build", false, map.getBuilding(CONSTRUCTION_YARD_ID).isAwaitingClick());
+        assertEquals("ticks should reset", 0, map.getBuilding(CONSTRUCTION_YARD_ID).getTicksAccumulated());
+        assertEquals(moneyRequiredToBuyPowerPlant, map.getPlayerById(1).getMoney());
+
+        // event after more ticks building should not be built and money should not be subtracted
+        for (int i = 0; i < 10; i++) {
+            gameService.tick();
+            assertEquals("building should not be build", false, map.getBuilding(CONSTRUCTION_YARD_ID).isAwaitingClick());
+            assertEquals(moneyRequiredToBuyPowerPlant, map.getPlayerById(1).getMoney());
+        }
+    }
+
+    @Test
+    public void testConstructionCancelledWhenBuildingReadyTickMoneyReturnedScenario() {
+        Map map = new Map(64,64);
+        gameService.setMap(map);
+
+        Building constructionYard = new Building();
+        constructionYard.setId(CONSTRUCTION_YARD_ID);
+        constructionYard.setOwnerId(1);
+        constructionYard.setType(BuildingType.CONSTRUCTIONYARD);
+        constructionYard.setX(1);
+        constructionYard.setY(1);
+        constructionYard.setHp(100);
+        map.getBuildings().add(constructionYard);
+
+        BuildingType.POWERPLANT.setCostPerTick(10);
+
+        int moneyRequiredToBuyPowerPlant = BuildingType.POWERPLANT.getTicksToBuild() * BuildingType.POWERPLANT.getCostPerTick();
+        map.getPlayerById(1).setMoney(moneyRequiredToBuyPowerPlant);
+
+        StartConstruction startConstruction = new StartConstruction();
+        startConstruction.setBuilderId(CONSTRUCTION_YARD_ID);
+        startConstruction.setEntityToBuildId(BuildingType.POWERPLANT.getIdOnJS());
+        startConstruction.setPlayerId(1);
+        userActionService.registerAction(startConstruction);
+
+
+        for (int i = 0; i < BuildingType.POWERPLANT.getTicksToBuild(); i++) {
+            gameService.tick();
+        }
+
+        assertEquals("building should be built", true, map.getBuilding(CONSTRUCTION_YARD_ID).isAwaitingClick());
+
+        // cancel construction
+        CancelConstruction cancelConstruction = new CancelConstruction();
+        cancelConstruction.setBuilderId(CONSTRUCTION_YARD_ID);
+        cancelConstruction.setPlayerId(1);
+        userActionService.registerAction(cancelConstruction);
+        // one last final tick
+        gameService.tick();
+
+        assertEquals("building should not be build", false, map.getBuilding(CONSTRUCTION_YARD_ID).isAwaitingClick());
+        assertEquals("ticks should reset", 0, map.getBuilding(CONSTRUCTION_YARD_ID).getTicksAccumulated());
+        assertEquals(moneyRequiredToBuyPowerPlant, map.getPlayerById(1).getMoney());
+
+        // event after more ticks building should not be built and money should not be subtracted
+        for (int i = 0; i < 10; i++) {
+            gameService.tick();
+            assertEquals("building should not be build", false, map.getBuilding(CONSTRUCTION_YARD_ID).isAwaitingClick());
+            assertEquals(moneyRequiredToBuyPowerPlant, map.getPlayerById(1).getMoney());
+        }
     }
 
     @Test
