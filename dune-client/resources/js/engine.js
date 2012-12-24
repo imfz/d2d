@@ -125,6 +125,7 @@ GameEngine.prototype.bindEvents = function () {
                         var shownBuildingInfo = that.shownBuildings[i];
                         if ((x2 > shownBuildingInfo.x) && (x < shownBuildingInfo.width + shownBuildingInfo.x)) {
                             if ((y2 > shownBuildingInfo.y) && (y < shownBuildingInfo.height + shownBuildingInfo.y)) {
+                                // ok text is blinking, go on with placement
                                 if (shownBuildingInfo.placementEnabled) {
                                     that.placementEnabled = true;
                                     that.builderId = shownBuildingInfo.id;
@@ -270,6 +271,9 @@ GameEngine.prototype.getBuildingPlacementConfig = function (buildingTypeBuilt) {
     if (buildingTypeBuilt == BUILDING_TYPE_FACTORY) {
         width = 3;
     }
+    if (buildingTypeBuilt == BUILDING_TYPE_REPAIRSHOP) {
+        width = 3;
+    }
     var result = new Object();
     result.width = width;
     result.height = height;
@@ -339,7 +343,7 @@ GameEngine.prototype.render = function () {
             shownBuildingInfo.width = buildingConfig.width;
             shownBuildingInfo.height = buildingConfig.height;
             shownBuildingInfo.placementEnabled = building.constructionComplete;
-            shownBuildingInfo.buildingTypeBuilt = building.buildingTypeBuilt;
+            shownBuildingInfo.buildingTypeBuilt = building.entityBuiltId;
             this.shownBuildings.push(shownBuildingInfo);
         }
     }
