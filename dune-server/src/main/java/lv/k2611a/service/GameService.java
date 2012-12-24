@@ -10,4 +10,6 @@ public interface GameService {
     void setTickCount(long tickCount);
 
     boolean isOwner(int buildingId, int playerId);
+
+    boolean playerExist(int playerId);
 }

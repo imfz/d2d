@@ -30,7 +30,6 @@
         var rightmenu;
         var moneyTab;
 
-
         $(window).load(
                 function () {
                     var thing = { plugin:'jquery-json', version:2.4 };
@@ -83,11 +82,8 @@
                         {type:BUY_OPTION_AIRBASE},
                         {type:BUY_OPTION_FACTORY}
                     ]);
-
-
                 }
         )
-
 
     </script>
 </head>
@@ -100,18 +96,20 @@
         </canvas>
 
         <div id='chat'></div>
-        <div id='input'>
-            <div id='join'>
-                Username:&nbsp;<input id='username' type='text'/>
-                PlayerId:&nbsp;<input id='playerId' type='text' value="1"/>
-                <input id='joinB' class='button' type='submit' name='join' value='Join'/>
-            </div>
-            <div id='joined' class='hidden'>
-                Chat:&nbsp;<input id='phrase' type='text'/>
-                <input id='sendB' class='button' type='submit' name='join' value='Send'/>
-            </div>
-        </div>
 
+        <form class="form-inline" id='joinform'>
+            <label class="control-label" for="username">Username:</label>
+            <input id='username' class="input" type='text'/>
+            <label class="control-label" for="playerId">PlayerId:</label>
+            <input id='playerId' class="input" type='text' value="1"/>
+            <input id='joinB' class='button' type='submit' name='join' value='Join'/>
+        </form>
+
+        <form class="form-inline" id='joinedform' style="display:none">
+            <label class="control-label" for="phrase">Chat:</label>
+            <input id='phrase' class="input" type='text'/>
+            <input id='sendB' class='button' type='submit' name='send' value='Send'/>
+        </form>
     </div>
     <div id="rightcol" style="text-align:center; ">
         <div id="moneyTab"></div>
@@ -120,14 +118,14 @@
         </canvas>
         <div style="height:5px"></div>
 
-        <div id="allrightmenu" style="margin:auto; overflow:auto; width:210px; height:390px">
+        <div id="rightmenu">
             <div class="rightmenulist">
                 <ul id="rightmenulistul" class="thumbnails">
                 </ul>
             </div>
             <div id="rightmenucurrent">
                 <div id="currentlyBuildingCanvas"></div>
-                <div id="rightmenuprogress" style="margin: 0px auto; width:182px; text-align: center;">
+                <div id="rightmenuprogress">
                 </div>
                 <div id="rightmenucancel" style="display: none">
                     <a href="#" id="rightmenucancelbutton" class="btn btn-danger"><i class="icon-white icon-remove"></i>Cancel</a>

@@ -20,6 +20,19 @@ div#rightcol {
 
 }
 
+div#rightmenu {
+    margin:auto;
+    overflow:auto;
+    width:210px;
+    height:390px
+}
+
+div#rightmenuprogress {
+    margin: 0px auto;
+    width:182px;
+    text-align: center;
+}
+
 div#chat {
     clear: both;
     width: 620px;
@@ -28,13 +41,14 @@ div#chat {
     background-color: #f0f0f0;
     padding: 4px;
     margin-top: 5px;
+    margin-bottom: 5px;
     border: 1px solid black;
 }
 
 div#input {
     clear: both;
     width: 620px;
-    padding: 4px;
+    padding:6px;
     background-color: #e0e0e0;
     border: 1px solid black;
     border-top: 0px
@@ -42,17 +56,14 @@ div#input {
 
 input#phrase {
     width: 30em;
-    background-color: #e0f0f0;
 }
 
 input#username {
     width: 14em;
-    background-color: #e0f0f0;
 }
 
 input#playerId {
     width: 14em;
-    background-color: #e0f0f0;
 }
 
 div.hidden {

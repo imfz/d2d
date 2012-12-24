@@ -10,11 +10,10 @@ var connection = {
     },
 
     onopen : function() {
-        var that = connection;
-        document.getElementById('join').className = 'hidden';
-        document.getElementById('joined').className = '';
-        document.getElementById('phrase').focus();
-        that.sendJoin(that._username, that._playerId);
+        $("#joinform").css("display", "none");
+        $("#joinedform").css("display", "block");
+        $("#phrase").focus();
+        connection.sendJoin(connection._username, connection._playerId);
     },
 
     sendJoin: function(username, playerId) {
@@ -85,10 +84,10 @@ var connection = {
 
     onclose : function(m) {
         this._ws = null;
-        document.getElementById('join').className = '';
-        document.getElementById('joined').className = 'hidden';
-        document.getElementById('username').focus();
-        document.getElementById('chat').innerHTML = '';
+        $("#joinform").css("display", "block");
+        $("#joinedform").css("display", "none");
+        $("#chat").html();
+        $("#username").focus();
     }
 };
 

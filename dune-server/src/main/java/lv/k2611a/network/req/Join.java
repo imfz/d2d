@@ -42,6 +42,12 @@ public class Join implements Request {
 
     @Override
     public void process() {
+        if (nickname == null) {
+            throw new IllegalArgumentException("Nickname cannot be null");
+        }
+        if (!mapService.playerExist(playerId)) {
+            throw new IllegalArgumentException("Illegal player id " + playerId);
+        }
         ClientConnection.getCurrentConnection().setUsername(nickname);
         ClientConnection.getCurrentConnection().setPlayerId(playerId);
         UpdateMap updateMap = mapService.getFullMapUpdate();

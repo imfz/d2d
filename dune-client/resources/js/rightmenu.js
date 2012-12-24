@@ -91,7 +91,7 @@ RightMenu.prototype.getBuyOptionConfig = function (type) {
 
 RightMenu.prototype.bindEvents = function () {
     var that = this;
-    $("#allrightmenu").bind("contextmenu", function (e) {
+    $("#rightmenu").bind("contextmenu", function (e) {
         return false;
     });
     $(this.canvas).click(function (e) {

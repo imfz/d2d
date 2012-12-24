@@ -137,6 +137,14 @@ public class GameServiceImpl implements GameService {
         return building.getOwnerId() == playerId;
     }
 
+    @Override
+    public synchronized boolean playerExist(int playerId) {
+        if (map.getPlayerById(playerId) == null) {
+            return false;
+        }
+        return true;
+    }
+
     private List<TileDTO> getMapTiles() {
         List<TileDTO> tileDTOList = new ArrayList<TileDTO>();
         for (int x = 0; x < map.getWidth(); x++) {
