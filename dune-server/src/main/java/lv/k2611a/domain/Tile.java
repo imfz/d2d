@@ -51,6 +51,10 @@ public class Tile {
         return usedBy > 0;
     }
 
+    public long getUsedBy() {
+        return usedBy;
+    }
+
     public void setUsed(long used) {
         this.usedBy = used;
     }

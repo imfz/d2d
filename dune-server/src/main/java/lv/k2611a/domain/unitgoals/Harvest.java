@@ -58,6 +58,13 @@ public class Harvest implements UnitGoal {
             targetSpice = null;
             return;
         }
+        // spice already being harvested
+        if (map.getTile(targetSpice).isUsedByUnit()) {
+            if (map.getTile(targetSpice).getUsedBy() != unit.getId()) {
+                targetSpice = null;
+                return;
+            }
+        }
         if (targetSpice.equals(unit.getPoint())) {
             harvestSpice(unit, map, gameService);
         } else {
