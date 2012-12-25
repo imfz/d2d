@@ -8,7 +8,10 @@ var HP_BAR_HEIGHT = 5;
 var HP_BAR_X_OFFSET = 15;
 var HP_BAR_Y_OFFSET = 3;
 
-var TARGET_FPS = 60;
+var SPICE_BAR_LENGTH = 33;
+var SPICE_BAR_HEIGHT = 5;
+var SPICE_BAR_X_OFFSET = 15;
+var SPICE_BAR_Y_OFFSET = 11;
 
 function GameEngine() {
     this.x = 0;
@@ -30,29 +33,7 @@ GameEngine.prototype.setCanvas = function (canvas) {
     console.log("Height in tiles : " + this.heightInTiles);
 };
 
-GameEngine.prototype.setMainSprite = function (mainSprite) {
-    this.mainSprite = mainSprite;
-};
 
-GameEngine.prototype.setBuildingsSprite = function (buildingsSprite) {
-    this.buildingsSprite = buildingsSprite;
-};
-
-GameEngine.prototype.setOkButton = function (okButtonSprite) {
-    this.okButtonSprite = okButtonSprite;
-};
-
-GameEngine.prototype.setBuildBgGreen = function (bgGreen) {
-    this.bgGreenSprite = bgGreen;
-};
-
-GameEngine.prototype.setBuildBgRed = function (bgRed) {
-    this.bgRedSprite = bgRed;
-};
-
-GameEngine.prototype.setUnitSprite = function (unitSprite) {
-    this.unitSprite = unitSprite;
-};
 
 GameEngine.prototype.setMap = function (map) {
     this.map = map;
@@ -372,6 +353,14 @@ GameEngine.prototype.getBuildingPlacementConfig = function (buildingTypeBuilt) {
         width = 1;
         height = 1;
     }
+    if (buildingTypeBuilt == BUILDING_TYPE_ROCKET_TURRET) {
+        width = 1;
+        height = 1;
+    }
+    if (buildingTypeBuilt == BUILDING_TYPE_REFINERY) {
+        width = 3;
+        height = 2;
+    }
     var result = new Object();
     result.width = width;
     result.height = height;
@@ -426,18 +415,18 @@ GameEngine.prototype.renderTiles = function (units, buildings) {
             //console.log("Rendering tile x: " + x + " y: " + y);
             var tileConfig = sprites.getTileConfig(x, y, this.map);
             if (tileConfig) {
-                context.drawImage(this.mainSprite, tileConfig.x, tileConfig.y, TILE_WIDTH, TILE_HEIGHT, (x - this.x) * TILE_WIDTH, (y - this.y) * TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT);
+                context.drawImage(tileConfig.sprite, tileConfig.x, tileConfig.y, TILE_WIDTH, TILE_HEIGHT, (x - this.x) * TILE_WIDTH, (y - this.y) * TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT);
             }
             if (this.placementEnabled) {
                 if (x >= currentMouseMapX && x < currentMouseMapX + this.placementWidth) {
                     if (y >= currentMouseMapY && y < currentMouseMapY + this.placementHeight) {
                         if (this.map.isTileOkForBuilding(x, y, units, buildings)) {
-                            context.drawImage(this.bgGreenSprite,
+                            context.drawImage(sprites.bgGreenSprite,
                                     0, 0, TILE_WIDTH, TILE_HEIGHT,
                                     (x - this.x) * TILE_WIDTH, (y - this.y) * TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT
                             );
                         } else {
-                            context.drawImage(this.bgRedSprite,
+                            context.drawImage(sprites.bgRedSprite,
                                     0, 0, TILE_WIDTH, TILE_HEIGHT,
                                     (x - this.x) * TILE_WIDTH, (y - this.y) * TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT
                             )
@@ -463,16 +452,16 @@ GameEngine.prototype.renderBuildings = function (buildings) {
         var buildingConfig = sprites.getBuildingConfig(building);
         var xToDrawTo = (building.x - this.x) * TILE_WIDTH;
         var yToDrawTo = (building.y - this.y) * TILE_HEIGHT;
-        context.drawImage(this.buildingsSprite, buildingConfig.x, buildingConfig.y, buildingConfig.width, buildingConfig.height, xToDrawTo, yToDrawTo, buildingConfig.width, buildingConfig.height);
+        context.drawImage(buildingConfig.sprite, buildingConfig.x, buildingConfig.y, buildingConfig.width, buildingConfig.height, xToDrawTo, yToDrawTo, buildingConfig.width, buildingConfig.height);
         // construction complete image
         if (building.constructionComplete && okButtonEnabled) {
-            context.drawImage(this.okButtonSprite,
+            context.drawImage(sprites.okButtonSprite,
                     0,
                     0,
-                    this.okButtonSprite.width, this.okButtonSprite.height,
-                    xToDrawTo + TILE_WIDTH - this.okButtonSprite.width / 2,
-                    yToDrawTo + TILE_HEIGHT - this.okButtonSprite.height / 2,
-                    this.okButtonSprite.width, this.okButtonSprite.height
+                    sprites.okButtonSprite.width, sprites.okButtonSprite.height,
+                    xToDrawTo + TILE_WIDTH - sprites.okButtonSprite.width / 2,
+                    yToDrawTo + TILE_HEIGHT - sprites.okButtonSprite.height / 2,
+                    sprites.okButtonSprite.width, sprites.okButtonSprite.height
             );
         }
         if (building.ownerId == connection._playerId) {
@@ -501,7 +490,8 @@ GameEngine.prototype.renderUnits = function (units) {
             var xToDrawTo = (unit.x - this.x) * TILE_WIDTH;
             var yToDrawTo = (unit.y - this.y) * TILE_HEIGHT;
             var movingCoord = this.shiftMovingUnit(xToDrawTo, yToDrawTo, unit.travelled, unit.viewDirection);
-            context.drawImage(this.unitSprite, unitConfig.x, unitConfig.y, TILE_WIDTH, TILE_HEIGHT, movingCoord.x, movingCoord.y, TILE_WIDTH, TILE_HEIGHT);
+            context.drawImage(unitConfig.sprite, unitConfig.x, unitConfig.y, unitConfig.width, unitConfig.height,
+                    movingCoord.x + unitConfig.xOffset , movingCoord.y + unitConfig.yOffset, unitConfig.width, unitConfig.height);
 
             if ($.inArray(unit.id, this.selectedUnitId) >= 0) {
                 // draw green border near selected unit
@@ -526,6 +516,20 @@ GameEngine.prototype.renderUnits = function (units) {
             context.lineTo(movingCoord.x + HP_BAR_X_OFFSET + hpBarLength, movingCoord.y + HP_BAR_Y_OFFSET);
             context.closePath();
             context.fill();
+
+            if (unit.spicePercents > 0) {
+                // draw spice bar near selected unit
+                context.beginPath();
+                context.fillStyle = '#e8A65d';
+                var spiceBarLength = unit.spicePercents / 100 * SPICE_BAR_LENGTH;
+                context.moveTo(movingCoord.x + SPICE_BAR_X_OFFSET, movingCoord.y + SPICE_BAR_Y_OFFSET);
+                context.lineTo(movingCoord.x + SPICE_BAR_X_OFFSET, movingCoord.y + SPICE_BAR_Y_OFFSET + SPICE_BAR_HEIGHT);
+                context.lineTo(movingCoord.x + SPICE_BAR_X_OFFSET + spiceBarLength, movingCoord.y + SPICE_BAR_Y_OFFSET + SPICE_BAR_HEIGHT);
+                context.lineTo(movingCoord.x + SPICE_BAR_X_OFFSET + spiceBarLength, movingCoord.y + SPICE_BAR_Y_OFFSET);
+                context.closePath();
+                context.fill();
+            }
+
 
             if (unit.ownerId == connection._playerId) {
                 var shownUnitInfo = new Object();

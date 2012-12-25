@@ -2,9 +2,13 @@ package lv.k2611a.domain;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import lv.k2611a.util.Node;
+import lv.k2611a.util.Point;
 
 public class Map {
 
@@ -16,6 +20,9 @@ public class Map {
     private int height;
     private List<Unit> units;
     private List<Building> buildings;
+
+    private HashMap<Point,RefineryEntrance> refineryEntranceList = new HashMap<Point,RefineryEntrance>();
+    private Set<Long> harvesters = new HashSet<Long>();
 
     public Map(int width, int height) {
         this(width, height, TileType.SAND);
@@ -41,6 +48,10 @@ public class Map {
         for (int i = 0; i < MAX_PLAYER_COUNT; i++) {
             players[i] = new Player();
         }
+    }
+
+    public Tile getTile(Point point) {
+        return getTile(point.getX(),point.getY());
     }
 
     public Tile getTile(int x, int y) {
@@ -71,8 +82,30 @@ public class Map {
         return units;
     }
 
+    public List<Unit> getUnitsByType(UnitType unitType) {
+        List<Unit> result = new ArrayList<Unit>();
+        for (Unit unit : units) {
+            if (unit.getUnitType() == UnitType.HARVESTER) {
+                result.add(unit);
+            }
+        }
+        return result;
+    }
+
     public List<Building> getBuildings() {
         return buildings;
+    }
+
+    public List<Tile> getTilesByType(TileType tileType) {
+        List<Tile> result = new ArrayList<Tile>();
+        for (Tile[] tile : tiles) {
+            for (Tile tile1 : tile) {
+                if (tile1.getTileType() == tileType) {
+                    result.add(tile1);
+                }
+            }
+        }
+        return result;
     }
 
     public List<Building> getBuildingsByType(BuildingType buildingType) {
@@ -80,6 +113,18 @@ public class Map {
         for (Building building : buildings) {
             if (building.getType() == buildingType) {
                 result.add(building);
+            }
+        }
+        return result;
+    }
+
+    public List<Building> getBuildingsByTypeAndOwner(BuildingType buildingType, int ownerId) {
+        List<Building> result = new ArrayList<Building>();
+        for (Building building : buildings) {
+            if (building.getType() == buildingType) {
+                if (building.getOwnerId() == ownerId) {
+                    result.add(building);
+                }
             }
         }
         return result;
@@ -196,7 +241,7 @@ public class Map {
         return false;
     }
 
-    public static double getDistanceBetween(Node node1, Node node2) {
+    public static double getDistanceBetween(Point node1, Point node2) {
         //if the nodes are on top or next to each other, return 1
         if (node1.getX() == node2.getX()) {
             return Math.abs(node1.getY() - node2.getY());
@@ -209,12 +254,22 @@ public class Map {
         return Math.sqrt(deltaX * deltaX + deltaY * deltaY);
     }
 
-    public boolean isObstacle(Node neighbor, long unitId) {
-        Tile tile = getTile(neighbor.getX(), neighbor.getY());
-        if (tile == null) {
-            return true;
+    public boolean isObstacle(Node neighbor, long unitId, int ownerid, boolean isHarvester) {
+        return isObstacle(neighbor.getX(), neighbor.getY(), unitId, ownerid, isHarvester);
+    }
+
+    private boolean harvesterCheck(Point point, long unitId, int ownerid, boolean isHarvester) {
+        if (isHarvester) {
+            if (this.harvesters.contains(unitId)) {
+                RefineryEntrance refineryEntrance = this.refineryEntranceList.get(point);
+                if (refineryEntrance != null) {
+                    if (refineryEntrance.getOwnerId() == ownerid) {
+                        return true;
+                    }
+                }
+            }
         }
-        return !tile.isPassable(unitId);
+        return false;
     }
 
     public boolean isObstacle(int x, int y) {
@@ -225,12 +280,15 @@ public class Map {
         return !tile.isPassable();
     }
 
-    public boolean isObstacle(int x, int y, long unitId) {
+    public boolean isObstacle(int x, int y, long unitId, int ownerid, boolean isHarvester) {
+        if (harvesterCheck(new Point(x,y), unitId, ownerid, isHarvester)) {
+            return false;
+        }
         return !getTile(x, y).isPassable(unitId);
     }
 
     public void setUsed(int x, int y, long unitId) {
-        if (isObstacle(x, y, unitId)) {
+        if (isObstacle(x, y, unitId, 0, false)) {
             return;
         }
         getTile(x, y).setUsed(unitId);
@@ -253,7 +311,7 @@ public class Map {
         return null;
     }
 
-    public Building getBuilding(int id) {
+    public Building getBuilding(long id) {
         for (Building building : buildings) {
             if (building.getId() == id) {
                 return building;
@@ -264,5 +322,30 @@ public class Map {
 
     public Player getPlayerById(int id) {
         return this.players[id];
+    }
+
+    public Tile getNearestFreeTile(int x, int y) {
+        if (!isObstacle(x,y)) {
+            getTile(x,y);
+        }
+        for (int radius = 0; radius < 10; radius++) {
+            for (int currentX = x - radius; currentX < x + radius; currentX++) {
+                for (int currentY = y - radius; currentY < y + radius; currentY++) {
+                    if (!isObstacle(currentX,currentY)) {
+                        return getTile(currentX,currentY);
+                    }
+                }
+            }
+        }
+        return null;
+
+    }
+
+    public HashMap<Point,RefineryEntrance> getRefineryEntranceList() {
+        return refineryEntranceList;
+    }
+
+    public Set<Long> getHarvesters() {
+        return harvesters;
     }
 }

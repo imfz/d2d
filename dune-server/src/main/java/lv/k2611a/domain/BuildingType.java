@@ -15,13 +15,13 @@ public enum BuildingType implements EntityType {
     ROCKET_TURRET(13,1,1,50,100, 10),
     RADAR(5,2,2,50,100, 10),
     CONCRETE(11,2,2,50,100, 10),
-    REFINERY(12,3,2,50,100, 10),
+    REFINERY(12,3,2,50,30, 10),
     FACTORY(8,3,2,50,100, 10),
     CONSTRUCTIONYARD(7,2,2,50,150, 10) {
         @Override
         public EnumSet<ConstructionOption> getConstructionOptions() {
             EnumSet<ConstructionOption> constructionOptions = EnumSet.of(
-                    ConstructionOption.REPAIRSHOP,
+                    ConstructionOption.REFINERY,
                     ConstructionOption.POWERPLANT,
                     ConstructionOption.SILO
             );

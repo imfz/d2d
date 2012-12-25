@@ -2,8 +2,10 @@ package lv.k2611a.service;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
@@ -21,6 +23,7 @@ import lv.k2611a.domain.BuildingType;
 import lv.k2611a.domain.ConstructionOption;
 import lv.k2611a.domain.Map;
 import lv.k2611a.domain.Player;
+import lv.k2611a.domain.RefineryEntrance;
 import lv.k2611a.domain.Tile;
 import lv.k2611a.domain.Unit;
 import lv.k2611a.domain.UnitType;
@@ -31,6 +34,7 @@ import lv.k2611a.network.BuildingDTO;
 import lv.k2611a.network.MapDTO;
 import lv.k2611a.network.OptionDTO;
 import lv.k2611a.network.TileDTO;
+import lv.k2611a.network.TileWithCoordinatesDTO;
 import lv.k2611a.network.UnitDTO;
 import lv.k2611a.network.req.GameStateChanger;
 import lv.k2611a.network.resp.UpdateConstructionOptions;
@@ -46,6 +50,8 @@ public class GameServiceImpl implements GameService {
 
     private static final Logger log = LoggerFactory.getLogger(GameServiceImpl.class);
     public static final int TICK_LENGTH = 1000 / 20;
+    public static final int BUILDING_USAGE_FLAG = -2;
+    public static final int REFINERY_ENTRY_USAGE_FLAG = -3;
 
     @Autowired
     private AutowireCapableBeanFactory autowireCapableBeanFactory;
@@ -64,6 +70,8 @@ public class GameServiceImpl implements GameService {
 
     private volatile Map map;
     private volatile long tickCount = 0;
+
+    private Set<Point> changedTiles;
 
     @PostConstruct
     public void init() {
@@ -150,6 +158,8 @@ public class GameServiceImpl implements GameService {
         long startTime = System.currentTimeMillis();
 
         tickCount++;
+
+        changedTiles = new HashSet<Point>();
 
         mapFillTileUsage(map);
         processUserClicks(map);
@@ -265,22 +275,42 @@ public class GameServiceImpl implements GameService {
         }
     }
 
+    @Override
+    public void registerChangedTile(Point point) {
+        changedTiles.add(point);
+    }
+
     private void sendIncrementalUpdate() {
         UpdateMapIncremental update = new UpdateMapIncremental();
+
         List<UnitDTO> mapUnits = getMapUnits();
         update.setUnits(mapUnits.toArray(new UnitDTO[mapUnits.size()]));
+
         List<BuildingDTO> buildingDTOList = getBuildings();
         update.setBuildings(buildingDTOList.toArray(new BuildingDTO[buildingDTOList.size()]));
+
+        List<TileWithCoordinatesDTO> tileDTOList = getChangedTiles();
+        update.setChangedTiles(tileDTOList.toArray(new TileWithCoordinatesDTO[tileDTOList.size()]));
+
         update.setTickCount(tickCount);
         sessionsService.sendUpdate(update);
 
+    }
+
+    private List<TileWithCoordinatesDTO> getChangedTiles() {
+        List<TileWithCoordinatesDTO> result = new ArrayList<TileWithCoordinatesDTO>();
+        for (Point changedTile : this.changedTiles) {
+            TileWithCoordinatesDTO tile = TileWithCoordinatesDTO.fromTile(map.getTile(changedTile));
+            result.add(tile);
+        }
+        return result;
     }
 
     private void processUnitsGoals(Map map) {
         for (Unit unit : map.getUnits()) {
             try {
                 if (unit.getCurrentGoal() != null) {
-                    unit.getCurrentGoal().process(unit, map);
+                    unit.getCurrentGoal().process(unit, map, this);
                 }
             } catch (Exception e) {
                 log.error("Exception while processing unit goal", e);
@@ -290,13 +320,25 @@ public class GameServiceImpl implements GameService {
 
     private void mapFillTileUsage(Map map) {
         map.clearUsageFlag();
+        map.getRefineryEntranceList().clear();
+        map.getHarvesters().clear();
         for (Building building : map.getBuildings()) {
             for (int x = 0; x < building.getType().getWidth(); x++) {
                 for (int y = 0; y < building.getType().getHeight(); y++) {
-                    map.setUsed(x + building.getX(), y + building.getY(), -2);
+                    map.setUsed(x + building.getX(), y + building.getY(), BUILDING_USAGE_FLAG);
                 }
             }
         }
+        for (Building building : map.getBuildingsByType(BuildingType.REFINERY)) {
+            Point point = building.getPoint();
+            point = new Point(point.getX() + 1, point.getY() + 1);
+            RefineryEntrance refineryEntrance = new RefineryEntrance(building.getOwnerId(), point);
+            map.getRefineryEntranceList().put(point,refineryEntrance);
+        }
+        for (Unit unit : map.getUnitsByType(UnitType.HARVESTER)) {
+            map.getHarvesters().add(unit.getId());
+        }
+
         for (Unit unit : map.getUnits()) {
             map.setUsed(unit.getX(), unit.getY(), unit.getId());
             if (unit.getTicksMovingToNextCell() > 0) {

@@ -1,6 +1,7 @@
 package lv.k2611a.service;
 
 import lv.k2611a.network.resp.UpdateMap;
+import lv.k2611a.util.Point;
 
 public interface GameService {
     UpdateMap getFullMapUpdate();
@@ -12,4 +13,6 @@ public interface GameService {
     boolean isOwner(int buildingId, int playerId);
 
     boolean playerExist(int playerId);
+
+    void registerChangedTile(Point point);
 }

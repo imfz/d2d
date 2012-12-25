@@ -4,10 +4,14 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import lv.k2611a.ClientConnection;
 import lv.k2611a.domain.Map;
+import lv.k2611a.domain.Tile;
+import lv.k2611a.domain.TileType;
 import lv.k2611a.domain.Unit;
+import lv.k2611a.domain.UnitType;
+import lv.k2611a.domain.unitgoals.Harvest;
 import lv.k2611a.domain.unitgoals.Move;
+import lv.k2611a.util.Point;
 
 public class UnitAction extends AbstractGameStateChanger {
 
@@ -46,10 +50,19 @@ public class UnitAction extends AbstractGameStateChanger {
         for (long id : ids) {
             unitIds.add(id);
         }
+        Tile tile = map.getTile(x,y);
         for (Unit unit : map.getUnits()) {
             if (unitIds.contains(unit.getId())) {
                 if (unit.getOwnerId() == playerId) {
-                    unit.setGoal(new Move(x, y));
+                    if (unit.getUnitType() == UnitType.HARVESTER) {
+                        if (tile.getTileType() == TileType.SPICE) {
+                            unit.setGoal(new Harvest(new Point(x,y)));
+                        } else {
+                            unit.setGoal(new Move(x, y));
+                        }
+                    } else {
+                        unit.setGoal(new Move(x, y));
+                    }
                 }
             }
         }

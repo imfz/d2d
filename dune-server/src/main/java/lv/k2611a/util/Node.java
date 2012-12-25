@@ -87,6 +87,10 @@ public class Node {
         return new Node(tile.getX(), tile.getY());
     }
 
+    public Point getPoint() {
+        return new Point(x,y);
+    }
+
     @Override
     public String toString() {
         return "Node{" +

@@ -1,15 +1,24 @@
 package lv.k2611a.network.req;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import lv.k2611a.domain.Building;
 import lv.k2611a.domain.BuildingType;
 import lv.k2611a.domain.Map;
 import lv.k2611a.domain.TileType;
+import lv.k2611a.domain.Unit;
+import lv.k2611a.domain.UnitType;
+import lv.k2611a.domain.ViewDirection;
+import lv.k2611a.domain.unitgoals.Harvest;
 import lv.k2611a.service.IdGeneratorService;
 import lv.k2611a.util.MapUtils;
 
 public class PlaceBuilding extends AbstractGameStateChanger {
+
+    private static final Logger log = LoggerFactory.getLogger(PlaceBuilding.class);
+
     private int x;
     private int y;
     // since building is produced by constr. yard, ask con yard id here
@@ -52,6 +61,17 @@ public class PlaceBuilding extends AbstractGameStateChanger {
         conYard.setTicksAccumulated(0);
         conYard.setBuildingTypeBuilt(null);
 
+        if (buildingTypeBuilt == BuildingType.REFINERY) {
+            Unit unit = new Unit();
+            unit.setId(idGeneratorService.generateUnitId());
+            unit.setOwnerId(conYard.getOwnerId());
+            unit.setX(x + 1);
+            unit.setY(y + 1);
+            unit.setUnitType(UnitType.HARVESTER);
+            unit.setViewDirection(ViewDirection.BOTTOM);
+            unit.setGoal(new Harvest());
+            map.getUnits().add(unit);
+        }
 
     }
 

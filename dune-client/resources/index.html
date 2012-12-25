@@ -47,14 +47,17 @@
                     moneyTab = new MoneyTab();
                     handler = new Handler(map, gameLog, rightmenu, engine, moneyTab);
 
+                    sprites.setMainSprite(document.getElementById("main_sprite"));
+                    sprites.setUnitSprite(document.getElementById("unit_sprite"));
+                    sprites.setBuildingsSprite(document.getElementById("buildings_sprite"));
+                    sprites.setRefinerySprite(document.getElementById("refinery_sprite"));
+                    sprites.setHarvesterSprite(document.getElementById("harvester_sprite"));
+                    sprites.setOkButton(document.getElementById("okbutton"));
+                    sprites.setBuildBgGreen(document.getElementById("build_bg_green"));
+                    sprites.setBuildBgRed(document.getElementById("build_bg_red"));
+
                     var canvas = document.getElementById("canvas");
                     engine.setCanvas(canvas);
-                    engine.setMainSprite(document.getElementById("main_sprite"));
-                    engine.setUnitSprite(document.getElementById("unit_sprite"));
-                    engine.setBuildingsSprite(document.getElementById("buildings_sprite"));
-                    engine.setOkButton(document.getElementById("okbutton"));
-                    engine.setBuildBgGreen(document.getElementById("build_bg_green"));
-                    engine.setBuildBgRed(document.getElementById("build_bg_red"));
                     engine.setMap(map);
                     engine.bindEvents();
 
@@ -151,6 +154,8 @@
 <img src="images/units.png" id="unit_sprite" style="display: none">
 <img src="images/buys.jpg" id="buys_sprite" style="display: none">
 <img src="images/buildings.jpg" id="buildings_sprite" style="display: none">
+<img src="images/harvester.png" id="harvester_sprite" style="display: none">
+<img src="images/refinery.jpg" id="refinery_sprite" style="display: none">
 <img src="images/okbutton.png" id="okbutton" style="display: none">
 <img src="images/build_bg_green.png" id="build_bg_green" style="display: none">
 <img src="images/build_bg_red.png" id="build_bg_red" style="display: none">

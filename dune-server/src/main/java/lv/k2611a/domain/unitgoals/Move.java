@@ -4,7 +4,9 @@ import java.util.List;
 
 import lv.k2611a.domain.Map;
 import lv.k2611a.domain.Unit;
+import lv.k2611a.domain.UnitType;
 import lv.k2611a.domain.ViewDirection;
+import lv.k2611a.service.GameServiceImpl;
 import lv.k2611a.util.AStar;
 import lv.k2611a.util.Node;
 import lv.k2611a.util.Point;
@@ -35,9 +37,9 @@ public class Move implements UnitGoal {
     }
 
     @Override
-    public void process(Unit unit, Map map) {
+    public void process(Unit unit, Map map, GameServiceImpl gameService) {
         if (path == null) {
-            path = aStarCache.calcShortestPath(unit.getX(), unit.getY(), goalX, goalY, map, unit.getId());
+            path = aStarCache.calcShortestPath(unit.getX(), unit.getY(), goalX, goalY, map, unit.getId(), unit.getUnitType() == UnitType.HARVESTER, unit.getOwnerId());
             lookAtNextNode(unit);
         }
         if (path.isEmpty()) {
@@ -56,16 +58,16 @@ public class Move implements UnitGoal {
             if (!(path.isEmpty())) {
                 next = path.get(0);
                 // recalc path if we hit an obstacle
-                if (map.isObstacle(next, unit.getId())) {
-                    path = aStarCache.calcShortestPath(unit.getX(), unit.getY(), goalX, goalY, map, unit.getId());
+                if (map.isObstacle(next, unit.getId(), unit.getOwnerId(), unit.getUnitType() == UnitType.HARVESTER)) {
+                    path = aStarCache.calcShortestPath(unit.getX(), unit.getY(), goalX, goalY, map, unit.getId(), unit.getUnitType() == UnitType.HARVESTER, unit.getOwnerId());
                 }
                 lookAtNextNode(unit);
             }
         } else {
             if (!path.isEmpty()) {
                 Node next = path.get(0);
-                if (map.isObstacle(next, unit.getId())) {
-                    path = aStarCache.calcShortestPath(unit.getX(), unit.getY(), goalX, goalY, map, unit.getId());
+                if (map.isObstacle(next, unit.getId(), unit.getOwnerId(), unit.getUnitType() == UnitType.HARVESTER)) {
+                    path = aStarCache.calcShortestPath(unit.getX(), unit.getY(), goalX, goalY, map, unit.getId(), unit.getUnitType() == UnitType.HARVESTER, unit.getOwnerId());
                     lookAtNextNode(unit);
                 } else {
                     unit.setTicksMovingToNextCell(unit.getTicksMovingToNextCell() + 1);

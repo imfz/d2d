@@ -3,6 +3,7 @@ package lv.k2611a.domain;
 import org.junit.Test;
 
 import lv.k2611a.util.Node;
+import lv.k2611a.util.Point;
 
 import static junit.framework.Assert.assertEquals;
 
@@ -42,9 +43,9 @@ public class MapTest {
 
     @Test
     public void testDistance() {
-        assertEquals(Math.sqrt(1), Map.getDistanceBetween(new Node(0,0), new Node(1,0)), 0.001);
-        assertEquals(Math.sqrt(1), Map.getDistanceBetween(new Node(0,0), new Node(0,1)), 0.001);
-        assertEquals(Math.sqrt(2), Map.getDistanceBetween(new Node(0,0), new Node(1,1)), 0.001);
-        assertEquals(Math.sqrt(200), Map.getDistanceBetween(new Node(0,0), new Node(10,10)), 0.001);
+        assertEquals(Math.sqrt(1), Map.getDistanceBetween(new Point(0,0), new Point(1,0)), 0.001);
+        assertEquals(Math.sqrt(1), Map.getDistanceBetween(new Point(0,0), new Point(0,1)), 0.001);
+        assertEquals(Math.sqrt(2), Map.getDistanceBetween(new Point(0,0), new Point(1,1)), 0.001);
+        assertEquals(Math.sqrt(200), Map.getDistanceBetween(new Point(0,0), new Point(10,10)), 0.001);
     }
 }

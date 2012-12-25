@@ -8,7 +8,7 @@ public enum UnitType implements EntityType {
     SIEGE_TANK(2, 60, 120),
     LAUNCHER(3, 30, 50),
     DEVASTATOR(4, 100, 200),
-    HARVESTER(5, 100, 200),
+    HARVESTER(5, 10, 200),
     JEEP(6, 100, 200),
     TRIKE(7, 100, 200),
     SONIC_TANK(8, 100, 200),

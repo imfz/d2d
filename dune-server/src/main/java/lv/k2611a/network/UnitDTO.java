@@ -1,6 +1,8 @@
 package lv.k2611a.network;
 
 import lv.k2611a.domain.Unit;
+import lv.k2611a.domain.UnitType;
+import lv.k2611a.domain.unitgoals.Harvest;
 
 public class UnitDTO {
     private long id;
@@ -11,6 +13,7 @@ public class UnitDTO {
     private double travelled;
     private int hp;
     private int maxHp;
+    private int spicePercents;
     private int ownerId;
 
     public int getUnitType() {
@@ -85,6 +88,14 @@ public class UnitDTO {
         this.ownerId = ownerId;
     }
 
+    public int getSpicePercents() {
+        return spicePercents;
+    }
+
+    public void setSpicePercents(int spicePercents) {
+        this.spicePercents = spicePercents;
+    }
+
     public static UnitDTO fromUnit(Unit unit) {
         UnitDTO dto = new UnitDTO();
         dto.setUnitType(unit.getUnitType().getIdOnJS());
@@ -96,6 +107,10 @@ public class UnitDTO {
         dto.setViewDirection(unit.getViewDirection().getIdOnJS());
         dto.setTravelled((double)unit.getTicksMovingToNextCell() / unit.getUnitType().getSpeed());
         dto.setOwnerId(unit.getOwnerId());
+        if (unit.getUnitType() == UnitType.HARVESTER) {
+            int spicePercents = (int) ((double) unit.getTicksCollectingSpice() / Harvest.TICKS_FOR_FULL * 100);
+            dto.setSpicePercents(spicePercents);
+        }
         return dto;
     }
 }

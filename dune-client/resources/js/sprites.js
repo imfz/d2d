@@ -207,7 +207,40 @@ Sprites.prototype.getTileConfig = function (targetTileX, targetTileY, map) {
     var result = new Object();
     result.x = x;
     result.y = y;
+    result.sprite = this.mainSprite;
     return result;
+};
+
+Sprites.prototype.setMainSprite = function (mainSprite) {
+    this.mainSprite = mainSprite;
+};
+
+Sprites.prototype.setBuildingsSprite = function (buildingsSprite) {
+    this.buildingsSprite = buildingsSprite;
+};
+
+Sprites.prototype.setHarvesterSprite = function (harvesterSprite) {
+    this.harvesterSprite = harvesterSprite;
+};
+
+Sprites.prototype.setRefinerySprite = function (refinerySprite) {
+    this.refinerySprite = refinerySprite;
+};
+
+Sprites.prototype.setOkButton = function (okButtonSprite) {
+    this.okButtonSprite = okButtonSprite;
+};
+
+Sprites.prototype.setBuildBgGreen = function (bgGreen) {
+    this.bgGreenSprite = bgGreen;
+};
+
+Sprites.prototype.setBuildBgRed = function (bgRed) {
+    this.bgRedSprite = bgRed;
+};
+
+Sprites.prototype.setUnitSprite = function (unitSprite) {
+    this.unitSprite = unitSprite;
 };
 
 Sprites.prototype.colorPlayerIdSelector = function() {
@@ -216,7 +249,6 @@ Sprites.prototype.colorPlayerIdSelector = function() {
     var setOptionColors = function() {
         var id = $(this).text();
         var playerColor = that.getPlayerColor(id);
-        console.log("Reseting color for " + id)
         $(this).css("color", colorToHex(playerColor.r, playerColor.g, playerColor.b));
     };
 
@@ -234,6 +266,10 @@ Sprites.prototype.getBuildingConfig = function (building) {
     var y = 0;
     var width = 2;
     var height = 2;
+
+    var sprite = this.buildingsSprite;
+
+
     if (building.type == BUILDING_TYPE_SILO) {
         y = 0;
     }
@@ -263,8 +299,16 @@ Sprites.prototype.getBuildingConfig = function (building) {
     if (building.type == BUILDING_TYPE_AIRBASE) {
         y = 8;
     }
+    if (building.type == BUILDING_TYPE_REFINERY) {
+        x = 0;
+        y = 0;
+        width = 3;
+        sprite = this.refinerySprite;
+    }
 
     var result = new Object();
+
+    result.sprite = sprite;
     result.x = x;
     result.y = y * (63 * 2);
     result.width = width * 63;
@@ -274,6 +318,11 @@ Sprites.prototype.getBuildingConfig = function (building) {
 };
 
 Sprites.prototype.getUnitConfig = function (unit) {
+
+    var sprite = this.unitSprite;
+    var xOffset = 0;
+    var yOffset = 0;
+
     var x = 0;
     if (unit.viewDirection == VIEW_DIRECTION_TOP) {
         x = 0;
@@ -304,6 +353,22 @@ Sprites.prototype.getUnitConfig = function (unit) {
     if (unit.unitType == UNIT_TYPE_BATTLE_TANK) {
         y = 16;
     }
+    if (unit.unitType == UNIT_TYPE_HARVESTER) {
+        y = 0;
+        sprite = this.harvesterSprite;
+        xOffset = -10;
+        yOffset = -10;
+
+        result = new Object();
+        result.sprite = sprite;
+        result.x = x * 83;
+        result.y = y * 83;
+        result.width = 83;
+        result.height = 83;
+        result.xOffset = xOffset;
+        result.yOffset = yOffset;
+        return result;
+    }
     if (unit.unitType == UNIT_TYPE_SIEGE_TANK) {
         y = 1;
     }
@@ -314,9 +379,14 @@ Sprites.prototype.getUnitConfig = function (unit) {
         y = 21;
     }
 
-    result = new Object();
+    var result = new Object();
+    result.sprite = sprite;
     result.x = x * 63;
     result.y = y * 63;
+    result.width = 63;
+    result.height = 63;
+    result.xOffset = xOffset;
+    result.yOffset = yOffset;
     return result;
 };
 

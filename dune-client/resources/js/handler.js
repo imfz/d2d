@@ -78,6 +78,10 @@ Handler.prototype.processUpdate = function(update) {
     }
     this.map.setUnits(update.units);
     this.map.setBuildings(update.buildings);
+    for (var i = 0; i < update.changedTiles.length; i++) {
+        var tile = update.changedTiles[i];
+        this.map.setTile(tile.x, tile.y, tile);
+    }
 };
 
 Handler.prototype.storeUpdateForFutureUse = function(data) {

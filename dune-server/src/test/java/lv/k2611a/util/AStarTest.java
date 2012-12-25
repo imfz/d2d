@@ -23,7 +23,7 @@ public class AStarTest {
 
     private int getPathLengthTo(Map map, int fromX, int fromY, int toX, int toY) {
         map.clearUsageFlag();
-        return new AStar().calcShortestPath(fromX, fromY, toX, toY, map,-1).size();
+        return new AStar().calcShortestPath(fromX, fromY, toX, toY, map,-1, false, 0).size();
     }
 
     @Test
@@ -33,7 +33,7 @@ public class AStarTest {
         int iterationCount = 100;
         int totalMoveCount = 0;
         for (int i = 0; i < iterationCount; i++) {
-            int result = new AStar().calcShortestPath(0, 0, 255, 255, map,-1).size();
+            int result = new AStar().calcShortestPath(0, 0, 255, 255, map,-1, false, 0).size();
             totalMoveCount += result;
         }
         long endTime = System.currentTimeMillis();

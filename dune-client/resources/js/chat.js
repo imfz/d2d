@@ -21,17 +21,6 @@ Chat.prototype.sendMessage = function (message) {
 
 Chat.prototype.init = function () {
     var that = this;
-    $('#username')
-            .attr({autocomplete:'OFF'})
-            .keyup(function (ev) {
-                var keyc = getKeyCode(ev);
-                if (keyc == 13 || keyc == 10) {
-                    connection.start($F('username'), $F('playerId'));
-                    return false;
-                }
-                return true;
-            });
-
     $('#joinB').click(function (event) {
         connection.start($F('username'), $F('playerId'));
         return false;

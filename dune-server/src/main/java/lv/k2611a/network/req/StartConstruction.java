@@ -1,6 +1,5 @@
 package lv.k2611a.network.req;
 
-import lv.k2611a.ClientConnection;
 import lv.k2611a.domain.Building;
 import lv.k2611a.domain.BuildingType;
 import lv.k2611a.domain.Map;

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lv.k2611a.domain.buildinggoals.BuildingGoal;
+import lv.k2611a.util.Point;
 
 public class Building {
     private long id;
@@ -107,5 +108,9 @@ public class Building {
 
     public void setOwnerId(int ownerId) {
         this.ownerId = ownerId;
+    }
+
+    public Point getPoint() {
+        return new Point(x,y);
     }
 }

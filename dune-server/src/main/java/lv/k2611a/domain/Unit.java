@@ -3,8 +3,8 @@ package lv.k2611a.domain;
 import java.util.ArrayList;
 import java.util.List;
 
-import lv.k2611a.domain.unitgoals.UnitGoal;
 import lv.k2611a.domain.unitgoals.Move;
+import lv.k2611a.domain.unitgoals.UnitGoal;
 import lv.k2611a.util.Point;
 
 public class Unit {
@@ -17,6 +17,7 @@ public class Unit {
     private int ticksMovingToNextCell;
     private int hp;
     private int ownerId;
+    private int ticksCollectingSpice;
 
     public UnitType getUnitType() {
         return unitType;
@@ -67,6 +68,10 @@ public class Unit {
         return goals.get(0);
     }
 
+    public void insertGoalBeforeCurrent(UnitGoal goal) {
+        goals.add(0, goal);
+    }
+
     public void setGoal(UnitGoal goal) {
         this.goals = new ArrayList<UnitGoal>();
         if (ticksMovingToNextCell > 0) {
@@ -98,5 +103,17 @@ public class Unit {
 
     public void setOwnerId(int ownerId) {
         this.ownerId = ownerId;
+    }
+
+    public Point getPoint() {
+        return new Point(x,y);
+    }
+
+    public int getTicksCollectingSpice() {
+        return ticksCollectingSpice;
+    }
+
+    public void setTicksCollectingSpice(int ticksCollectingSpice) {
+        this.ticksCollectingSpice = ticksCollectingSpice;
     }
 }

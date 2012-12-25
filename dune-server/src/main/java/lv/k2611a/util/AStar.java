@@ -18,11 +18,11 @@ public class AStar {
         return copy;
     }
 
-    public List<Node> calcShortestPath(int fromX, int fromY, int toX, int toY, Map map, long unitId) {
+    public List<Node> calcShortestPath(int fromX, int fromY, int toX, int toY, Map map, long unitId, boolean isHarvester, int ownerId) {
         Node start = new Node(fromX, fromY);
         Node goal = new Node(toX, toY);
 
-        if (map.isObstacle(goal, unitId)) {
+        if (map.isObstacle(goal, unitId, ownerId, isHarvester)) {
             return new ArrayList<Node>();
         }
 
@@ -49,8 +49,8 @@ public class AStar {
                     continue;
                 }
 
-                if (!map.isObstacle(neighbor, unitId)) {
-                    double neighborDistanceFromStart = current.getDistanceFromStart() + Map.getDistanceBetween(current, neighbor);
+                if (!map.isObstacle(neighbor, unitId, ownerId, isHarvester)) {
+                    double neighborDistanceFromStart = current.getDistanceFromStart() + Map.getDistanceBetween(current.getPoint(), neighbor.getPoint());
 
                     if (!openSet.contains(neighbor)) {
                         openSet.add(neighbor);
@@ -63,7 +63,7 @@ public class AStar {
                     if (neighborIsBetter) {
                         neighbor.setPreviousNode(current);
                         neighbor.setDistanceFromStart(neighborDistanceFromStart);
-                        neighbor.setHeuristicDistanceFromGoal(Map.getDistanceBetween(neighbor, goal));
+                        neighbor.setHeuristicDistanceFromGoal(Map.getDistanceBetween(neighbor.getPoint(), goal.getPoint()));
                     }
                 }
 
