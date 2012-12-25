@@ -194,7 +194,7 @@ RightMenu.prototype.redraw = function () {
 
             context = descr[0].getContext("2d");
             context.font = '15px Arial Bold';
-            context.fillStyle = 'green';
+            context.fillStyle = 'black';
             context.fillText(option.name, 5, 15);
             context.fillText(option.cost, 140, 15);
 

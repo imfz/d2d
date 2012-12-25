@@ -199,8 +199,8 @@ public class GameServiceImpl implements GameService {
                     OptionDTO option = new OptionDTO();
                     option.setType(constructionOption.getIdOnJS());
                     option.setEntityToBuildId(constructionOption.getEntityToBuildIdOnJs());
-                    option.setCost(BuildingType.getByJsId(constructionOption.getEntityToBuildIdOnJs()).getCost());
-                    option.setName(BuildingType.getByJsId(constructionOption.getEntityToBuildIdOnJs()).name());
+                    option.setCost(constructionOption.getCost());
+                    option.setName(constructionOption.getName());
                     options.add(option);
                 }
                 UpdateConstructionOptions updateConstructionOptions = new UpdateConstructionOptions();

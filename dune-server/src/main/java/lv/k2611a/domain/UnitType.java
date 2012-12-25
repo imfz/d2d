@@ -3,11 +3,17 @@ package lv.k2611a.domain;
 import java.util.HashSet;
 import java.util.Set;
 
-public enum UnitType {
+public enum UnitType implements EntityType {
     BATTLE_TANK(1, 40, 100),
     SIEGE_TANK(2, 60, 120),
     LAUNCHER(3, 30, 50),
-    DEVASTATOR(4, 100, 200)
+    DEVASTATOR(4, 100, 200),
+    HARVESTER(5, 100, 200),
+    JEEP(6, 100, 200),
+    TRIKE(7, 100, 200),
+    SONIC_TANK(8, 100, 200),
+    DEVIATOR(9, 100, 200),
+    MCV(10, 100, 200)
     ;
 
     static {
@@ -33,6 +39,16 @@ public enum UnitType {
         return idOnJS;
     }
 
+    @Override
+    public int getCost() {
+        return 0;
+    }
+
+    @Override
+    public String getName() {
+        return name();
+    }
+
     public int getSpeed() {
         return speed;
     }
@@ -40,4 +56,6 @@ public enum UnitType {
     public int getHp() {
         return hp;
     }
+
+
 }

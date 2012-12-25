@@ -5,29 +5,28 @@ import java.util.Set;
 
 public enum ConstructionOption {
 
-    DEVASTATOR(1,4),
-    SIEGE_TANK(2,2),
-    TANK(3,1),
-    LAUNCHER(4,3),
+    DEVASTATOR(1,UnitType.DEVASTATOR),
+    SIEGE_TANK(2,UnitType.SIEGE_TANK),
+    TANK(3,UnitType.SIEGE_TANK),
+    LAUNCHER(4,UnitType.LAUNCHER),
 
-    //TODO: -1 ;[
-    POWERPLANT(5,2),
-    HARVESTER(6, -1),
-    RADAR(7,5),
-    CONCRETE(8, -1),
-    JEEP(9, -1),
-    DEVIATOR(10, -1),
-    REFINERY(11, -1),
-    FACTORY(12,8),
-    ROCKET_TURRET(13, -1),
-    SILO(14,1),
-    REPAIRSHOP(15,3),
-    AIRBASE(16,9),
-    WALL(17, -1),
-    MCV(18, -1),
-    TURRET(19, -1),
-    SONIC_TANK(20, -1),
-    TRIKE(21, -1);
+    POWERPLANT(5,BuildingType.POWERPLANT),
+    HARVESTER(6,UnitType.HARVESTER),
+    RADAR(7,BuildingType.RADAR),
+    CONCRETE(8, BuildingType.CONCRETE),
+    JEEP(9, UnitType.JEEP),
+    DEVIATOR(10, UnitType.DEVIATOR),
+    REFINERY(11, BuildingType.REFINERY),
+    FACTORY(12,BuildingType.FACTORY),
+    ROCKET_TURRET(13, BuildingType.ROCKET_TURRET),
+    SILO(14,BuildingType.SILO),
+    REPAIRSHOP(15,BuildingType.REPAIRSHOP),
+    AIRBASE(16,BuildingType.AIRBASE),
+    WALL(17, BuildingType.WALL),
+    MCV(18, UnitType.MCV),
+    TURRET(19, BuildingType.TURRET),
+    SONIC_TANK(20, UnitType.SONIC_TANK),
+    TRIKE(21, UnitType.TRIKE);
 
 
     static {
@@ -40,11 +39,11 @@ public enum ConstructionOption {
     }
 
     private final int idOnJS;
-    private final int entityToBuildIdOnJs;
+    private final EntityType entityType;
 
-    private ConstructionOption(int idOnJS, int entityToBuildIdOnJs) {
+    private ConstructionOption(int idOnJS, EntityType entityType) {
         this.idOnJS = idOnJS;
-        this.entityToBuildIdOnJs = entityToBuildIdOnJs;
+        this.entityType = entityType;
     }
 
     public int getIdOnJS() {
@@ -52,6 +51,14 @@ public enum ConstructionOption {
     }
 
     public int getEntityToBuildIdOnJs() {
-        return entityToBuildIdOnJs;
+        return entityType.getIdOnJS();
+    }
+
+    public int getCost() {
+        return entityType.getCost();
+    }
+
+    public String getName() {
+        return entityType.getName();
     }
 }
