@@ -99,7 +99,7 @@ public class ReturnToBase implements UnitGoal {
             if (unit.getY() > 2) {
                 if (!map.getTile(unit.getX(), unit.getY()-1).isUsedByUnit()) {
                    unit.setX(unit.getX());
-                   unit.setY(unit.getY());
+                   unit.setY(unit.getY()-1);
                 }
             }
             unit.setGoal(new Harvest());
