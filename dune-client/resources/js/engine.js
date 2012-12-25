@@ -297,6 +297,10 @@ GameEngine.prototype.getBuildingPlacementConfig = function (buildingTypeBuilt) {
     if (buildingTypeBuilt == BUILDING_TYPE_REPAIRSHOP) {
         width = 3;
     }
+    if (buildingTypeBuilt == BUILDING_TYPE_TURRET) {
+        width = 1;
+        height = 1;
+    }
     var result = new Object();
     result.width = width;
     result.height = height;

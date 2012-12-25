@@ -7,6 +7,7 @@ import lv.k2611a.domain.BuildingType;
 import lv.k2611a.domain.Map;
 import lv.k2611a.domain.TileType;
 import lv.k2611a.service.IdGeneratorService;
+import lv.k2611a.util.MapUtils;
 
 public class PlaceBuilding extends AbstractGameStateChanger {
     private int x;
@@ -31,15 +32,12 @@ public class PlaceBuilding extends AbstractGameStateChanger {
         }
         BuildingType buildingTypeBuilt = conYard.getBuildingTypeBuilt();
 
-        for (int x = 0; x < buildingTypeBuilt.getWidth(); x++) {
-            for (int y = 0; y < buildingTypeBuilt.getHeight(); y++) {
-                if (map.isObstacle(this.x + x,this.y + y)) {
-                    return;
-                }
-                if (map.getTile(this.x + x,this.y + y).getTileType() != TileType.ROCK) {
-                    return;
-                }
-            }
+        if (!terrainAllowsConstruction(map, buildingTypeBuilt)) {
+            return;
+        }
+
+        if (!buildingNearby(map, x, y, buildingTypeBuilt.getWidth(), buildingTypeBuilt.getHeight(), this.playerId)) {
+            return;
         }
 
         Building building = new Building();
@@ -55,6 +53,38 @@ public class PlaceBuilding extends AbstractGameStateChanger {
         conYard.setBuildingTypeBuilt(null);
 
 
+    }
+
+    private boolean buildingNearby(Map map, int x, int y, int width, int height, int playerId) {
+        for (Building building : map.getBuildings()) {
+            MapUtils.IntersectionType intersectionType =
+                    MapUtils.getIntersectionType(
+                            x, y, width, height,
+                            building.getX(), building.getY(), building.getType().getWidth(), building.getType().getHeight());
+            if (intersectionType == MapUtils.IntersectionType.INTERSECT) {
+                return false;
+            }
+            if (building.getOwnerId() == playerId) {
+                if (intersectionType == MapUtils.IntersectionType.NEARBY) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean terrainAllowsConstruction(Map map, BuildingType buildingTypeBuilt) {
+        for (int x = 0; x < buildingTypeBuilt.getWidth(); x++) {
+            for (int y = 0; y < buildingTypeBuilt.getHeight(); y++) {
+                if (map.isObstacle(this.x + x, this.y + y)) {
+                    return false;
+                }
+                if (map.getTile(this.x + x, this.y + y).getTileType() != TileType.ROCK) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     public int getX() {

@@ -9,6 +9,7 @@ public enum BuildingType {
     SILO(1,2,2,50,50, 10),
     POWERPLANT(2,2,2,50,100, 10),
     REPAIRSHOP(3,3,2,50,100, 10),
+    TURRET(10,1,1,50,100, 10),
     CONSTRUCTIONYARD(7,2,2,50,150, 10) {
         @Override
         public EnumSet<ConstructionOption> getConstructionOptions() {

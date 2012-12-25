@@ -75,7 +75,7 @@ public class Map {
         return buildings;
     }
 
-    public List<Building> getBuildingByType(BuildingType buildingType) {
+    public List<Building> getBuildingsByType(BuildingType buildingType) {
         List<Building> result = new ArrayList<Building>();
         for (Building building : buildings) {
             if (building.getType() == buildingType) {

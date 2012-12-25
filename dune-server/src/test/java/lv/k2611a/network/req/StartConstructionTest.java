@@ -245,7 +245,7 @@ public class StartConstructionTest {
         anotherConstructionYard.setId(ANOTHER_CONSTRUCTION_YARD_ID);
         anotherConstructionYard.setOwnerId(1);
         anotherConstructionYard.setType(BuildingType.CONSTRUCTIONYARD);
-        anotherConstructionYard.setX(3);
+        anotherConstructionYard.setX(20);
         anotherConstructionYard.setY(3);
         anotherConstructionYard.setHp(100);
         map.getBuildings().add(anotherConstructionYard);
@@ -269,15 +269,17 @@ public class StartConstructionTest {
         assertEquals("tick count should reset", 0, map.getBuilding(CONSTRUCTION_YARD_ID).getTicksAccumulated());
         assertEquals("building goal should be empty", null, map.getBuilding(CONSTRUCTION_YARD_ID).getCurrentGoal());
 
+        placeTurret(14, 14, map, 1, 6);
+
         PlaceBuilding placeBuilding = new PlaceBuilding();
         placeBuilding.setBuilderId(ANOTHER_CONSTRUCTION_YARD_ID);
-        placeBuilding.setX(5);
-        placeBuilding.setY(5);
+        placeBuilding.setX(15);
+        placeBuilding.setY(15);
         placeBuilding.setPlayerId(1);
         userActionService.registerAction(placeBuilding);
         gameService.tick();
 
-        assertEquals("building should not be built from another construction yard", 2, map.getBuildings().size());
+        assertEquals("building should not be built from another construction yard", 0, map.getBuildingsByType(BuildingType.POWERPLANT).size());
         assertEquals("con yard should not be empty", true, map.getBuilding(CONSTRUCTION_YARD_ID).isAwaitingClick());
 
         placeBuilding = new PlaceBuilding();
@@ -288,7 +290,7 @@ public class StartConstructionTest {
         userActionService.registerAction(placeBuilding);
         gameService.tick();
 
-        assertEquals("building should not be built on nonempty location", 2, map.getBuildings().size());
+        assertEquals("building should not be built on nonempty location", 0, map.getBuildingsByType(BuildingType.POWERPLANT).size());
         assertEquals("con yard should not be empty", true, map.getBuilding(CONSTRUCTION_YARD_ID).isAwaitingClick());
 
         Unit unit = new Unit();
@@ -297,6 +299,8 @@ public class StartConstructionTest {
         unit.setY(16);
         unit.setUnitType(UnitType.BATTLE_TANK);
         map.getUnits().add(unit);
+
+        placeTurret(14, 14, map, 1, 5);
         placeBuilding = new PlaceBuilding();
         placeBuilding.setBuilderId(CONSTRUCTION_YARD_ID);
         placeBuilding.setX(15);
@@ -305,8 +309,10 @@ public class StartConstructionTest {
         userActionService.registerAction(placeBuilding);
         gameService.tick();
 
-        assertEquals("building should not be built on a unit", 2, map.getBuildings().size());
+        assertEquals("building should not be built on a unit", 0, map.getBuildingsByType(BuildingType.POWERPLANT).size());
         assertEquals("con yard should not be empty", true, map.getBuilding(CONSTRUCTION_YARD_ID).isAwaitingClick());
+
+        placeTurret(62, 62, map, 1, 7);
 
         placeBuilding = new PlaceBuilding();
         placeBuilding.setBuilderId(CONSTRUCTION_YARD_ID);
@@ -316,8 +322,10 @@ public class StartConstructionTest {
         userActionService.registerAction(placeBuilding);
         gameService.tick();
 
-        assertEquals("building should not be built on the edge of the map", 2, map.getBuildings().size());
+        assertEquals("building should not be built on the edge of the map", 0, map.getBuildingsByType(BuildingType.POWERPLANT).size());
         assertEquals("con yard should not be empty", true, map.getBuilding(CONSTRUCTION_YARD_ID).isAwaitingClick());
+
+        placeTurret(57, 57, map, 1, 8);
 
         placeBuilding = new PlaceBuilding();
         placeBuilding.setBuilderId(CONSTRUCTION_YARD_ID);
@@ -328,9 +336,12 @@ public class StartConstructionTest {
         userActionService.registerAction(placeBuilding);
         gameService.tick();
 
-        assertEquals("building should not be built on the sand", 2, map.getBuildings().size());
+        assertEquals("building should not be built on the sand", 0, map.getBuildingsByType(BuildingType.POWERPLANT).size());
         assertEquals("con yard should not be empty", true, map.getBuilding(CONSTRUCTION_YARD_ID).isAwaitingClick());
 
+
+        // there is turret nearby, but from wrong owner
+        placeTurret(7, 7, map, 2, 9);
 
         placeBuilding = new PlaceBuilding();
         placeBuilding.setBuilderId(CONSTRUCTION_YARD_ID);
@@ -340,11 +351,34 @@ public class StartConstructionTest {
         userActionService.registerAction(placeBuilding);
         gameService.tick();
 
-        assertEquals("building should be built", 3, map.getBuildings().size());
-        assertEquals("power plant is built", 1, map.getBuildingByType(BuildingType.POWERPLANT).size());
-        assertEquals("power plant hp is ok", BuildingType.POWERPLANT.getHp(), map.getBuildingByType(BuildingType.POWERPLANT).get(0).getHp());
+        assertEquals("building should not be built without building nearby", 0, map.getBuildingsByType(BuildingType.POWERPLANT).size());
+        assertEquals("con yard should not be empty", true, map.getBuilding(CONSTRUCTION_YARD_ID).isAwaitingClick());
+
+
+        placeTurret(4, 4, map, 1, 9);
+
+        placeBuilding = new PlaceBuilding();
+        placeBuilding.setBuilderId(CONSTRUCTION_YARD_ID);
+        placeBuilding.setX(5);
+        placeBuilding.setY(5);
+        placeBuilding.setPlayerId(1);
+        userActionService.registerAction(placeBuilding);
+        gameService.tick();
+
+        assertEquals("power plant is built", 1, map.getBuildingsByType(BuildingType.POWERPLANT).size());
+        assertEquals("power plant hp is ok", BuildingType.POWERPLANT.getHp(), map.getBuildingsByType(BuildingType.POWERPLANT).get(0).getHp());
         assertEquals("con yard should be empty", false, map.getBuilding(CONSTRUCTION_YARD_ID).isAwaitingClick());
 
+    }
+
+    private void placeTurret(int x, int y, Map map, int playerId, int turretId) {
+        Building building = new Building();
+        building.setId(turretId);
+        building.setOwnerId(playerId);
+        building.setType(BuildingType.TURRET);
+        building.setX(x);
+        building.setY(y);
+        map.getBuildings().add(building);
     }
 
 
