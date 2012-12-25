@@ -1,8 +1,10 @@
 package lv.k2611a.domain.unitgoals;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import lv.k2611a.domain.Map;
+import lv.k2611a.domain.Tile;
 import lv.k2611a.domain.Unit;
 import lv.k2611a.domain.UnitType;
 import lv.k2611a.domain.ViewDirection;
@@ -39,7 +41,7 @@ public class Move implements UnitGoal {
     @Override
     public void process(Unit unit, Map map, GameServiceImpl gameService) {
         if (path == null) {
-            path = aStarCache.calcShortestPath(unit.getX(), unit.getY(), goalX, goalY, map, unit.getId(), unit.getUnitType() == UnitType.HARVESTER, unit.getOwnerId());
+            calcPath(unit, map);
             lookAtNextNode(unit);
         }
         if (path.isEmpty()) {
@@ -59,7 +61,7 @@ public class Move implements UnitGoal {
                 next = path.get(0);
                 // recalc path if we hit an obstacle
                 if (map.isObstacle(next, unit.getId(), unit.getOwnerId(), unit.getUnitType() == UnitType.HARVESTER)) {
-                    path = aStarCache.calcShortestPath(unit.getX(), unit.getY(), goalX, goalY, map, unit.getId(), unit.getUnitType() == UnitType.HARVESTER, unit.getOwnerId());
+                    calcPath(unit, map);
                 }
                 lookAtNextNode(unit);
             }
@@ -67,7 +69,7 @@ public class Move implements UnitGoal {
             if (!path.isEmpty()) {
                 Node next = path.get(0);
                 if (map.isObstacle(next, unit.getId(), unit.getOwnerId(), unit.getUnitType() == UnitType.HARVESTER)) {
-                    path = aStarCache.calcShortestPath(unit.getX(), unit.getY(), goalX, goalY, map, unit.getId(), unit.getUnitType() == UnitType.HARVESTER, unit.getOwnerId());
+                    calcPath(unit, map);
                     lookAtNextNode(unit);
                 } else {
                     unit.setTicksMovingToNextCell(unit.getTicksMovingToNextCell() + 1);
@@ -79,6 +81,23 @@ public class Move implements UnitGoal {
             unit.setTicksMovingToNextCell(0);
         }
 
+    }
+
+    private void calcPath(Unit unit, Map map) {
+        boolean roadExists = false;
+        int targetsSegment = map.getTile(goalX, goalY).getPassableSegmentNumber();
+        for (Tile tile : map.getTileNeighbours(unit.getX(), unit.getY())) {
+            if (tile.getPassableSegmentNumber() == targetsSegment) {
+                roadExists = true;
+                break;
+            }
+        }
+        if (!roadExists) {
+            // no path can be found, segments are mutually separated
+            path = new ArrayList<Node>();
+            return;
+        }
+        path = aStarCache.calcShortestPath(unit.getX(), unit.getY(), goalX, goalY, map, unit.getId(), unit.getUnitType() == UnitType.HARVESTER, unit.getOwnerId());
     }
 
     private void lookAtNextNode(Unit unit) {

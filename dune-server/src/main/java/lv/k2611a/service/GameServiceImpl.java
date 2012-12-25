@@ -85,7 +85,7 @@ public class GameServiceImpl implements GameService {
                 unit.setX(j);
                 unit.setY(i);
                 unit.setGoal(new Move(10 + j, i));
-                unit.setUnitType(UnitType.values()[r.nextInt(UnitType.values().length)]);
+                unit.setUnitType(UnitType.HARVESTER);
                 map.getUnits().add(unit);
             }
         }
@@ -346,6 +346,7 @@ public class GameServiceImpl implements GameService {
                 map.setUsed(unitMovingTo.getX(), unitMovingTo.getY(), unit.getId());
             }
         }
+        map.buildPassableSegmentCache();
     }
 
     public List<BuildingDTO> getBuildings() {

@@ -11,6 +11,7 @@ public class Tile {
     private long usedBy;
     private TileType tileType;
     private int spiceRemainingTicks = TICKS_IN_SPICE_TILE;
+    private int passableSegmentNumber = 0;
 
     public Tile(int x, int y) {
         this.x = x;
@@ -69,5 +70,13 @@ public class Tile {
 
     public void setSpiceRemainingTicks(int spiceRemainingTicks) {
         this.spiceRemainingTicks = spiceRemainingTicks;
+    }
+
+    public int getPassableSegmentNumber() {
+        return passableSegmentNumber;
+    }
+
+    public void setPassableSegmentNumber(int passableSegmentNumber) {
+        this.passableSegmentNumber = passableSegmentNumber;
     }
 }

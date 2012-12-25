@@ -12,6 +12,7 @@ import lv.k2611a.domain.Player;
 import lv.k2611a.domain.RefineryEntrance;
 import lv.k2611a.domain.Unit;
 import lv.k2611a.domain.UnitType;
+import lv.k2611a.domain.ViewDirection;
 import lv.k2611a.service.GameServiceImpl;
 import lv.k2611a.util.Point;
 
@@ -88,12 +89,19 @@ public class ReturnToBase implements UnitGoal {
     }
 
     private void unloadSpice(Unit unit, Map map, GameServiceImpl gameService) {
+        unit.setViewDirection(ViewDirection.TOP);
         unit.setTicksCollectingSpice(unit.getTicksCollectingSpice() - TICKS_COLLECTING_UNLOADED_PER_TICK);
         Player player = map.getPlayerById(unit.getOwnerId());
         player.setMoney(player.getMoney() + MONEY_PER_TICK);
         if (unit.getTicksCollectingSpice() <= 0) {
             unit.setTicksCollectingSpice(0);
             unit.removeGoal(this);
+            if (unit.getY() > 2) {
+                if (!map.getTile(unit.getX(), unit.getY()-1).isUsedByUnit()) {
+                   unit.setX(unit.getX());
+                   unit.setY(unit.getY());
+                }
+            }
             unit.setGoal(new Harvest());
         }
     }

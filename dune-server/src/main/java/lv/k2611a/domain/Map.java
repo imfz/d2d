@@ -21,7 +21,7 @@ public class Map {
     private List<Unit> units;
     private List<Building> buildings;
 
-    private HashMap<Point,RefineryEntrance> refineryEntranceList = new HashMap<Point,RefineryEntrance>();
+    private HashMap<Point, RefineryEntrance> refineryEntranceList = new HashMap<Point, RefineryEntrance>();
     private Set<Long> harvesters = new HashSet<Long>();
 
     public Map(int width, int height) {
@@ -51,7 +51,7 @@ public class Map {
     }
 
     public Tile getTile(Point point) {
-        return getTile(point.getX(),point.getY());
+        return getTile(point.getX(), point.getY());
     }
 
     public Tile getTile(int x, int y) {
@@ -284,7 +284,7 @@ public class Map {
     }
 
     public boolean isObstacle(int x, int y, long unitId, int ownerid, boolean isHarvester) {
-        if (harvesterCheck(new Point(x,y), unitId, ownerid, isHarvester)) {
+        if (harvesterCheck(new Point(x, y), unitId, ownerid, isHarvester)) {
             return false;
         }
         return !getTile(x, y).isPassable(unitId);
@@ -298,6 +298,7 @@ public class Map {
         for (Tile[] tile : tiles) {
             for (Tile tile1 : tile) {
                 tile1.setUsed(-1);
+                tile1.setPassableSegmentNumber(-1);
             }
         }
     }
@@ -325,14 +326,14 @@ public class Map {
     }
 
     public Tile getNearestFreeTile(int x, int y) {
-        if (!isObstacle(x,y)) {
-            getTile(x,y);
+        if (!isObstacle(x, y)) {
+            getTile(x, y);
         }
         for (int radius = 0; radius < 10; radius++) {
             for (int currentX = x - radius; currentX < x + radius; currentX++) {
                 for (int currentY = y - radius; currentY < y + radius; currentY++) {
-                    if (!isObstacle(currentX,currentY)) {
-                        return getTile(currentX,currentY);
+                    if (!isObstacle(currentX, currentY)) {
+                        return getTile(currentX, currentY);
                     }
                 }
             }
@@ -341,11 +342,42 @@ public class Map {
 
     }
 
-    public HashMap<Point,RefineryEntrance> getRefineryEntranceList() {
+    public HashMap<Point, RefineryEntrance> getRefineryEntranceList() {
         return refineryEntranceList;
     }
 
     public Set<Long> getHarvesters() {
         return harvesters;
+    }
+
+    // precache simultaneously impassable segments, to avoid AStars worse-case scenario calculations. Like moving 100 units to impassable area.
+    public void buildPassableSegmentCache() {
+        int segmentNumber = 0;
+        boolean found;
+        do {
+            found = false;
+            for (Tile[] tile : tiles) {
+                for (Tile tile1 : tile) {
+                    if (tile1.isPassable()) {
+                        if (tile1.getPassableSegmentNumber() == -1) {
+                            segmentNumber++;
+                            spreadSegment(segmentNumber, tile1);
+                            found = true;
+                        }
+                    }
+                }
+            }
+        } while (found);
+    }
+
+    private void spreadSegment(int segmentNumber, Tile tile) {
+        tile.setPassableSegmentNumber(segmentNumber);
+        for (Tile neighbour : getTileNeighbours(tile.getX(), tile.getY())) {
+            if (neighbour.isPassable()) {
+                if (neighbour.getPassableSegmentNumber() == -1) {
+                    spreadSegment(segmentNumber, neighbour);
+                }
+            }
+        }
     }
 }

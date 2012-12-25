@@ -43,6 +43,11 @@ public class AStar {
             openSet.remove(current);
             closedSet.add(current);
 
+            // 400 iterations should be enough.
+            if (closedSet.size() >= 500) {
+                return new ArrayList<Node>();
+            }
+
             for (Node neighbor : tilesToNodes(map.getTileNeighbours(current.getX(), current.getY()))) {
                 boolean neighborIsBetter;
                 if (closedSet.contains(neighbor)) {
