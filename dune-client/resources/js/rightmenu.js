@@ -176,7 +176,7 @@ RightMenu.prototype.redraw = function () {
             $("#rightmenulistul").
                     append(
                     $('<li class="span2"></li>')
-                            .css({ height:BUY_OPTION_HEIGHT + 20 })
+                            .css({ height:BUY_OPTION_HEIGHT + 10 })
                             .css({ width:BUY_OPTION_WIDTH + 10 })
                             .append(
                             $('<a href="#" class="thumbnail"></a>')
