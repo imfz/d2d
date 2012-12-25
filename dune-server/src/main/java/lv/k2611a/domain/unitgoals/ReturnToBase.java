@@ -9,6 +9,7 @@ import lv.k2611a.domain.Building;
 import lv.k2611a.domain.BuildingType;
 import lv.k2611a.domain.Map;
 import lv.k2611a.domain.Player;
+import lv.k2611a.domain.RefineryEntrance;
 import lv.k2611a.domain.Unit;
 import lv.k2611a.domain.UnitType;
 import lv.k2611a.service.GameServiceImpl;
@@ -21,6 +22,19 @@ public class ReturnToBase implements UnitGoal {
 
     private Point targetRefinery;
     private long targetRefineryId;
+
+    public ReturnToBase() {
+    }
+
+    public ReturnToBase(Point targetRefinery, long targetRefineryId) {
+        this.targetRefinery = targetRefinery;
+        this.targetRefineryId = targetRefineryId;
+    }
+
+    public ReturnToBase(RefineryEntrance refineryEntrance) {
+        this.targetRefinery = refineryEntrance.getPoint();
+        this.targetRefineryId = refineryEntrance.getRefineryId();
+    }
 
     @Override
     public void process(Unit unit, Map map, GameServiceImpl gameService) {

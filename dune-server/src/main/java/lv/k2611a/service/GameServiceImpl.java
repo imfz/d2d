@@ -332,7 +332,7 @@ public class GameServiceImpl implements GameService {
         for (Building building : map.getBuildingsByType(BuildingType.REFINERY)) {
             Point point = building.getPoint();
             point = new Point(point.getX() + 1, point.getY() + 1);
-            RefineryEntrance refineryEntrance = new RefineryEntrance(building.getOwnerId(), point);
+            RefineryEntrance refineryEntrance = new RefineryEntrance(building.getOwnerId(), point, building.getId());
             map.getRefineryEntranceList().put(point,refineryEntrance);
         }
         for (Unit unit : map.getUnitsByType(UnitType.HARVESTER)) {
