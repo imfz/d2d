@@ -18,6 +18,7 @@ function GameEngine() {
     this.shownUnits = new Array();
     this.shownBuildings = new Array();
     this.selectedUnitId = new Array();
+    this.groups = new Array();
     console.log("Created game engine");
 }
 
@@ -70,6 +71,7 @@ GameEngine.prototype.bindEvents = function () {
             } else {
                 that.setCoordinates(that.x - 1, that.y);
             }
+            return false;
             break;
         case arrow.up:
             if (e.ctrlKey) {
@@ -77,6 +79,7 @@ GameEngine.prototype.bindEvents = function () {
             } else {
                 that.setCoordinates(that.x, that.y - 1);
             }
+            return false;
             break;
         case arrow.right:
             if (e.ctrlKey) {
@@ -84,6 +87,7 @@ GameEngine.prototype.bindEvents = function () {
             } else {
                 that.setCoordinates(that.x + 1, that.y);
             }
+            return false;
             break;
         case arrow.down:
             if (e.ctrlKey) {
@@ -91,6 +95,7 @@ GameEngine.prototype.bindEvents = function () {
             } else {
                 that.setCoordinates(that.x, that.y + 1);
             }
+            return false;
             break;
         case 27:
             // handle ESC button
@@ -99,14 +104,36 @@ GameEngine.prototype.bindEvents = function () {
                 return;
             }
             that.selectedUnitId = [];
+            return false;
             break;
         case 72:
             // handle H button
             that.centerOnMain();
+            return false;
+            break;
+        case 48:
+        case 49:
+        case 50:
+        case 51:
+        case 52:
+        case 53:
+        case 54:
+        case 55:
+        case 56:
+        case 57:
+            if (e.ctrlKey) {
+                that.saveCurrentSelection(keyCode);
+            } else {
+                that.restoreCurrentSelection(keyCode);
+            }
+            return false;
             break;
         }
 
+
     });
+
+
     $(this.canvas).mouseup(function (e) {
         switch (event.which) {
         case 1:
@@ -126,33 +153,15 @@ GameEngine.prototype.bindEvents = function () {
                 y2 = tmp;
             }
             if (!that.placementEnabled) {
-                that.selectedUnitId = [];
-                for (var i = 0; i < that.shownUnits.length; i++) {
-                    var showUnitInfo = that.shownUnits[i];
-                    if ((x2 > showUnitInfo.x) && (x < showUnitInfo.x + TILE_WIDTH)) {
-                        if ((y2 > showUnitInfo.y) && (y < showUnitInfo.y + TILE_HEIGHT)) {
-                            that.selectedUnitId.push(showUnitInfo.id);
-                        }
-                    }
-                }
-                // if no units selected, search for buildings
+                selectUnits(x2, x, y2, y, e.shiftKey);
                 if (that.selectedUnitId.length == 0) {
-                    for (var i = 0; i < that.shownBuildings.length; i++) {
-                        var shownBuildingInfo = that.shownBuildings[i];
-                        if ((x2 > shownBuildingInfo.x) && (x < shownBuildingInfo.width + shownBuildingInfo.x)) {
-                            if ((y2 > shownBuildingInfo.y) && (y < shownBuildingInfo.height + shownBuildingInfo.y)) {
-                                // ok text is blinking, go on with placement
-                                if (shownBuildingInfo.placementEnabled) {
-                                    that.placementEnabled = true;
-                                    that.builderId = shownBuildingInfo.id;
-                                    var buildingConfig = that.getBuildingPlacementConfig(shownBuildingInfo.buildingTypeBuilt);
-                                    that.placementWidth = buildingConfig.width;
-                                    that.placementHeight = buildingConfig.height;
-                                }
-                                that.selectedBuilding = shownBuildingInfo.id;
-                                connection.sendBuildingSelection(that.selectedBuilding);
-                            }
-                        }
+                    // if no units selected, search for buildings
+                    selectBuildings(x2, x, y2, y);
+                } else {
+                    // unselect building
+                    if (that.selectedBuilding != -1) {
+                        that.selectedBuilding = -1;
+                        connection.sendBuildingSelection(that.selectedBuilding);
                     }
                 }
             } else {
@@ -201,6 +210,68 @@ GameEngine.prototype.bindEvents = function () {
     $(this.canvas).bind("contextmenu", function (e) {
         return false;
     });
+
+    function selectUnits(x2, x, y2, y, shiftKey) {
+        if (!shiftKey) {
+            that.selectedUnitId = [];
+        }
+        for (var i = 0; i < that.shownUnits.length; i++) {
+            var showUnitInfo = that.shownUnits[i];
+            if ((x2 > showUnitInfo.x) && (x < showUnitInfo.x + TILE_WIDTH)) {
+                if ((y2 > showUnitInfo.y) && (y < showUnitInfo.y + TILE_HEIGHT)) {
+                    if (shiftKey) {
+                        var found = false;
+                        for (var j = 0; j < that.selectedUnitId.length; j++) {
+                            if (that.selectedUnitId == showUnitInfo.id) {
+                                found = true;
+                            }
+                        }
+                        if (!found) {
+                            that.selectedUnitId.push(showUnitInfo.id);
+                        }
+                    } else {
+                        that.selectedUnitId.push(showUnitInfo.id);
+                    }
+                }
+            }
+        }
+    }
+
+    function selectBuildings(x2, x, y2, y) {
+        for (var i = 0; i < that.shownBuildings.length; i++) {
+            var shownBuildingInfo = that.shownBuildings[i];
+            if ((x2 > shownBuildingInfo.x) && (x < shownBuildingInfo.width + shownBuildingInfo.x)) {
+                if ((y2 > shownBuildingInfo.y) && (y < shownBuildingInfo.height + shownBuildingInfo.y)) {
+                    // ok text is blinking, go on with placement
+                    if (shownBuildingInfo.placementEnabled) {
+                        that.placementEnabled = true;
+                        that.builderId = shownBuildingInfo.id;
+                        var buildingConfig = that.getBuildingPlacementConfig(shownBuildingInfo.buildingTypeBuilt);
+                        that.placementWidth = buildingConfig.width;
+                        that.placementHeight = buildingConfig.height;
+                    }
+                    that.selectedBuilding = shownBuildingInfo.id;
+                    connection.sendBuildingSelection(that.selectedBuilding);
+                }
+            }
+        }
+    }
+};
+
+GameEngine.prototype.saveCurrentSelection = function (keyCode) {
+    this.groups[keyCode] = [this.selectedUnitId, this.selectedBuilding];
+};
+
+GameEngine.prototype.restoreCurrentSelection = function (keyCode) {
+    var selectedBuildingWas = this.selectedBuilding;
+    var group = this.groups[keyCode];
+    if (group) {
+        this.selectedUnitId = group[0];
+        this.selectedBuilding = group[1];
+        if (selectedBuildingWas != this.selectedBuilding) {
+            connection.sendBuildingSelection(this.selectedBuilding);
+        }
+    }
 };
 
 GameEngine.prototype.centerOnMain = function () {

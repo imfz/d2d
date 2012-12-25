@@ -14,6 +14,11 @@ public class SelectBuilding implements Request {
 
     @Override
     public void process() {
+        if (selectedId == -1) {
+            // unselect building
+            ClientConnection.getCurrentConnection().setSelectedBuildingId(null);
+            return;
+        }
         if (!gameService.isOwner(selectedId, ClientConnection.getCurrentConnection().getPlayerId())) {
             // cannot select enemy building
             return;
