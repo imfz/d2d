@@ -322,10 +322,23 @@ GameEngine.prototype.render = function () {
     this.renderRectangle();
 
     var that = this;
-    setTimeout(function () {
+
+    requestAnimFrame(function () {
         that.render()
-    }, 1000 / TARGET_FPS);
+    });
+
 };
+
+requestAnimFrame = (function() {
+    return window.requestAnimationFrame ||
+            window.webkitRequestAnimationFrame ||
+            window.mozRequestAnimationFrame ||
+            window.oRequestAnimationFrame ||
+            window.msRequestAnimationFrame ||
+            function(/* function FrameRequestCallback */ callback, /* DOMElement Element */ element) {
+                window.setTimeout(callback, 1000/60);
+            };
+})();
 
 GameEngine.prototype.renderTiles = function (units, buildings) {
     var context = this.canvas.getContext("2d");
