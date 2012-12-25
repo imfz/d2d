@@ -172,14 +172,16 @@ RightMenu.prototype.redraw = function () {
         for (var i = 0; i < this.options.length; i++) {
             var option = this.options[i];
             var canvas = $('<canvas height="' + BUY_OPTION_HEIGHT + '" width=" ' + BUY_OPTION_WIDTH + ' ">');
+            var descr = $('<canvas height="' + 15 + '" width=" ' + BUY_OPTION_WIDTH + ' ">');
             $("#rightmenulistul").
                     append(
                     $('<li class="span2"></li>')
-                            .css({ height:BUY_OPTION_HEIGHT - 5 })
+                            .css({ height:BUY_OPTION_HEIGHT + 20 })
                             .css({ width:BUY_OPTION_WIDTH + 10 })
                             .append(
                             $('<a href="#" class="thumbnail"></a>')
                                     .append(canvas)
+                                    .append(descr)
                     )
             );
 
@@ -189,6 +191,12 @@ RightMenu.prototype.redraw = function () {
 
             var buyOptionConfig = this.getBuyOptionConfig(option.type);
             context.drawImage(this.mainSprite, buyOptionConfig.x, buyOptionConfig.y, BUY_OPTION_WIDTH, BUY_OPTION_HEIGHT, 0, 0, BUY_OPTION_WIDTH, BUY_OPTION_HEIGHT);
+
+            context = descr[0].getContext("2d");
+            context.font = '15px Arial Bold';
+            context.fillStyle = 'green';
+            context.fillText(option.name, 5, 15);
+            context.fillText(option.cost, 140, 15);
 
             canvas.click(sendStartConnectionClosure(this.builderId, option.entityToBuildId));
         }
