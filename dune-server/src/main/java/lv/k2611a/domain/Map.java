@@ -18,7 +18,7 @@ public class Map {
     private List<Building> buildings;
 
     public Map(int width, int height) {
-        this(width,height,TileType.SAND);
+        this(width, height, TileType.SAND);
     }
 
 
@@ -173,6 +173,29 @@ public class Map {
         return false;
     }
 
+    public boolean hasBuildingInSquare(int x, int y, int radius) {
+        for (int currentX = x - radius; currentX < x + radius; currentX++) {
+            for (int currentY = y - radius; currentY < y + radius; currentY++) {
+                if (currentX > 0) {
+                    if (currentY > 0) {
+                        if (currentX < width) {
+                            if (currentY < height) {
+                                for (Building building : buildings) {
+                                    if (building.getX() == currentX) {
+                                        if (building.getY() == currentY) {
+                                            return true;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     public static double getDistanceBetween(Node node1, Node node2) {
         //if the nodes are on top or next to each other, return 1
         if (node1.getX() == node2.getX()) {
@@ -203,14 +226,14 @@ public class Map {
     }
 
     public boolean isObstacle(int x, int y, long unitId) {
-        return !getTile(x,y).isPassable(unitId);
+        return !getTile(x, y).isPassable(unitId);
     }
 
     public void setUsed(int x, int y, long unitId) {
-        if (isObstacle(x,y,unitId)) {
+        if (isObstacle(x, y, unitId)) {
             return;
         }
-        getTile(x,y).setUsed(unitId);
+        getTile(x, y).setUsed(unitId);
     }
 
     public void clearUsageFlag() {

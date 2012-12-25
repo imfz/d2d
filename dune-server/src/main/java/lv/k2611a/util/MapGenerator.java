@@ -7,28 +7,30 @@ import java.util.Random;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import lv.k2611a.domain.Building;
+import lv.k2611a.domain.BuildingType;
 import lv.k2611a.domain.Map;
 import lv.k2611a.domain.Tile;
 import lv.k2611a.domain.TileType;
+import lv.k2611a.service.IdGeneratorService;
 
 public class MapGenerator {
 
     private static final Logger log = LoggerFactory.getLogger(MapGenerator.class);
-    private static final int BASE_RADIUS = 13;
-    private static final int BASE_COUNT = 6;
-    private static final int SPICE_RADIUS = 8;
-    private static final int SPICE_COUNT = 17;
+    private static final int BASE_RADIUS = 6;
+    private static final int SPICE_RADIUS = 5;
+    private static final int SPICE_COUNT = 7;
 
     private MapGenerator() {
 
     }
 
-    public static Map generateMap(int width, int height) {
+    public static Map generateMap(int width, int height, int baseCount, IdGeneratorService idGeneratorService) {
         log.info("Generating map");
         Map map = new Map(width, height);
         Random random = new Random();
         log.info("Placing bases");
-        for (int i = 0; i < BASE_COUNT; i++) {
+        for (int i = 0; i < baseCount; i++) {
             int x;
             int y;
             int iterationCount = 0;
@@ -36,16 +38,26 @@ public class MapGenerator {
                 x = random.nextInt(map.getWidth() - BASE_RADIUS * 2) + BASE_RADIUS;
                 y = random.nextInt(map.getHeight() - BASE_RADIUS * 2) + BASE_RADIUS;
                 iterationCount++;
-            } while (map.hasTileInSquare(x, y, BASE_RADIUS + 1, EnumSet.noneOf(TileType.class)) && iterationCount < 1000);
+            } while (
+                    map.hasTileInSquare(x, y, BASE_RADIUS + 1, EnumSet.noneOf(TileType.class))
+                    || map.hasBuildingInSquare(x, y, BASE_RADIUS + 1)
+                    && iterationCount < 1000);
             if (iterationCount > 100) {
                 log.warn("Could not find a spot for base in 1000 iterations");
             }
             placeTiles(map, x, y, TileType.ROCK, BASE_RADIUS, random);
+            placeConYard(map, x,y,i, idGeneratorService.generateBuildingId());
         }
 
-        fixSandyTiles(map);
 
         log.info("Bases placed");
+
+
+
+        // fix for missing graphics. Sandy tile cannot be surrounded by rocks, etc.
+        fixSandyTiles(map);
+
+        log.info("Sandy tiles fixed");
 
         log.info("Placing spice");
 
@@ -72,6 +84,16 @@ public class MapGenerator {
         log.info("Map generated");
 
         return map;
+    }
+
+    private static void placeConYard(Map map, int x, int y, int playerId, int id) {
+        Building building = new Building();
+        building.setOwnerId(playerId);
+        building.setType(BuildingType.CONSTRUCTIONYARD);
+        building.setX(x);
+        building.setY(y);
+        building.setId(id);
+        map.getBuildings().add(building);
     }
 
     private static void fixSandyTiles(Map map) {

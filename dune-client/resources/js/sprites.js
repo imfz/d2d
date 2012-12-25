@@ -316,7 +316,32 @@ Sprites.prototype.getPlayerColor = function (playerId) {
     if (playerId == 3) {
         result.r = 0;
         result.g = 0;
+        result.b = 234;
+    }
+    if (playerId == 4) {
+        result.r = 214;
+        result.g = 0;
         result.b = 214;
+    }
+    if (playerId == 5) {
+        result.r = 0;
+        result.g = 214;
+        result.b = 214;
+    }
+    if (playerId == 6) {
+        result.r = 214;
+        result.g = 214;
+        result.b = 0;
+    }
+    if (playerId == 7) {
+        result.r = 214;
+        result.g = 214;
+        result.b = 214;
+    }
+    if (playerId == 8) {
+        result.r = 0;
+        result.g = 0;
+        result.b = 0;
     }
     return result;
 };

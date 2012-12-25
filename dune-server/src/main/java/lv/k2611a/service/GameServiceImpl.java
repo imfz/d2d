@@ -62,44 +62,25 @@ public class GameServiceImpl implements GameService {
     @Autowired
     private ServerMonitor serverMonitor;
 
-    private volatile Map map = MapGenerator.generateMap(128, 128);
+    private volatile Map map;
     private volatile long tickCount = 0;
 
     @PostConstruct
     public void init() {
-
-        Building building = new Building();
-        building.setId(idGeneratorService.generateBuildingId());
-        building.setOwnerId(1);
-        building.setX(1);
-        building.setY(110);
-        building.setType(BuildingType.POWERPLANT);
-        building.setOwnerId(1);
-        map.getBuildings().add(building);
-
-        building = new Building();
-        building.setId(idGeneratorService.generateBuildingId());
-        building.setOwnerId(1);
-        building.setX(1);
-        building.setY(120);
-        building.setType(BuildingType.CONSTRUCTIONYARD);
-        building.setOwnerId(1);
-        map.getBuildings().add(building);
-
+        map = MapGenerator.generateMap(64, 64, 8, idGeneratorService);
         Random r = new Random();
         for (int j = 1; j < 10; j++) {
-            for (int i = 0; i < 100; i++) {
+            for (int i = 0; i < 10; i++) {
                 Unit unit = new Unit();
                 unit.setId(idGeneratorService.generateUnitId());
                 unit.setOwnerId(1);
                 unit.setX(j);
                 unit.setY(i);
-                unit.setGoal(new Move(100 + j, i));
+                unit.setGoal(new Move(10 + j, i));
                 unit.setUnitType(UnitType.values()[r.nextInt(UnitType.values().length)]);
                 map.getUnits().add(unit);
             }
         }
-
     }
 
     public Map getMap() {

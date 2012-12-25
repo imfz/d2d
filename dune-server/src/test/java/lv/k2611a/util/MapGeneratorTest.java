@@ -7,6 +7,7 @@ import org.junit.Test;
 import lv.k2611a.domain.Map;
 import lv.k2611a.domain.Tile;
 import lv.k2611a.domain.TileType;
+import lv.k2611a.service.IdGeneratorServiceImpl;
 
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
@@ -14,7 +15,7 @@ import static junit.framework.Assert.assertTrue;
 public class MapGeneratorTest {
     @Test
     public void testGenerateMap() throws Exception {
-        Map map = MapGenerator.generateMap(256,256);
+        Map map = MapGenerator.generateMap(256,256, 8, new IdGeneratorServiceImpl());
 
         EnumSet<TileType> tileTypesFound = EnumSet.noneOf(TileType.class);
 

@@ -207,8 +207,10 @@ GameEngine.prototype.centerOnMain = function () {
     for (var i = 0; i < this.map.buildings.length; i++) {
         var building = this.map.buildings[i];
         if (building.type == BUILDING_TYPE_CONSTRUCTION_YARD) {
-            this.centerOnCoordinates(building.x, building.y);
-            return;
+            if (building.ownerId == connection._playerId) {
+                this.centerOnCoordinates(building.x, building.y);
+                return;
+            }
         }
     }
 };
@@ -329,14 +331,14 @@ GameEngine.prototype.render = function () {
 
 };
 
-requestAnimFrame = (function() {
+requestAnimFrame = (function () {
     return window.requestAnimationFrame ||
             window.webkitRequestAnimationFrame ||
             window.mozRequestAnimationFrame ||
             window.oRequestAnimationFrame ||
             window.msRequestAnimationFrame ||
-            function(/* function FrameRequestCallback */ callback, /* DOMElement Element */ element) {
-                window.setTimeout(callback, 1000/60);
+            function (/* function FrameRequestCallback */ callback, /* DOMElement Element */ element) {
+                window.setTimeout(callback, 1000 / 60);
             };
 })();
 

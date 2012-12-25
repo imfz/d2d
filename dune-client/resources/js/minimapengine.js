@@ -112,8 +112,10 @@ MinimapGameEngine.prototype.render = function () {
             var unit = map.units[i];
             var x = Math.round(unit.x / map.getWidth() * canvas.width);
             var y = Math.round(unit.y / map.getHeight() * canvas.height);
+            var x2 = Math.round((unit.x + 1) / map.getWidth() * canvas.width);
+            var y2 = Math.round((unit.y + 1) / map.getHeight() * canvas.height);
             var color = sprites.getPlayerColor(unit.ownerId);
-            putpixel(imgd, x, y, color.r, color.g, color.b, 255, canvas.height, pix);
+            putPixels(x,y,x2,y2,color);
         }
     }
 
@@ -122,11 +124,17 @@ MinimapGameEngine.prototype.render = function () {
             var building = map.buildings[i];
             var x = Math.round(building.x / map.getWidth() * canvas.width);
             var y = Math.round(building.y / map.getHeight() * canvas.height);
-            for (var w = x; w < x + building.width; w++) {
-                for (var h = y; h < y + building.height; h++) {
-                    var color = sprites.getPlayerColor(building.ownerId);
-                    putpixel(imgd, w, h, color.r, color.g, color.b, 255, canvas.height, pix);
-                }
+            var x2 = Math.round((building.x + building.width) / map.getWidth() * canvas.width);
+            var y2 = Math.round((building.y + building.height)/ map.getHeight() * canvas.height);
+            var color = sprites.getPlayerColor(building.ownerId);
+            putPixels(x,y,x2,y2,color);
+        }
+    }
+
+    function putPixels(x, y, x2, y2, color) {
+        for (var w = x; w <= x2; w++) {
+            for (var h = y; h <= y2; h++) {
+                putpixel(imgd, w, h, color.r, color.g, color.b);
             }
         }
     }
