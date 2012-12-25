@@ -55,14 +55,17 @@ div#input {
 }
 
 input#phrase {
+    height:30px;
     width: 30em;
 }
 
 input#username {
+    height:30px;
     width: 14em;
 }
 
 input#playerId {
+    height:30px;
     width: 14em;
 }
 

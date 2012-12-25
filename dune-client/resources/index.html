@@ -29,6 +29,7 @@
         var handler;
         var rightmenu;
         var moneyTab;
+        var sprites;
 
         $(window).load(
                 function () {
@@ -36,6 +37,7 @@
 
                     console.log("Initialized");
                     gameLog = new GameLog();
+                    sprites = new Sprites();
                     engine = new GameEngine();
                     minimapEngine = new MinimapGameEngine();
                     map = new GameMap();
@@ -101,7 +103,16 @@
             <label class="control-label" for="username">Username:</label>
             <input id='username' class="input" type='text'/>
             <label class="control-label" for="playerId">PlayerId:</label>
-            <input id='playerId' class="input" type='text' value="1"/>
+            <select id='playerId' class="input" value="1">
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+                <option>6</option>
+                <option>7</option>
+                <option>8</option>
+            </select>
             <input id='joinB' class='button' type='submit' name='join' value='Join'/>
         </form>
 

@@ -1,5 +1,5 @@
 function Sprites() {
-
+    this.colorPlayerIdSelector();
 };
 
 Sprites.prototype.getTileConfig = function (targetTileX, targetTileY, map) {
@@ -210,6 +210,25 @@ Sprites.prototype.getTileConfig = function (targetTileX, targetTileY, map) {
     return result;
 };
 
+Sprites.prototype.colorPlayerIdSelector = function() {
+    var that = this;
+
+    var setOptionColors = function() {
+        var id = $(this).text();
+        var playerColor = that.getPlayerColor(id);
+        console.log("Reseting color for " + id)
+        $(this).css("color", colorToHex(playerColor.r, playerColor.g, playerColor.b));
+    };
+
+    $('#playerId > option').each(setOptionColors);
+
+};
+
+function colorToHex(red,green,blue) {
+    var rgb = blue | (green << 8) | (red << 16);
+    return '#' + rgb.toString(16);
+};
+
 Sprites.prototype.getBuildingConfig = function (building) {
     var x = 0;
     var y = 0;
@@ -346,4 +365,4 @@ Sprites.prototype.getPlayerColor = function (playerId) {
     return result;
 };
 
-var sprites = new Sprites();
+
