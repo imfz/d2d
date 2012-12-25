@@ -17,7 +17,7 @@ import lv.k2611a.util.Point;
 
 public class ReturnToBase implements UnitGoal {
 
-    public static final int TICKS_COLLECTING_UNLOADED_PER_TICK = 4;
+    public static int TICKS_COLLECTING_UNLOADED_PER_TICK = 4;
     public static final int MONEY_PER_TICK = 40;
 
     private Point targetRefinery;
@@ -52,17 +52,17 @@ public class ReturnToBase implements UnitGoal {
         }
         if (targetRefinery == null) {
             // no refinery found.
-            unit.removeGoal(this);
             return;
         }
-        if (map.getBuilding(targetRefineryId) == null) {
+        Building building = map.getBuilding(targetRefineryId);
+        if (building == null) {
             // refinery dissappeared
             targetRefinery = null;
             targetRefineryId = 0;
             return;
         }
 
-        if (map.getBuilding(targetRefineryId).getOwnerId() != unit.getOwnerId()) {
+        if (building.getOwnerId() != unit.getOwnerId()) {
             // refinery is no longer ours
             targetRefinery = null;
             targetRefineryId = 0;
@@ -72,31 +72,49 @@ public class ReturnToBase implements UnitGoal {
         if (unit.getPoint().equals(targetRefinery)) {
             unloadSpice(unit, map, gameService);
         } else {
-            moveToRefinery(unit);
+            moveToRefinery(map, unit);
         }
 
     }
 
-    private void moveToRefinery(Unit unit) {
-        unit.insertGoalBeforeCurrent(new Move(targetRefinery));
+    private void moveToRefinery(Map map, Unit unit) {
+        if (map.getTile(targetRefinery).isUsedByUnit()) {
+            // refinery already occupied, go search for another
+            targetRefinery = null;
+            targetRefineryId = 0;
+        } else {
+            unit.insertGoalBeforeCurrent(new Move(targetRefinery));
+        }
     }
 
     private void unloadSpice(Unit unit, Map map, GameServiceImpl gameService) {
         unit.setTicksCollectingSpice(unit.getTicksCollectingSpice() - TICKS_COLLECTING_UNLOADED_PER_TICK);
         Player player = map.getPlayerById(unit.getOwnerId());
         player.setMoney(player.getMoney() + MONEY_PER_TICK);
+        if (unit.getTicksCollectingSpice() <= 0) {
+            unit.setTicksCollectingSpice(0);
+            unit.removeGoal(this);
+            unit.setGoal(new Harvest());
+        }
     }
 
 
     private void searchBase(Unit unit, Map map) {
         Point unitCoordinates = unit.getPoint();
         List<Pair> targets = new ArrayList<Pair>();
-        for (Building building : map.getBuildingsByTypeAndOwner(BuildingType.REFINERY, unit.getOwnerId())) {
-            Point point = new Point(building.getX()+1, building.getY()+1);
-            double distanceBetween = Map.getDistanceBetween(point, unitCoordinates);
-            Pair pair = new Pair(point, distanceBetween, building.getId());
-            targets.add(pair);
+
+        for (java.util.Map.Entry<Point, RefineryEntrance> pointRefineryEntranceEntry : map.getRefineryEntranceList().entrySet()) {
+            RefineryEntrance refineryEntrance = pointRefineryEntranceEntry.getValue();
+            if (refineryEntrance.getOwnerId() == unit.getOwnerId()) {
+                Point point = refineryEntrance.getPoint();
+                if (!map.getTile(point).isUsedByUnit()) {
+                    double distanceBetween = Map.getDistanceBetween(point, unitCoordinates);
+                    Pair pair = new Pair(point, distanceBetween, refineryEntrance.getRefineryId());
+                    targets.add(pair);
+                }
+            }
         }
+
         Collections.sort(targets, new Comparator<Pair>() {
             @Override
             public int compare(Pair o1, Pair o2) {

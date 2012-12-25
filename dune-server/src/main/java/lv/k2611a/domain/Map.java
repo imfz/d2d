@@ -260,6 +260,9 @@ public class Map {
 
     private boolean harvesterCheck(Point point, long unitId, int ownerid, boolean isHarvester) {
         if (isHarvester) {
+            if (getTile(point).isUsedByUnit()) {
+                return false;
+            }
             if (this.harvesters.contains(unitId)) {
                 RefineryEntrance refineryEntrance = this.refineryEntranceList.get(point);
                 if (refineryEntrance != null) {
@@ -288,9 +291,6 @@ public class Map {
     }
 
     public void setUsed(int x, int y, long unitId) {
-        if (isObstacle(x, y, unitId, 0, false)) {
-            return;
-        }
         getTile(x, y).setUsed(unitId);
     }
 

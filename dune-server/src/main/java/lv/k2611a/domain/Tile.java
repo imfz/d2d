@@ -47,6 +47,10 @@ public class Tile {
         return myId == usedBy;
     }
 
+    public boolean isUsedByUnit() {
+        return usedBy > 0;
+    }
+
     public void setUsed(long used) {
         this.usedBy = used;
     }

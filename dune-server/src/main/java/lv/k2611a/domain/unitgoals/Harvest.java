@@ -16,7 +16,7 @@ import lv.k2611a.util.Point;
 
 public class Harvest implements UnitGoal {
 
-    public static final int TICKS_FOR_FULL = 200;
+    public static int TICKS_FOR_FULL = 200;
 
     private Point targetSpice;
 
@@ -91,14 +91,16 @@ public class Harvest implements UnitGoal {
         }
         List<Pair> targets = new ArrayList<Pair>();
         for (Tile tile : map.getTilesByType(TileType.SPICE)) {
-            double distanceBetween = Map.getDistanceBetween(tile.getPoint(), unitCoordinates);
-            Pair pair = new Pair(tile.getPoint(), distanceBetween);
-            targets.add(pair);
+            if (!tile.isUsedByUnit()) {
+                double distanceBetween = Map.getDistanceBetween(tile.getPoint(), unitCoordinates);
+                Pair pair = new Pair(tile.getPoint(), distanceBetween);
+                targets.add(pair);
+            }
         }
         Collections.sort(targets, new Comparator<Pair>() {
             @Override
             public int compare(Pair o1, Pair o2) {
-                return Double.compare(o1.getDistance(),o2.getDistance());
+                return Double.compare(o1.getDistance(), o2.getDistance());
             }
         });
         if (targets.isEmpty()) {
