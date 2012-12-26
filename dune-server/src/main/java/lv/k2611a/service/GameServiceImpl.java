@@ -21,6 +21,7 @@ import lv.k2611a.ClientConnection;
 import lv.k2611a.domain.Building;
 import lv.k2611a.domain.BuildingType;
 import lv.k2611a.domain.ConstructionOption;
+import lv.k2611a.domain.EntityType;
 import lv.k2611a.domain.Map;
 import lv.k2611a.domain.Player;
 import lv.k2611a.domain.RefineryEntrance;
@@ -28,6 +29,7 @@ import lv.k2611a.domain.Tile;
 import lv.k2611a.domain.Unit;
 import lv.k2611a.domain.UnitType;
 import lv.k2611a.domain.buildinggoals.CreateBuilding;
+import lv.k2611a.domain.buildinggoals.CreateUnit;
 import lv.k2611a.domain.unitgoals.Move;
 import lv.k2611a.jmx.ServerMonitor;
 import lv.k2611a.network.BuildingDTO;
@@ -265,6 +267,16 @@ public class GameServiceImpl implements GameService {
                             int percentsDone = (int) Math.round(done * 100);
                             updateConstructionOptions.setPercentsDone(percentsDone);
                         }
+                    }if (building.getCurrentGoal() instanceof CreateUnit) {
+                        CreateUnit createUnit = (CreateUnit) building.getCurrentGoal();
+                        UnitType unitType = createUnit.getUnitType();
+                        if (unitType != null) {
+                            updateConstructionOptions.setCurrentlyBuildingId(unitType.getIdOnJS());
+                            updateConstructionOptions.setCurrentlyBuildingOptionId(getConstructionOption(building.getType().getConstructionOptions(), unitType));
+                            double done = (double) building.getTicksAccumulated() / unitType.getTicksToBuild();
+                            int percentsDone = (int) Math.round(done * 100);
+                            updateConstructionOptions.setPercentsDone(percentsDone);
+                        }
                     }
                 }
                 updateConstructionOptions.setOptions(options.toArray(new OptionDTO[options.size()]));
@@ -293,7 +305,7 @@ public class GameServiceImpl implements GameService {
         return filtered;
     }
 
-    private int getConstructionOption(EnumSet<ConstructionOption> constructionOptions, BuildingType buildingTypeBuilt) {
+    private int getConstructionOption(EnumSet<ConstructionOption> constructionOptions, EntityType buildingTypeBuilt) {
         for (ConstructionOption constructionOption : constructionOptions) {
             if (constructionOption.getEntityToBuildIdOnJs() == buildingTypeBuilt.getIdOnJS()) {
                 return constructionOption.getIdOnJS();
