@@ -26,6 +26,7 @@ Chat.prototype.init = function () {
             return false;
         }
         connection.start(name, $('#playerId').val());
+        return false;
     });
 
     $('#phrase')
