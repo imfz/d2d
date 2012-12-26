@@ -11,7 +11,7 @@ import lv.k2611a.domain.TileType;
 import lv.k2611a.domain.Unit;
 import lv.k2611a.domain.UnitType;
 import lv.k2611a.domain.unitgoals.Harvest;
-import lv.k2611a.domain.unitgoals.Move;
+import lv.k2611a.domain.unitgoals.RepetetiveMove;
 import lv.k2611a.domain.unitgoals.ReturnToBase;
 import lv.k2611a.util.Point;
 
@@ -69,7 +69,7 @@ public class UnitAction extends AbstractGameStateChanger {
         if (unit.getUnitType() == UnitType.HARVESTER) {
             processHarvester(map, tile, unit);
         } else {
-            unit.setGoal(new Move(x, y));
+            unit.setGoal(new RepetetiveMove(x, y));
         }
     }
 
@@ -83,10 +83,10 @@ public class UnitAction extends AbstractGameStateChanger {
                 if (refineryEntrance.getOwnerId() == unit.getOwnerId()) {
                     unit.setGoal(new ReturnToBase(refineryEntrance));
                 } else {
-                    unit.setGoal(new Move(x, y));
+                    unit.setGoal(new RepetetiveMove(x, y));
                 }
             } else {
-                unit.setGoal(new Move(x, y));
+                unit.setGoal(new RepetetiveMove(x, y));
             }
         }
     }

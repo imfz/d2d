@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Random;
 
 import lv.k2611a.domain.Map;
 import lv.k2611a.domain.Tile;
@@ -21,6 +22,7 @@ public class Harvest implements UnitGoal {
     private Point targetSpice;
     private int collectingSpice;
     private int wasCollectingSpice;
+    private int ticksToWait;
 
     public Harvest() {
     }
@@ -31,6 +33,10 @@ public class Harvest implements UnitGoal {
 
     @Override
     public void process(Unit unit, Map map, GameServiceImpl gameService) {
+        if (ticksToWait > 0) {
+            ticksToWait--;
+            return;
+        }
         wasCollectingSpice = collectingSpice;
         collectingSpice = 0;
         if (unit.getUnitType() != UnitType.HARVESTER) {
@@ -60,12 +66,14 @@ public class Harvest implements UnitGoal {
         // spice already harvested
         if (map.getTile(targetSpice).getTileType() != TileType.SPICE) {
             targetSpice = null;
+            ticksToWait = new Random().nextInt(10);
             return;
         }
         // spice already being harvested
         if (map.getTile(targetSpice).isUsedByUnit()) {
             if (map.getTile(targetSpice).getUsedBy() != unit.getId()) {
                 targetSpice = null;
+                ticksToWait = new Random().nextInt(10);
                 return;
             }
         }

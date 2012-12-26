@@ -61,6 +61,7 @@ public class ReturnToBase implements UnitGoal {
         }
         if (targetRefinery == null) {
             // no refinery found.
+            ticksToWait = new Random().nextInt(10);
             return;
         }
         Building building = map.getBuilding(targetRefineryId);
@@ -68,6 +69,7 @@ public class ReturnToBase implements UnitGoal {
             // refinery dissappeared
             targetRefinery = null;
             targetRefineryId = 0;
+            ticksToWait = new Random().nextInt(10);
             return;
         }
 
@@ -75,6 +77,7 @@ public class ReturnToBase implements UnitGoal {
             // refinery is no longer ours
             targetRefinery = null;
             targetRefineryId = 0;
+            ticksToWait = new Random().nextInt(10);
             return;
         }
 
