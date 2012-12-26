@@ -6,18 +6,18 @@ import java.util.Set;
 
 public enum BuildingType implements EntityType {
 
-    SILO(1,2,2,50,50, 10),
-    POWERPLANT(2,2,2,50,100, 10),
-    AIRBASE(9,2,2,50,100, 10),
-    WALL(14,1,1,50,100, 10),
-    REPAIRSHOP(3,3,2,50,100, 10),
-    TURRET(10,1,1,50,100, 10),
-    ROCKET_TURRET(13,1,1,50,100, 10),
-    RADAR(5,2,2,50,100, 10),
-    CONCRETE(11,2,2,50,100, 10),
-    REFINERY(12,3,2,50,30, 10),
-    FACTORY(8,3,2,50,100, 10),
-    CONSTRUCTIONYARD(7,2,2,50,150, 10) {
+    SILO(1,2,2,50,50, 10, -5),
+    POWERPLANT(2,2,2,50,100, 10, +100),
+    AIRBASE(9,2,2,50,100, 10, -20),
+    WALL(14,1,1,50,100, 10, 0),
+    REPAIRSHOP(3,3,2,50,100, 10, -15),
+    TURRET(10,1,1,50,100, 10, -5),
+    ROCKET_TURRET(13,1,1,50,100, 10, -20),
+    RADAR(5,2,2,50,100, 10, -15),
+    CONCRETE(11,2,2,50,100, 10, 0),
+    REFINERY(12,3,2,50,30, 10, -25),
+    FACTORY(8,3,2,50,100, 10, -25),
+    CONSTRUCTIONYARD(7,2,2,50,150, 10, 0) {
         @Override
         public EnumSet<ConstructionOption> getConstructionOptions() {
             EnumSet<ConstructionOption> constructionOptions = EnumSet.of(
@@ -44,14 +44,16 @@ public enum BuildingType implements EntityType {
     private final int hp;
     private final int ticksToBuild;
     private int costPerTick;
+    private final int electricityDelta;
 
-    private BuildingType(int idOnJS, int width, int height, int hp, int ticksToBuild, int costPerTick) {
+    private BuildingType(int idOnJS, int width, int height, int hp, int ticksToBuild, int costPerTick, int electricityDelta) {
         this.idOnJS = idOnJS;
         this.width = width;
         this.height = height;
         this.hp = hp;
         this.ticksToBuild = ticksToBuild;
         this.costPerTick = costPerTick;
+        this.electricityDelta = electricityDelta;
     }
 
     @Override
@@ -70,6 +72,10 @@ public enum BuildingType implements EntityType {
 
     public int getHeight() {
         return height;
+    }
+
+    public int getElectricityDelta() {
+        return electricityDelta;
     }
 
     public int getHp() {

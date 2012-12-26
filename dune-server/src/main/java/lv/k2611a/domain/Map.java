@@ -130,6 +130,17 @@ public class Map {
         return result;
     }
 
+
+    public List<Building> getBuildingsByOwner(int ownerId) {
+        List<Building> result = new ArrayList<Building>();
+        for (Building building : buildings) {
+            if (building.getOwnerId() == ownerId) {
+                result.add(building);
+            }
+        }
+        return result;
+    }
+
     public List<Tile> getTileNeighbours(int x, int y) {
         List<Tile> tileList = new ArrayList<Tile>();
         if (x > 0) {
@@ -367,6 +378,10 @@ public class Map {
 
     public Player getPlayerById(int id) {
         return this.players[id];
+    }
+
+    public Player[] getPlayers() {
+        return players;
     }
 
     public Tile getNearestFreeTile(int x, int y) {

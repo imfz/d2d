@@ -162,6 +162,7 @@ public class GameServiceImpl implements GameService {
         changedTiles = new HashSet<Point>();
 
         mapFillTileUsage(map);
+        updatePlayerElectricity();
         processUserClicks(map);
         processBuildingGoals(map);
         processUnitsGoals(map);
@@ -180,14 +181,29 @@ public class GameServiceImpl implements GameService {
 
     }
 
+    private void updatePlayerElectricity() {
+        for (int playerId = 0; playerId < this.map.getPlayers().length; playerId++) {
+            this.map.getPlayers()[playerId].setElectricity(getPlayerEletricity(map,playerId));
+        }
+    }
+
     private void sendUpdateMoney() {
         for (ClientConnection clientConnection : sessionsService.getMembers()) {
             int playerId = clientConnection.getPlayerId();
             Player player = map.getPlayerById(playerId);
             UpdateMoney updateMoney = new UpdateMoney();
             updateMoney.setMoney(player.getMoney());
+            updateMoney.setElectricity(player.getElectricity());
             clientConnection.sendMessage(updateMoney);
         }
+    }
+
+    private long getPlayerEletricity(Map map, int playerId) {
+        long delta = 0;
+        for (Building building : map.getBuildingsByOwner(playerId)) {
+            delta += building.getType().getElectricityDelta();
+        }
+        return delta;
     }
 
     private void sendAvalaibleConstructionOptionsUpdate() {

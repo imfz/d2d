@@ -135,7 +135,7 @@ Handler.prototype.handleLeft = function(data) {
 };
 
 Handler.prototype.handleUpdateMoney = function(data) {
-    this.moneyTab.setMoney(data.money);
+    this.moneyTab.setMoney(data.money, data.electricity);
 };
 
 Handler.prototype.handleUpdateConstructionOptions = function(data) {
