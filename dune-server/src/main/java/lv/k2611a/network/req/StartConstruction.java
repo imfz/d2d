@@ -3,7 +3,9 @@ package lv.k2611a.network.req;
 import lv.k2611a.domain.Building;
 import lv.k2611a.domain.BuildingType;
 import lv.k2611a.domain.Map;
+import lv.k2611a.domain.UnitType;
 import lv.k2611a.domain.buildinggoals.CreateBuilding;
+import lv.k2611a.domain.buildinggoals.CreateUnit;
 
 public class StartConstruction extends AbstractGameStateChanger {
     private int builderId;
@@ -18,12 +20,18 @@ public class StartConstruction extends AbstractGameStateChanger {
         if (building.getOwnerId() != this.playerId) {
             return;
         }
-        if (!(building.getType() == BuildingType.CONSTRUCTIONYARD)) {
-            return;
+        if (building.getType() == BuildingType.CONSTRUCTIONYARD) {
+            CreateBuilding createBuilding = new CreateBuilding();
+            createBuilding.setBuildingType(BuildingType.getByJsId(entityToBuildId));
+            building.addGoal(createBuilding);
         }
-        CreateBuilding createBuilding = new CreateBuilding();
-        createBuilding.setBuildingType(BuildingType.getByJsId(entityToBuildId));
-        building.addGoal(createBuilding);
+
+        if (building.getType() == BuildingType.FACTORY) {
+            CreateUnit createUnit = new CreateUnit();
+            createUnit.setUnitType(UnitType.getByJsId(entityToBuildId));
+            building.addGoal(createUnit);
+        }
+
     }
 
     public int getBuilderId() {

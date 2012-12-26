@@ -306,7 +306,7 @@ public class GameServiceImpl implements GameService {
         for (Building building : map.getBuildings()) {
             try {
                 if (building.getCurrentGoal() != null) {
-                    building.getCurrentGoal().process(building, map);
+                    building.getCurrentGoal().process(building, map, idGeneratorService);
                 }
             } catch (RuntimeException e) {
                 log.error("Exception while proccessing building goal", e);

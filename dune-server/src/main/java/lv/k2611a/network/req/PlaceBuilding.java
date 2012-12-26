@@ -31,6 +31,9 @@ public class PlaceBuilding extends AbstractGameStateChanger {
     @Override
     public void changeGameState(Map map) {
         Building conYard = map.getBuilding(builderId);
+        if (conYard == null) {
+            return;
+        }
         if (conYard.getType() != BuildingType.CONSTRUCTIONYARD) {
             return;
         }

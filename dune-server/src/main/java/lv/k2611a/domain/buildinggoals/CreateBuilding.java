@@ -4,6 +4,7 @@ import lv.k2611a.domain.Building;
 import lv.k2611a.domain.BuildingType;
 import lv.k2611a.domain.Map;
 import lv.k2611a.domain.Player;
+import lv.k2611a.service.IdGeneratorService;
 
 public class CreateBuilding implements BuildingGoal {
 
@@ -18,7 +19,7 @@ public class CreateBuilding implements BuildingGoal {
     }
 
     @Override
-    public void process(Building building, Map map) {
+    public void process(Building building, Map map, IdGeneratorService idGeneratorService) {
         Player player = map.getPlayerById(building.getOwnerId());
         if (player.getMoney() >= buildingType.getCostPerTick()) {
             player.setMoney(player.getMoney() - buildingType.getCostPerTick());

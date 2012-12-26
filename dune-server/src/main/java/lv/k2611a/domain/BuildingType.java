@@ -16,14 +16,23 @@ public enum BuildingType implements EntityType {
     RADAR(5,2,2,50,100, 10, -15, new BuildingType[]{BuildingType.POWERPLANT}),
     CONCRETE(11,2,2,50,100, 10, 0, new BuildingType[]{BuildingType.POWERPLANT}),
     REFINERY(12,3,2,50,30, 10, -25, new BuildingType[]{BuildingType.POWERPLANT}),
-    FACTORY(8,3,2,50,100, 10, -25, new BuildingType[]{BuildingType.POWERPLANT}),
+    FACTORY(8,3,2,50,100, 10, -25, new BuildingType[]{BuildingType.POWERPLANT}) {
+        @Override
+        public EnumSet<ConstructionOption> getConstructionOptions() {
+            EnumSet<ConstructionOption> constructionOptions = EnumSet.of(
+                    ConstructionOption.TANK
+            );
+            return constructionOptions;
+        }
+    },
     CONSTRUCTIONYARD(7,2,2,50,150, 10, 0, null) {
         @Override
         public EnumSet<ConstructionOption> getConstructionOptions() {
             EnumSet<ConstructionOption> constructionOptions = EnumSet.of(
                     ConstructionOption.REFINERY,
                     ConstructionOption.POWERPLANT,
-                    ConstructionOption.SILO
+                    ConstructionOption.SILO,
+                    ConstructionOption.FACTORY
             );
             return constructionOptions;
         }
