@@ -160,6 +160,37 @@ public class Map {
         return tileList;
     }
 
+
+    public List<Node> getTileNeighbourNodes(int x, int y) {
+        List<Node> nodeList = new ArrayList<Node>();
+        if (x > 0) {
+            nodeList.add(new Node(x - 1, y));
+        }
+        if (y > 0) {
+            nodeList.add(new Node(x, y - 1));
+        }
+        if ((x > 0) && (y > 0)) {
+            nodeList.add(new Node(x - 1, y - 1));
+        }
+        if (x < width - 1) {
+            nodeList.add(new Node(x + 1, y));
+        }
+        if (y < height - 1) {
+            nodeList.add(new Node(x, y + 1));
+        }
+        if ((x < width - 1) && (y < height - 1)) {
+            nodeList.add(new Node(x + 1, y + 1));
+        }
+
+        if ((x > 0) && (y < height - 1)) {
+            nodeList.add(new Node(x - 1, y + 1));
+        }
+        if ((x < width - 1) && (y > 0)) {
+            nodeList.add(new Node(x + 1, y - 1));
+        }
+        return nodeList;
+    }
+
     public List<Tile> getTileDirectNeighbours(int x, int y) {
         List<Tile> tileList = new ArrayList<Tile>();
         if (x > 0) {
@@ -242,6 +273,19 @@ public class Map {
     }
 
     public static double getDistanceBetween(Point node1, Point node2) {
+        //if the nodes are on top or next to each other, return 1
+        if (node1.getX() == node2.getX()) {
+            return Math.abs(node1.getY() - node2.getY());
+        }
+        if (node1.getY() == node2.getY()) {
+            return Math.abs(node1.getX() - node2.getX());
+        }
+        int deltaX = Math.abs(node1.getX() - node2.getX());
+        int deltaY = Math.abs(node1.getY() - node2.getY());
+        return Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+    }
+
+    public static double getDistanceBetween(Node node1, Node node2) {
         //if the nodes are on top or next to each other, return 1
         if (node1.getX() == node2.getX()) {
             return Math.abs(node1.getY() - node2.getY());
