@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import lv.k2611a.domain.Building;
 import lv.k2611a.domain.BuildingType;
 import lv.k2611a.domain.Map;
+import lv.k2611a.domain.Tile;
 import lv.k2611a.domain.TileType;
 import lv.k2611a.domain.Unit;
 import lv.k2611a.domain.UnitType;
@@ -62,11 +63,36 @@ public class PlaceBuilding extends AbstractGameStateChanger {
         conYard.setBuildingTypeBuilt(null);
 
         if (buildingTypeBuilt == BuildingType.REFINERY) {
+
+            int newX = x+1;
+            int newY = y+1;
+
+            boolean entranceBlocked = false;
+
+            if (y + 2 >= map.getHeight()) {
+                entranceBlocked = true;
+            } else {
+                if ((map.isObstacle(x, y + 2)) && (map.isObstacle(x + 1, y + 2)) && (map.isObstacle(x + 2, y + 2))) {
+                    entranceBlocked = true;
+                }
+            }
+
+            if (entranceBlocked) {
+                Tile freeTile = map.getNearestFreeTile(x + 1, y + 1);
+                if (freeTile == null) {
+                    log.warn("Cannot place harvester, all tiles occupied");
+                    return;
+                }
+                newX = freeTile.getX();
+                newY = freeTile.getY();
+            }
+
+
             Unit unit = new Unit();
             unit.setId(idGeneratorService.generateUnitId());
             unit.setOwnerId(conYard.getOwnerId());
-            unit.setX(x + 1);
-            unit.setY(y + 1);
+            unit.setX(newX);
+            unit.setY(newY);
             unit.setUnitType(UnitType.HARVESTER);
             unit.setViewDirection(ViewDirection.BOTTOM);
             unit.setGoal(new Harvest());
