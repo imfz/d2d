@@ -615,25 +615,31 @@ GameEngine.prototype.renderUnits = function (units) {
             }
 
             // draw hp bar near selected unit
-            context.beginPath();
-            context.fillStyle = '#00cc00';
-            var hpBarLength = unit.hp / unit.maxHp * HP_BAR_LENGTH;
-            context.moveTo(movingCoord.x + HP_BAR_X_OFFSET, movingCoord.y + HP_BAR_Y_OFFSET);
-            context.lineTo(movingCoord.x + HP_BAR_X_OFFSET, movingCoord.y + HP_BAR_Y_OFFSET + HP_BAR_HEIGHT);
-            context.lineTo(movingCoord.x + HP_BAR_X_OFFSET + hpBarLength, movingCoord.y + HP_BAR_Y_OFFSET + HP_BAR_HEIGHT);
-            context.lineTo(movingCoord.x + HP_BAR_X_OFFSET + hpBarLength, movingCoord.y + HP_BAR_Y_OFFSET);
-            context.closePath();
-            context.fill();
+            drawBar(movingCoord.x, movingCoord.y, HP_BAR_X_OFFSET, HP_BAR_Y_OFFSET, HP_BAR_HEIGHT, HP_BAR_LENGTH, '#00cc00', unit.hp / unit.maxHp);
 
-            if (unit.spicePercents > 0) {
+            if (unit.unitType == UNIT_TYPE_HARVESTER) {
                 // draw spice bar near selected unit
+                drawBar(movingCoord.x, movingCoord.y, SPICE_BAR_X_OFFSET, SPICE_BAR_Y_OFFSET, SPICE_BAR_HEIGHT, SPICE_BAR_LENGTH, '#e8A65d', unit.spicePercents / 100);
+            }
+
+            function drawBar(x, y, offsetX, offsetY, barHeight, fullBarLength, barColor, percent) {
                 context.beginPath();
-                context.fillStyle = '#e8A65d';
-                var spiceBarLength = unit.spicePercents / 100 * SPICE_BAR_LENGTH;
-                context.moveTo(movingCoord.x + SPICE_BAR_X_OFFSET, movingCoord.y + SPICE_BAR_Y_OFFSET);
-                context.lineTo(movingCoord.x + SPICE_BAR_X_OFFSET, movingCoord.y + SPICE_BAR_Y_OFFSET + SPICE_BAR_HEIGHT);
-                context.lineTo(movingCoord.x + SPICE_BAR_X_OFFSET + spiceBarLength, movingCoord.y + SPICE_BAR_Y_OFFSET + SPICE_BAR_HEIGHT);
-                context.lineTo(movingCoord.x + SPICE_BAR_X_OFFSET + spiceBarLength, movingCoord.y + SPICE_BAR_Y_OFFSET);
+                context.strokeStyle = '#000000';
+                context.lineWidth = 1;
+                context.moveTo(x + offsetX - 1, y + offsetY - 1);
+                context.lineTo(x + offsetX - 1, y + offsetY + barHeight + 1);
+                context.lineTo(x + offsetX + fullBarLength + 1, y + offsetY + barHeight + 1);
+                context.lineTo(x + offsetX + fullBarLength + 1, y + offsetY - 1);
+                context.closePath();
+                context.stroke();
+
+                var filledBarLength = percent * fullBarLength;
+                context.beginPath();
+                context.fillStyle = barColor;
+                context.moveTo(x + offsetX, y + offsetY);
+                context.lineTo(x + offsetX, y + offsetY + HP_BAR_HEIGHT);
+                context.lineTo(x + offsetX + filledBarLength, y + offsetY + HP_BAR_HEIGHT);
+                context.lineTo(x + offsetX + filledBarLength, y + offsetY);
                 context.closePath();
                 context.fill();
             }
