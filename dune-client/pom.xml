@@ -5,7 +5,7 @@
     <artifactId>dune-client</artifactId>
     <packaging>jar</packaging>
     <version>1.0-SNAPSHOT</version>
-    <name>dune-server</name>
+    <name>dune-client</name>
     <url>http://maven.apache.org</url>
 
     <build>
