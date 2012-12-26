@@ -37,6 +37,13 @@ var connection = {
         this.sendNetworkRequest("UnitAction", unitAction);
     },
 
+
+    sendUnitStop : function(ids) {
+        var unitStop = new Object();
+        unitStop.ids = ids;
+        this.sendNetworkRequest("UnitStop", unitStop);
+    },
+
     sendBuildingSelection : function(id) {
         var selectBuilding = new Object();
         selectBuilding.selectedId = id;

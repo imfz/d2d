@@ -53,7 +53,6 @@ GameEngine.prototype.bindEvents = function () {
                 that.setCoordinates(that.x - 1, that.y);
             }
             return false;
-            break;
         case arrow.up:
             if (e.ctrlKey) {
                 that.setCoordinates(that.x, that.y - that.heightInTiles);
@@ -61,7 +60,6 @@ GameEngine.prototype.bindEvents = function () {
                 that.setCoordinates(that.x, that.y - 1);
             }
             return false;
-            break;
         case arrow.right:
             if (e.ctrlKey) {
                 that.setCoordinates(that.x + that.widthInTiles, that.y);
@@ -69,7 +67,6 @@ GameEngine.prototype.bindEvents = function () {
                 that.setCoordinates(that.x + 1, that.y);
             }
             return false;
-            break;
         case arrow.down:
             if (e.ctrlKey) {
                 that.setCoordinates(that.x, that.y + that.heightInTiles);
@@ -77,7 +74,6 @@ GameEngine.prototype.bindEvents = function () {
                 that.setCoordinates(that.x, that.y + 1);
             }
             return false;
-            break;
         case 27:
             // handle ESC button
             if (that.placementEnabled) {
@@ -86,12 +82,14 @@ GameEngine.prototype.bindEvents = function () {
             }
             that.selectedUnitId = [];
             return false;
-            break;
         case 72:
             // handle H button
             that.centerOnMain();
             return false;
-            break;
+        case 83:
+            // handle S button
+            connection.sendUnitStop(that.selectedUnitId);
+            return false;
         case 48:
         case 49:
         case 50:

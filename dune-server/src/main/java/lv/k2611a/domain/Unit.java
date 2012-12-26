@@ -116,4 +116,8 @@ public class Unit {
     public void setTicksCollectingSpice(int ticksCollectingSpice) {
         this.ticksCollectingSpice = ticksCollectingSpice;
     }
+
+    public void clearGoals() {
+        this.goals = new ArrayList<UnitGoal>();
+    }
 }
