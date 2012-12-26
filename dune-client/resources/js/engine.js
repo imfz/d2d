@@ -234,7 +234,6 @@ GameEngine.prototype.bindEvents = function () {
 
         // select by type only if we double clicked on one unit and no rectangle select was in progress.
         if (newSelectedUnits.length == 1) {
-            console.log("Selected units of type " + newSelectedUnits[0].unitType);
             var newSelectedUnitsOfType = [];
             for (i = 0; i < that.shownUnits.length; i++) {
                 showUnitInfo = that.shownUnits[i];
