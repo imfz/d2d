@@ -8,6 +8,10 @@ MinimapGameEngine.prototype.setCanvas = function (canvas) {
     this.canvas = canvas;
 };
 
+MinimapGameEngine.prototype.setBufferCanvas = function (buffer) {
+    this.buffer = buffer;
+};
+
 MinimapGameEngine.prototype.setMap = function (map) {
     this.map = map;
 };
@@ -51,37 +55,31 @@ MinimapGameEngine.prototype.bindEvents = function() {
     });
 };
 
-
-MinimapGameEngine.prototype.render = function () {
-    if (this.startTime == 0) {
-        this.startTime = new Date().getTime();
-    }
-    this.frameCount++;
-    var canvas = this.canvas;
+MinimapGameEngine.prototype.renderBuffer =function(){
+    var canvas = this.buffer;
     var context = canvas.getContext("2d");
     var map = this.map;
     var engine = this.engine;
+    var height = canvas.height;
 
     context.clearRect(0, 0, canvas.width, canvas.height);
     var imgd = context.createImageData(canvas.width, canvas.height);
     var pix = imgd.data;
 
-    drawTerrain();
-    drawUnits();
-    drawBuildings();
-    drawRectangle();
-    var that = this;
-    setTimeout(function () {
-        that.render()
-    }, 1000 / 60);
-
     function putpixel(imgd, ix, iy, rd, gr, bl) {
-        var p = (canvas.height * iy + ix) * 4;
+        var p = (height * iy + ix) * 4;
         pix[p]   = rd % 256; // red
         pix[p+1] = gr % 256; // green
         pix[p+2] = bl % 256; // blue
         pix[p+3] = 255; // alpha
     }
+
+    drawTerrain();
+    context.putImageData(imgd, 0, 0);
+    var that = this;
+    setTimeout(function () {
+        that.renderBuffer()
+    }, 1000 / 1);
 
     function drawTerrain() {
         for (var x = 0; x < canvas.width; x++) {
@@ -105,6 +103,43 @@ MinimapGameEngine.prototype.render = function () {
                 }
             }
         }
+    }
+}
+
+
+MinimapGameEngine.prototype.render = function () {
+    if (this.startTime == 0) {
+        this.startTime = new Date().getTime();
+    }
+    this.frameCount++;
+    var canvas = this.canvas;
+    var context = canvas.getContext("2d");
+    var map = this.map;
+    var engine = this.engine;
+    var height = canvas.height;
+
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.drawImage(this.buffer, 0, 0);
+
+    var imgd = context.getImageData(0,0,canvas.width, canvas.height);
+    var pix = imgd.data;
+
+
+    drawUnits();
+    drawBuildings();
+    context.putImageData(imgd, 0, 0);
+    drawRectangle();
+    var that = this;
+    setTimeout(function () {
+        that.render()
+    }, 1000 / 60);
+
+    function putpixel(imgd, ix, iy, rd, gr, bl) {
+        var p = (height * iy + ix) * 4;
+        pix[p]   = rd % 256; // red
+        pix[p+1] = gr % 256; // green
+        pix[p+2] = bl % 256; // blue
+        pix[p+3] = 255; // alpha
     }
 
     function drawUnits() {
@@ -144,7 +179,7 @@ MinimapGameEngine.prototype.render = function () {
         var y1 = engine.y * 1.0 / map.getHeight() * canvas.height;
         var x2 = (engine.x * 1.0 + engine.widthInTiles) / map.getWidth() * canvas.width;
         var y2 = (engine.y * 1.0 + engine.heightInTiles) / map.getHeight() * canvas.height;
-        context.putImageData(imgd, 0, 0);
+
         context.strokeStyle = "#000000";
         context.lineWidth = 2;
         context.strokeRect(x1, y1, x2 - x1, y2 - y1);

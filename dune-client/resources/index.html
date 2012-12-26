@@ -52,6 +52,7 @@
                     sprites.setBuildingsSprite(document.getElementById("buildings_sprite"));
                     sprites.setRefinerySprite(document.getElementById("refinery_sprite"));
                     sprites.setHarvesterSprite(document.getElementById("harvester_sprite"));
+
                     sprites.setOkButton(document.getElementById("okbutton"));
                     sprites.setBuildBgGreen(document.getElementById("build_bg_green"));
                     sprites.setBuildBgRed(document.getElementById("build_bg_red"));
@@ -63,6 +64,7 @@
 
                     var minimapCanvas = document.getElementById("minimap");
                     minimapEngine.setCanvas(minimapCanvas);
+                    minimapEngine.setBufferCanvas(document.getElementById("minimap_buffer"));
                     minimapEngine.setMap(map);
                     minimapEngine.setEngine(engine);
                     minimapEngine.bindEvents();
@@ -78,6 +80,7 @@
 
                     engine.render();
 
+                    minimapEngine.renderBuffer();
                     minimapEngine.render();
 
                     rightmenu.setOptions([
@@ -159,6 +162,8 @@
 <img src="images/okbutton.png" id="okbutton" style="display: none">
 <img src="images/build_bg_green.png" id="build_bg_green" style="display: none">
 <img src="images/build_bg_red.png" id="build_bg_red" style="display: none">
+<canvas id="minimap_buffer" width="200" height="200"  style="display: none">
+</canvas>
 </body>
 
 </html>
