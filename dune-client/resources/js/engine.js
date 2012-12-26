@@ -114,6 +114,11 @@ GameEngine.prototype.bindEvents = function () {
 
     });
 
+    $(this.canvas).dblclick(function (e) {
+        var x = Math.floor((e.pageX - $(that.canvas).offset().left));
+        var y = Math.floor((e.pageY - $(that.canvas).offset().top));
+        selectUnitsByType(x, y, e.shiftKey);
+    });
 
     $(this.canvas).mouseup(function (e) {
         switch (event.which) {
@@ -193,28 +198,81 @@ GameEngine.prototype.bindEvents = function () {
     });
 
     function selectUnits(x2, x, y2, y, shiftKey) {
-        if (!shiftKey) {
-            that.selectedUnitId = [];
-        }
+        var newSelectedUnits = [];
         for (var i = 0; i < that.shownUnits.length; i++) {
             var showUnitInfo = that.shownUnits[i];
             if ((x2 > showUnitInfo.x) && (x < showUnitInfo.x + TILE_WIDTH)) {
                 if ((y2 > showUnitInfo.y) && (y < showUnitInfo.y + TILE_HEIGHT)) {
-                    if (shiftKey) {
-                        var found = false;
-                        for (var j = 0; j < that.selectedUnitId.length; j++) {
-                            if (that.selectedUnitId == showUnitInfo.id) {
-                                found = true;
-                            }
-                        }
-                        if (!found) {
-                            that.selectedUnitId.push(showUnitInfo.id);
-                        }
-                    } else {
-                        that.selectedUnitId.push(showUnitInfo.id);
-                    }
+                    newSelectedUnits.push(showUnitInfo.id);
                 }
             }
+        }
+
+        if (!shiftKey) {
+            if (newSelectedUnits.length > 0) {
+                that.selectedUnitId = [];
+            }
+        }
+
+        if (shiftKey) {
+            addUnitToSelection(newSelectedUnits);
+        } else {
+            setSelectedUnit(newSelectedUnits);
+        }
+    }
+
+    function selectUnitsByType(x, y, shiftKey) {
+        var newSelectedUnits = [];
+        for (var i = 0; i < that.shownUnits.length; i++) {
+            var showUnitInfo = that.shownUnits[i];
+            if ((x >= showUnitInfo.x) && (x < showUnitInfo.x + TILE_WIDTH)) {
+                if ((y >= showUnitInfo.y) && (y < showUnitInfo.y + TILE_HEIGHT)) {
+                    newSelectedUnits.push(showUnitInfo);
+                }
+            }
+        }
+
+
+        // select by type only if we double clicked on one unit and no rectangle select was in progress.
+        if (newSelectedUnits.length == 1) {
+            console.log("Selected units of type " + newSelectedUnits[0].unitType);
+            var newSelectedUnitsOfType = [];
+            for (i = 0; i < that.shownUnits.length; i++) {
+                showUnitInfo = that.shownUnits[i];
+                if (showUnitInfo.unitType == newSelectedUnits[0].unitType) {
+                    newSelectedUnitsOfType.push(showUnitInfo.id);
+                }
+            }
+            if (shiftKey) {
+                addUnitToSelection(newSelectedUnitsOfType);
+            } else {
+                setSelectedUnit(newSelectedUnitsOfType);
+            }
+        }
+
+    }
+
+    function addUnitToSelection(unitId) {
+        for (var i = 0; i < unitId.length; i++) {
+            var found = false;
+            var unit = unitId[i];
+            for (var j = 0; j < that.selectedUnitId.length; j++) {
+                if (that.selectedUnitId == unit) {
+                    found = true;
+                }
+            }
+            if (!found) {
+                that.selectedUnitId.push(unit);
+            }
+        }
+    }
+
+    ;
+
+    function setSelectedUnit(unitId) {
+        that.selectedUnitId = [];
+        for (var i = 0; i < unitId.length; i++) {
+            that.selectedUnitId.push(unitId[i]);
         }
     }
 
@@ -380,7 +438,7 @@ GameEngine.prototype.render = function () {
     context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
     var buildings = this.map.getBuildings(this.x - 1, this.y - 1, this.x + this.widthInTiles + 1, this.y + this.heightInTiles + 1);
-    var units = this.map.getUnits(this.x - 1, this.y - 1, this.x + this.widthInTiles + 1, this.y + this.heightInTiles + 1);
+    var units = this.map.getUnits(this.x - 1, this.y - 1, this.x + this.widthInTiles, this.y + this.heightInTiles);
 
     this.renderTiles(units, buildings);
     this.renderBuildings(buildings);
@@ -491,7 +549,7 @@ GameEngine.prototype.renderUnits = function (units) {
             var yToDrawTo = (unit.y - this.y) * TILE_HEIGHT;
             var movingCoord = this.shiftMovingUnit(xToDrawTo, yToDrawTo, unit.travelled, unit.viewDirection);
             context.drawImage(unitConfig.sprite, unitConfig.x, unitConfig.y, unitConfig.width, unitConfig.height,
-                    movingCoord.x + unitConfig.xOffset , movingCoord.y + unitConfig.yOffset, unitConfig.width, unitConfig.height);
+                    movingCoord.x + unitConfig.xOffset, movingCoord.y + unitConfig.yOffset, unitConfig.width, unitConfig.height);
 
             if ($.inArray(unit.id, this.selectedUnitId) >= 0) {
                 // draw green border near selected unit
@@ -536,6 +594,7 @@ GameEngine.prototype.renderUnits = function (units) {
                 shownUnitInfo.id = unit.id;
                 shownUnitInfo.x = movingCoord.x;
                 shownUnitInfo.y = movingCoord.y;
+                shownUnitInfo.unitType = unit.unitType;
                 this.shownUnits.push(shownUnitInfo);
             }
         }
