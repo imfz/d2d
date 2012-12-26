@@ -583,6 +583,25 @@ GameEngine.prototype.renderBuildings = function (buildings) {
             shownBuildingInfo.buildingTypeBuilt = building.entityBuiltId;
             this.shownBuildings.push(shownBuildingInfo);
         }
+
+    }
+
+    for (i = 0; i < buildings.length; i++) {
+        building = buildings[i];
+        xToDrawTo = (building.x - this.x) * TILE_WIDTH;
+        yToDrawTo = (building.y - this.y) * TILE_HEIGHT;
+
+        if (building.id == this.selectedBuilding) {
+            context.beginPath();
+            context.strokeStyle = '#00cc00';
+            context.lineWidth = 3;
+            context.moveTo(xToDrawTo, yToDrawTo);
+            context.lineTo(xToDrawTo, yToDrawTo + TILE_HEIGHT * building.height);
+            context.lineTo(xToDrawTo + TILE_WIDTH * building.width, yToDrawTo + TILE_HEIGHT * building.height);
+            context.lineTo(xToDrawTo + TILE_WIDTH * building.width, yToDrawTo);
+            context.closePath();
+            context.stroke();
+        }
     }
     return building;
 };
