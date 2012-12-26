@@ -27,8 +27,16 @@ public class CreateUnit implements BuildingGoal {
     }
 
     @Override
-    public void process(Building building, Map map, IdGeneratorService idGeneratorService) {
+    public void process(Building building, Map map, IdGeneratorService idGeneratorService, long tickCount) {
         Player player = map.getPlayerById(building.getOwnerId());
+
+        if (player.getElectricity() < 0) {
+            // throttle 3/4 of ticks, if not enough electricity
+            if (tickCount % 4 != 3) {
+                return;
+            }
+        }
+
         if (player.getMoney() >= unitType.getCostPerTick()) {
             player.setMoney(player.getMoney() - unitType.getCostPerTick());
         } else {

@@ -19,7 +19,7 @@ public class CreateBuilding implements BuildingGoal {
     }
 
     @Override
-    public void process(Building building, Map map, IdGeneratorService idGeneratorService) {
+    public void process(Building building, Map map, IdGeneratorService idGeneratorService, long tickCount) {
         Player player = map.getPlayerById(building.getOwnerId());
         if (player.getMoney() >= buildingType.getCostPerTick()) {
             player.setMoney(player.getMoney() - buildingType.getCostPerTick());
