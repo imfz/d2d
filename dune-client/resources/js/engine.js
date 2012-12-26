@@ -13,6 +13,11 @@ var SPICE_BAR_HEIGHT = 5;
 var SPICE_BAR_X_OFFSET = 15;
 var SPICE_BAR_Y_OFFSET = 11;
 
+var BUILDING_HP_BAR_HEIGHT = 5;
+var BUILDING_HP_BAR_X_OFFSET = 15;
+var BUILDING_HP_BAR_Y_OFFSET = 3;
+
+
 function GameEngine() {
     this.x = 0;
     this.y = 0;
@@ -604,6 +609,9 @@ GameEngine.prototype.renderBuildings = function (buildings) {
             context.lineTo(xToDrawTo + TILE_WIDTH * building.width, yToDrawTo);
             context.closePath();
             context.stroke();
+
+            var maxBarLength = Math.floor(TILE_WIDTH * building.width * 0.8);
+            drawBar(context, xToDrawTo, yToDrawTo, BUILDING_HP_BAR_X_OFFSET, BUILDING_HP_BAR_Y_OFFSET, BUILDING_HP_BAR_HEIGHT, maxBarLength, '#00cc00', building.hp / building.maxHp);
         }
     }
     return building;
@@ -637,33 +645,11 @@ GameEngine.prototype.renderUnits = function (units) {
             }
 
             // draw hp bar near selected unit
-            drawBar(movingCoord.x, movingCoord.y, HP_BAR_X_OFFSET, HP_BAR_Y_OFFSET, HP_BAR_HEIGHT, HP_BAR_LENGTH, '#00cc00', unit.hp / unit.maxHp);
+            drawBar(context, movingCoord.x, movingCoord.y, HP_BAR_X_OFFSET, HP_BAR_Y_OFFSET, HP_BAR_HEIGHT, HP_BAR_LENGTH, '#00cc00', unit.hp / unit.maxHp);
 
             if (unit.unitType == UNIT_TYPE_HARVESTER) {
                 // draw spice bar near selected unit
-                drawBar(movingCoord.x, movingCoord.y, SPICE_BAR_X_OFFSET, SPICE_BAR_Y_OFFSET, SPICE_BAR_HEIGHT, SPICE_BAR_LENGTH, '#e8A65d', unit.spicePercents / 100);
-            }
-
-            function drawBar(x, y, offsetX, offsetY, barHeight, fullBarLength, barColor, percent) {
-                context.beginPath();
-                context.strokeStyle = '#000000';
-                context.lineWidth = 1;
-                context.moveTo(x + offsetX - 1, y + offsetY - 1);
-                context.lineTo(x + offsetX - 1, y + offsetY + barHeight + 1);
-                context.lineTo(x + offsetX + fullBarLength + 1, y + offsetY + barHeight + 1);
-                context.lineTo(x + offsetX + fullBarLength + 1, y + offsetY - 1);
-                context.closePath();
-                context.stroke();
-
-                var filledBarLength = percent * fullBarLength;
-                context.beginPath();
-                context.fillStyle = barColor;
-                context.moveTo(x + offsetX, y + offsetY);
-                context.lineTo(x + offsetX, y + offsetY + HP_BAR_HEIGHT);
-                context.lineTo(x + offsetX + filledBarLength, y + offsetY + HP_BAR_HEIGHT);
-                context.lineTo(x + offsetX + filledBarLength, y + offsetY);
-                context.closePath();
-                context.fill();
+                drawBar(context, movingCoord.x, movingCoord.y, SPICE_BAR_X_OFFSET, SPICE_BAR_Y_OFFSET, SPICE_BAR_HEIGHT, SPICE_BAR_LENGTH, '#e8A65d', unit.spicePercents / 100);
             }
 
 
@@ -678,6 +664,28 @@ GameEngine.prototype.renderUnits = function (units) {
         }
     }
 };
+
+function drawBar(context, x, y, offsetX, offsetY, barHeight, fullBarLength, barColor, percent) {
+    context.beginPath();
+    context.strokeStyle = '#000000';
+    context.lineWidth = 1;
+    context.moveTo(x + offsetX - 1, y + offsetY - 1);
+    context.lineTo(x + offsetX - 1, y + offsetY + barHeight + 1);
+    context.lineTo(x + offsetX + fullBarLength + 1, y + offsetY + barHeight + 1);
+    context.lineTo(x + offsetX + fullBarLength + 1, y + offsetY - 1);
+    context.closePath();
+    context.stroke();
+
+    var filledBarLength = percent * fullBarLength;
+    context.beginPath();
+    context.fillStyle = barColor;
+    context.moveTo(x + offsetX, y + offsetY);
+    context.lineTo(x + offsetX, y + offsetY + HP_BAR_HEIGHT);
+    context.lineTo(x + offsetX + filledBarLength, y + offsetY + HP_BAR_HEIGHT);
+    context.lineTo(x + offsetX + filledBarLength, y + offsetY);
+    context.closePath();
+    context.fill();
+}
 
 GameEngine.prototype.renderRectangle = function () {
     var context = this.canvas.getContext("2d");
