@@ -19,6 +19,8 @@ public class Harvest implements UnitGoal {
     public static int TICKS_FOR_FULL = 200;
 
     private Point targetSpice;
+    private int collectingSpice;
+    private int wasCollectingSpice;
 
     public Harvest() {
     }
@@ -29,6 +31,8 @@ public class Harvest implements UnitGoal {
 
     @Override
     public void process(Unit unit, Map map, GameServiceImpl gameService) {
+        wasCollectingSpice = collectingSpice;
+        collectingSpice = 0;
         if (unit.getUnitType() != UnitType.HARVESTER) {
             unit.removeGoal(this);
             return;
@@ -77,6 +81,7 @@ public class Harvest implements UnitGoal {
     }
 
     private void harvestSpice(Unit unit, Map map, GameService gameService) {
+        collectingSpice = wasCollectingSpice + 1;
         // increment unit spice
         unit.setTicksCollectingSpice(unit.getTicksCollectingSpice() + 1);
         // decrement tile spice
@@ -115,6 +120,10 @@ public class Harvest implements UnitGoal {
             return;
         }
         targetSpice = targets.get(0).getPoint();
+    }
+
+    public int getCollectingSpice() {
+        return collectingSpice;
     }
 
     private static class Pair {

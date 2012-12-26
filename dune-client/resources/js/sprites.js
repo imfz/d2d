@@ -355,6 +355,12 @@ Sprites.prototype.getUnitConfig = function (unit) {
     }
     if (unit.unitType == UNIT_TYPE_HARVESTER) {
         y = 0;
+
+        if (unit.harvesting > 0) {
+            y = ((Math.floor((unit.harvesting / 3)) % 3) + 1);
+        }
+
+
         sprite = this.harvesterSprite;
         xOffset = -10;
         yOffset = -10;

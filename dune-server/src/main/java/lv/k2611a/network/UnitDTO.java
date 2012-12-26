@@ -3,6 +3,7 @@ package lv.k2611a.network;
 import lv.k2611a.domain.Unit;
 import lv.k2611a.domain.UnitType;
 import lv.k2611a.domain.unitgoals.Harvest;
+import lv.k2611a.domain.unitgoals.UnitGoal;
 
 public class UnitDTO {
     private long id;
@@ -15,6 +16,7 @@ public class UnitDTO {
     private int maxHp;
     private int spicePercents;
     private int ownerId;
+    private int harvesting;
 
     public int getUnitType() {
         return unitType;
@@ -96,6 +98,14 @@ public class UnitDTO {
         this.spicePercents = spicePercents;
     }
 
+    public int getHarvesting() {
+        return harvesting;
+    }
+
+    public void setHarvesting(int harvesting) {
+        this.harvesting = harvesting;
+    }
+
     public static UnitDTO fromUnit(Unit unit) {
         UnitDTO dto = new UnitDTO();
         dto.setUnitType(unit.getUnitType().getIdOnJS());
@@ -110,6 +120,11 @@ public class UnitDTO {
         if (unit.getUnitType() == UnitType.HARVESTER) {
             int spicePercents = (int) ((double) unit.getTicksCollectingSpice() / Harvest.TICKS_FOR_FULL * 100);
             dto.setSpicePercents(spicePercents);
+            UnitGoal uncasted = unit.getCurrentGoal();
+            if (uncasted instanceof Harvest) {
+                Harvest casted = (Harvest)uncasted;
+                dto.setHarvesting(casted.getCollectingSpice());
+            }
         }
         return dto;
     }
