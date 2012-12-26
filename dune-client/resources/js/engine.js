@@ -34,7 +34,6 @@ GameEngine.prototype.setCanvas = function (canvas) {
 };
 
 
-
 GameEngine.prototype.setMap = function (map) {
     this.map = map;
 };
@@ -89,6 +88,10 @@ GameEngine.prototype.bindEvents = function () {
         case 83:
             // handle S button
             connection.sendUnitStop(that.selectedUnitId);
+            return false;
+        case 80:
+            // handle P button
+            that.placementEnabled = true;
             return false;
         case 48:
         case 49:
