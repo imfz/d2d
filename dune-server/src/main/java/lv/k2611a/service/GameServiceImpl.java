@@ -346,7 +346,7 @@ public class GameServiceImpl implements GameService {
                 map.setUsed(unitMovingTo.getX(), unitMovingTo.getY(), unit.getId());
             }
         }
-        map.buildPassableSegmentCache();
+        //map.buildPassableSegmentCache();
     }
 
     public List<BuildingDTO> getBuildings() {

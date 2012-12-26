@@ -13,11 +13,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 
-import com.google.gson.Gson;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializeConfig;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 
 import lv.k2611a.network.req.Request;
 import lv.k2611a.network.resp.Left;
 import lv.k2611a.network.resp.Response;
+import lv.k2611a.network.resp.UpdateConstructionOptions;
 import lv.k2611a.service.SessionsService;
 
 public class ClientConnection implements WebSocket.OnTextMessage, Runnable {
@@ -25,8 +28,6 @@ public class ClientConnection implements WebSocket.OnTextMessage, Runnable {
     private static final Logger log = LoggerFactory.getLogger(ClientConnection.class);
 
     private volatile Connection _connection;
-
-    private Gson gson = new Gson();
 
     private static final ThreadLocal<ClientConnection> localConnection = new ThreadLocal<ClientConnection>();
 
@@ -36,7 +37,7 @@ public class ClientConnection implements WebSocket.OnTextMessage, Runnable {
     }
 
     public static void setCurrentConnection(ClientConnection clientConnection) {
-         localConnection.set(clientConnection);
+        localConnection.set(clientConnection);
     }
 
     @Autowired
@@ -75,11 +76,11 @@ public class ClientConnection implements WebSocket.OnTextMessage, Runnable {
     }
 
     public void onMessage(String data) {
-        NetworkPacket networkPacket = gson.fromJson(data, NetworkPacket.class);
+        NetworkPacket networkPacket = JSON.parseObject(data, NetworkPacket.class);
         Request request = null;
         try {
             localConnection.set(this);
-            request = (Request) gson.fromJson(networkPacket.getPayload(), Class.forName("lv.k2611a.network.req." + networkPacket.getMessageName()));
+            request = (Request) JSON.parseObject(networkPacket.getPayload(), Class.forName("lv.k2611a.network.req." + networkPacket.getMessageName()));
             autowireCapableBeanFactory.autowireBean(request);
             request.process();
         } catch (Exception e) {
@@ -105,10 +106,14 @@ public class ClientConnection implements WebSocket.OnTextMessage, Runnable {
                 }
                 NetworkPacket networkPacket = new NetworkPacket();
                 networkPacket.setMessageName(response.getClass().getSimpleName());
-                networkPacket.setPayload(gson.toJson(response));
-                String toSend = gson.toJson(networkPacket);
+                networkPacket.setPayload(JSON.toJSONString(response));
+                String toSend = JSON.toJSONString(networkPacket);
                 byteCount += toSend.length() * 2;
                 _connection.sendMessage(toSend);
+
+                if (response.getClass() == UpdateConstructionOptions.class) {
+                    //System.out.println(toSend);
+                }
             } catch (IOException e) {
                 log.error("Exception happened while working with websocket", e);
                 break;

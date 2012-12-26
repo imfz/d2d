@@ -116,12 +116,13 @@ MinimapGameEngine.prototype.render = function () {
     var context = canvas.getContext("2d");
     var map = this.map;
     var engine = this.engine;
+    var width = canvas.width;
     var height = canvas.height;
 
-    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.clearRect(0, 0, width, height);
     context.drawImage(this.buffer, 0, 0);
 
-    var imgd = context.getImageData(0,0,canvas.width, canvas.height);
+    var imgd = context.getImageData(0,0,width, height);
     var pix = imgd.data;
 
 
@@ -130,9 +131,9 @@ MinimapGameEngine.prototype.render = function () {
     context.putImageData(imgd, 0, 0);
     drawRectangle();
     var that = this;
-    setTimeout(function () {
+    requestAnimFrame(function () {
         that.render()
-    }, 1000 / 60);
+    });
 
     function putpixel(imgd, ix, iy, rd, gr, bl) {
         var p = (height * iy + ix) * 4;
@@ -175,10 +176,10 @@ MinimapGameEngine.prototype.render = function () {
     }
 
     function drawRectangle() {
-        var x1 = engine.x * 1.0 / map.getWidth() * canvas.width;
-        var y1 = engine.y * 1.0 / map.getHeight() * canvas.height;
-        var x2 = (engine.x * 1.0 + engine.widthInTiles) / map.getWidth() * canvas.width;
-        var y2 = (engine.y * 1.0 + engine.heightInTiles) / map.getHeight() * canvas.height;
+        var x1 = engine.x * 1.0 / map.getWidth() * width;
+        var y1 = engine.y * 1.0 / map.getHeight() * height;
+        var x2 = (engine.x * 1.0 + engine.widthInTiles) / map.getWidth() * width;
+        var y2 = (engine.y * 1.0 + engine.heightInTiles) / map.getHeight() * height;
 
         context.strokeStyle = "#000000";
         context.lineWidth = 2;

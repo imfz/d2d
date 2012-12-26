@@ -13,6 +13,14 @@ public class ChatMessage implements Request {
     @Autowired
     private SessionServiceImpl sessionService;
 
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
     @Override
     public void process() {
         IncomingChatMessage incomingChatMessage = new IncomingChatMessage();

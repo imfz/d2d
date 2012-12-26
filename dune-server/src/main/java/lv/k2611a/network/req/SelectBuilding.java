@@ -12,6 +12,14 @@ public class SelectBuilding implements Request {
 
     private int selectedId;
 
+    public int getSelectedId() {
+        return selectedId;
+    }
+
+    public void setSelectedId(int selectedId) {
+        this.selectedId = selectedId;
+    }
+
     @Override
     public void process() {
         if (selectedId == -1) {

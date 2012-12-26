@@ -34,6 +34,17 @@ Handler.prototype.handleIncomingChatMessage = function(data) {
 };
 
 Handler.prototype.handleUpdateMap = function(data) {
+
+    if (typeof data.map.units === "undefined") {
+        data.map.units = new Array();
+    }
+    if (typeof data.map.buildings === "undefined") {
+        data.map.buildings = new Array();
+    }
+    if (typeof data.map.tiles === "undefined") {
+        data.map.tiles = new Array();
+    }
+
     this.map.setHeight(data.map.height);
     this.map.setWidth(data.map.width);
     this.map.setTickCount(data.tickCount);
@@ -48,6 +59,8 @@ Handler.prototype.handleUpdateMap = function(data) {
             x++;
         }
     }
+
+
     this.map.setUnits(data.map.units);
     this.map.setBuildings(data.map.buildings);
     console.log("Map loaded. Processing saved updates");
@@ -70,6 +83,19 @@ Handler.prototype.processSavedUpdates = function() {
 };
 
 Handler.prototype.processUpdate = function(update) {
+
+    if (typeof update.changedTiles === "undefined") {
+        update.changedTiles = new Array();
+    }
+
+    if (typeof update.buildings === "undefined") {
+        update.buildings = new Array();
+    }
+
+    if (typeof update.units === "undefined") {
+        update.units = new Array();
+    }
+
     if (update.tickCount == this.map.tickCount + 1) {
         this.map.tickCount++;
         this.gameLog.setMapVersion(this.map.tickCount);
@@ -113,6 +139,11 @@ Handler.prototype.handleUpdateMoney = function(data) {
 };
 
 Handler.prototype.handleUpdateConstructionOptions = function(data) {
+
+    if (typeof data.options === "undefined") {
+        data.options = new Array();
+    }
+
     // reset building mouse cursor here, after building
     if (engine.placementEnabled) {
         if (engine.builderId == data.builderId) {
@@ -121,5 +152,6 @@ Handler.prototype.handleUpdateConstructionOptions = function(data) {
             }
         }
     }
+
     this.rightMenu.setOptions(data.builderId, data.options, data.percentsDone, data.currentlyBuildingId, data.currentlyBuildingOptionId);
 };

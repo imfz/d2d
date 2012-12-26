@@ -48,6 +48,9 @@ public class UnitAction extends AbstractGameStateChanger {
 
     @Override
     public void changeGameState(Map map) {
+        if (ids == null) {
+            ids = new long[0];
+        }
         Set<Long> unitIds = new HashSet<Long>();
         for (long id : ids) {
             unitIds.add(id);
