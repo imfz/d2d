@@ -1,8 +1,12 @@
 package lv.k2611a.domain;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class Player {
     private long money = 10000;
     private long electricity;
+    private Set<BuildingType> buildingTypes = new HashSet<BuildingType>();
 
     public long getMoney() {
         return money;
@@ -18,5 +22,13 @@ public class Player {
 
     public void setElectricity(long electricity) {
         this.electricity = electricity;
+    }
+
+    public Set<BuildingType> getBuildingTypes() {
+        return buildingTypes;
+    }
+
+    public void setBuildingTypes(Set<BuildingType> buildingTypes) {
+        this.buildingTypes = buildingTypes;
     }
 }

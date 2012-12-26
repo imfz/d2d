@@ -61,4 +61,8 @@ public enum ConstructionOption {
     public String getName() {
         return entityType.getName();
     }
+
+    public BuildingType[] getPrerequisites() {
+        return entityType.getPrerequisites();
+    }
 }

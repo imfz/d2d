@@ -6,4 +6,6 @@ public interface EntityType {
     int getCost();
 
     String getName();
+
+    BuildingType[] getPrerequisites();
 }

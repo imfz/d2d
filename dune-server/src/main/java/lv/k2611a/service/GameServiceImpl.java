@@ -161,11 +161,15 @@ public class GameServiceImpl implements GameService {
 
         changedTiles = new HashSet<Point>();
 
+
+        fillPlayerBuildingTypes();
         mapFillTileUsage(map);
         updatePlayerElectricity();
+
         processUserClicks(map);
         processBuildingGoals(map);
         processUnitsGoals(map);
+
         sendIncrementalUpdate();
         sendAvalaibleConstructionOptionsUpdate();
         sendUpdateMoney();
@@ -181,9 +185,20 @@ public class GameServiceImpl implements GameService {
 
     }
 
+    private void fillPlayerBuildingTypes() {
+        for (int playerId = 0; playerId < this.map.getPlayers().length; playerId++) {
+            this.map.getPlayers()[playerId].getBuildingTypes().clear();
+        }
+        for (Building building : map.getBuildings()) {
+            Player player = this.map.getPlayerById(building.getOwnerId());
+            player.getBuildingTypes().add(building.getType());
+        }
+
+    }
+
     private void updatePlayerElectricity() {
         for (int playerId = 0; playerId < this.map.getPlayers().length; playerId++) {
-            this.map.getPlayers()[playerId].setElectricity(getPlayerEletricity(map,playerId));
+            this.map.getPlayers()[playerId].setElectricity(getPlayerEletricity(map, playerId));
         }
     }
 
@@ -218,6 +233,7 @@ public class GameServiceImpl implements GameService {
                 EnumSet<ConstructionOption> constructionOptions = EnumSet.noneOf(ConstructionOption.class);
                 if (!(building.isAwaitingClick() || building.getCurrentGoal() != null)) {
                     constructionOptions = building.getType().getConstructionOptions();
+                    constructionOptions = filterAvalaibleConstructionOptions(constructionOptions, clientConnection.getPlayerId());
                 }
 
                 List<OptionDTO> options = new ArrayList<OptionDTO>();
@@ -257,6 +273,24 @@ public class GameServiceImpl implements GameService {
                 clientConnection.sendMessage(new UpdateConstructionOptions());
             }
         }
+    }
+
+    private EnumSet<ConstructionOption> filterAvalaibleConstructionOptions(EnumSet<ConstructionOption> constructionOptions, int playerId) {
+        Player player = map.getPlayerById(playerId);
+        EnumSet<ConstructionOption> filtered = EnumSet.noneOf(ConstructionOption.class);
+        for (ConstructionOption constructionOption : constructionOptions) {
+            boolean prerequisitesFound = true;
+            for (BuildingType buildingType : constructionOption.getPrerequisites()) {
+                if (!player.getBuildingTypes().contains(buildingType)) {
+                    prerequisitesFound = false;
+                    break;
+                }
+            }
+            if (prerequisitesFound) {
+                filtered.add(constructionOption);
+            }
+        }
+        return filtered;
     }
 
     private int getConstructionOption(EnumSet<ConstructionOption> constructionOptions, BuildingType buildingTypeBuilt) {

@@ -6,18 +6,18 @@ import java.util.Set;
 
 public enum BuildingType implements EntityType {
 
-    SILO(1,2,2,50,50, 10, -5),
-    POWERPLANT(2,2,2,50,100, 10, +100),
-    AIRBASE(9,2,2,50,100, 10, -20),
-    WALL(14,1,1,50,100, 10, 0),
-    REPAIRSHOP(3,3,2,50,100, 10, -15),
-    TURRET(10,1,1,50,100, 10, -5),
-    ROCKET_TURRET(13,1,1,50,100, 10, -20),
-    RADAR(5,2,2,50,100, 10, -15),
-    CONCRETE(11,2,2,50,100, 10, 0),
-    REFINERY(12,3,2,50,30, 10, -25),
-    FACTORY(8,3,2,50,100, 10, -25),
-    CONSTRUCTIONYARD(7,2,2,50,150, 10, 0) {
+    POWERPLANT(2,2,2,50,100, 10, +100, null),
+    SILO(1,2,2,50,50, 10, -5, new BuildingType[]{BuildingType.POWERPLANT}),
+    AIRBASE(9,2,2,50,100, 10, -20, new BuildingType[]{BuildingType.POWERPLANT}),
+    WALL(14,1,1,50,100, 10, 0, new BuildingType[]{BuildingType.POWERPLANT}),
+    REPAIRSHOP(3,3,2,50,100, 10, -15, new BuildingType[]{BuildingType.POWERPLANT}),
+    TURRET(10,1,1,50,100, 10, -5, new BuildingType[]{BuildingType.POWERPLANT}),
+    ROCKET_TURRET(13,1,1,50,100, 10, -20, new BuildingType[]{BuildingType.POWERPLANT}),
+    RADAR(5,2,2,50,100, 10, -15, new BuildingType[]{BuildingType.POWERPLANT}),
+    CONCRETE(11,2,2,50,100, 10, 0, new BuildingType[]{BuildingType.POWERPLANT}),
+    REFINERY(12,3,2,50,30, 10, -25, new BuildingType[]{BuildingType.POWERPLANT}),
+    FACTORY(8,3,2,50,100, 10, -25, new BuildingType[]{BuildingType.POWERPLANT}),
+    CONSTRUCTIONYARD(7,2,2,50,150, 10, 0, null) {
         @Override
         public EnumSet<ConstructionOption> getConstructionOptions() {
             EnumSet<ConstructionOption> constructionOptions = EnumSet.of(
@@ -45,8 +45,9 @@ public enum BuildingType implements EntityType {
     private final int ticksToBuild;
     private int costPerTick;
     private final int electricityDelta;
+    private final BuildingType[] prerequisites;
 
-    private BuildingType(int idOnJS, int width, int height, int hp, int ticksToBuild, int costPerTick, int electricityDelta) {
+    private BuildingType(int idOnJS, int width, int height, int hp, int ticksToBuild, int costPerTick, int electricityDelta, BuildingType[] prerequisites) {
         this.idOnJS = idOnJS;
         this.width = width;
         this.height = height;
@@ -54,6 +55,11 @@ public enum BuildingType implements EntityType {
         this.ticksToBuild = ticksToBuild;
         this.costPerTick = costPerTick;
         this.electricityDelta = electricityDelta;
+        if (prerequisites == null) {
+            this.prerequisites = new BuildingType[0];
+        } else {
+            this.prerequisites = prerequisites;
+        }
     }
 
     @Override
@@ -88,6 +94,11 @@ public enum BuildingType implements EntityType {
 
     public int getCostPerTick() {
         return costPerTick;
+    }
+
+    @Override
+    public BuildingType[] getPrerequisites() {
+        return prerequisites;
     }
 
     @Override

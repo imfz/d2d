@@ -49,6 +49,11 @@ public enum UnitType implements EntityType {
         return name();
     }
 
+    @Override
+    public BuildingType[] getPrerequisites() {
+        return new BuildingType[0];
+    }
+
     public int getSpeed() {
         return speed;
     }
