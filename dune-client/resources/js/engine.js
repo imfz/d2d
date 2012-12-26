@@ -48,7 +48,7 @@ GameEngine.prototype.bindEvents = function () {
     var that = this;
     $(window).keydown(function (e) {
         var keyCode = e.keyCode || e.which,
-                arrow = {left:37, up:38, right:39, down:40 };
+            arrow = {left: 37, up: 38, right: 39, down: 40 };
         switch (keyCode) {
         case arrow.left:
             if (e.ctrlKey) {
@@ -127,11 +127,11 @@ GameEngine.prototype.bindEvents = function () {
         selectUnitsByType(x, y, e.shiftKey);
     });
 
-    $(this.canvas).mouseup(function (e) {
+    $(this.canvas).mouseup(function (event) {
         switch (event.which) {
         case 1:
-            var x = Math.floor((e.pageX - $(that.canvas).offset().left));
-            var y = Math.floor((e.pageY - $(that.canvas).offset().top));
+            var x = Math.floor((event.pageX - $(that.canvas).offset().left));
+            var y = Math.floor((event.pageY - $(that.canvas).offset().top));
             var x2 = that.xMouseDown;
             var y2 = that.yMouseDown;
             var tmp;
@@ -145,22 +145,23 @@ GameEngine.prototype.bindEvents = function () {
                 y = y2;
                 y2 = tmp;
             }
-            if (!that.placementEnabled) {
-                selectUnits(x2, x, y2, y, e.shiftKey);
-                if (that.selectedUnitId.length == 0) {
-                    // if no units selected, search for buildings
-                    selectBuildings(x2, x, y2, y);
-                } else {
-                    // unselect building
-                    if (that.selectedBuilding != -1) {
-                        that.selectedBuilding = -1;
-                        connection.sendBuildingSelection(that.selectedBuilding);
-                    }
-                }
-            } else {
+            if (that.placementEnabled) {
                 var mapX = Math.floor((x / TILE_WIDTH) + that.x);
                 var mapY = Math.floor((y / TILE_HEIGHT) + that.y);
                 connection.sendBuildingPlacement(mapX, mapY, that.builderId);
+            } else {
+                selectUnits(x2, x, y2, y, event.shiftKey);
+                var buildingSelected = false;
+                if (that.selectedUnitId.length == 0) {
+                    // if no units selected, search for buildings
+                    buildingSelected = selectBuildings(x2, x, y2, y);
+                }
+
+                // try to unselect building
+                if (!buildingSelected && that.selectedBuilding != -1) {
+                    that.selectedBuilding = -1;
+                    connection.sendBuildingSelection(that.selectedBuilding);
+                }
             }
             that.xMouseDown = null;
             that.yMouseDown = null;
@@ -179,9 +180,9 @@ GameEngine.prototype.bindEvents = function () {
         that.xMouseDown = null;
         that.yMouseDown = null;
     });
-    $(this.canvas).mousedown(function (e) {
-        var x = Math.floor((e.pageX - $(that.canvas).offset().left));
-        var y = Math.floor((e.pageY - $(that.canvas).offset().top));
+    $(this.canvas).mousedown(function (event) {
+        var x = Math.floor((event.pageX - $(that.canvas).offset().left));
+        var y = Math.floor((event.pageY - $(that.canvas).offset().top));
         switch (event.which) {
         case 1:
             // remember mousedown for rectangle selection
@@ -191,7 +192,7 @@ GameEngine.prototype.bindEvents = function () {
         case 3:
             if (that.placementEnabled) {
                 that.placementEnabled = false;
-                return;
+                return false;
             }
             var mapX = Math.floor((x / TILE_WIDTH) + that.x);
             var mapY = Math.floor((y / TILE_HEIGHT) + that.y);
@@ -273,8 +274,6 @@ GameEngine.prototype.bindEvents = function () {
         }
     }
 
-    ;
-
     function setSelectedUnit(unitId) {
         that.selectedUnitId = [];
         for (var i = 0; i < unitId.length; i++) {
@@ -283,6 +282,7 @@ GameEngine.prototype.bindEvents = function () {
     }
 
     function selectBuildings(x2, x, y2, y) {
+        var buildingFound = false;
         for (var i = 0; i < that.shownBuildings.length; i++) {
             var shownBuildingInfo = that.shownBuildings[i];
             if ((x2 > shownBuildingInfo.x) && (x < shownBuildingInfo.width + shownBuildingInfo.x)) {
@@ -296,10 +296,12 @@ GameEngine.prototype.bindEvents = function () {
                         that.placementHeight = buildingConfig.height;
                     }
                     that.selectedBuilding = shownBuildingInfo.id;
+                    buildingFound = true;
                     connection.sendBuildingSelection(that.selectedBuilding);
                 }
             }
         }
+        return buildingFound;
     }
 };
 
@@ -406,7 +408,7 @@ GameEngine.prototype.setCoordinates = function (x, y) {
     }
     this.x = mapX;
     this.y = mapY;
-}
+};
 
 GameEngine.prototype.centerOnCoordinates = function (x, y) {
     // because x,y represent topright corner, and the desired coordinates represent the middle of the screen
@@ -513,13 +515,13 @@ GameEngine.prototype.render = function () {
 
 requestAnimFrame = (function () {
     return window.requestAnimationFrame ||
-            window.webkitRequestAnimationFrame ||
-            window.mozRequestAnimationFrame ||
-            window.oRequestAnimationFrame ||
-            window.msRequestAnimationFrame ||
-            function (/* function FrameRequestCallback */ callback, /* DOMElement Element */ element) {
-                window.setTimeout(callback, 1000 / 60);
-            };
+        window.webkitRequestAnimationFrame ||
+        window.mozRequestAnimationFrame ||
+        window.oRequestAnimationFrame ||
+        window.msRequestAnimationFrame ||
+        function (/* function FrameRequestCallback */ callback, /* DOMElement Element */ element) {
+            window.setTimeout(callback, 1000 / 60);
+        };
 })();
 
 GameEngine.prototype.renderTiles = function (units, buildings) {
@@ -538,13 +540,13 @@ GameEngine.prototype.renderTiles = function (units, buildings) {
                     if (y >= currentMouseMapY && y < currentMouseMapY + this.placementHeight) {
                         if (this.map.isTileOkForBuilding(x, y, units, buildings)) {
                             context.drawImage(sprites.bgGreenSprite,
-                                    0, 0, TILE_WIDTH, TILE_HEIGHT,
-                                    (x - this.x) * TILE_WIDTH, (y - this.y) * TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT
+                                0, 0, TILE_WIDTH, TILE_HEIGHT,
+                                (x - this.x) * TILE_WIDTH, (y - this.y) * TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT
                             );
                         } else {
                             context.drawImage(sprites.bgRedSprite,
-                                    0, 0, TILE_WIDTH, TILE_HEIGHT,
-                                    (x - this.x) * TILE_WIDTH, (y - this.y) * TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT
+                                0, 0, TILE_WIDTH, TILE_HEIGHT,
+                                (x - this.x) * TILE_WIDTH, (y - this.y) * TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT
                             )
                         }
                     }
@@ -572,12 +574,12 @@ GameEngine.prototype.renderBuildings = function (buildings) {
         // construction complete image
         if (building.constructionComplete && okButtonEnabled) {
             context.drawImage(sprites.okButtonSprite,
-                    0,
-                    0,
-                    sprites.okButtonSprite.width, sprites.okButtonSprite.height,
-                    xToDrawTo + TILE_WIDTH - sprites.okButtonSprite.width / 2,
-                    yToDrawTo + TILE_HEIGHT - sprites.okButtonSprite.height / 2,
-                    sprites.okButtonSprite.width, sprites.okButtonSprite.height
+                0,
+                0,
+                sprites.okButtonSprite.width, sprites.okButtonSprite.height,
+                xToDrawTo + TILE_WIDTH - sprites.okButtonSprite.width / 2,
+                yToDrawTo + TILE_HEIGHT - sprites.okButtonSprite.height / 2,
+                sprites.okButtonSprite.width, sprites.okButtonSprite.height
             );
         }
         if (building.ownerId == connection._playerId) {
@@ -611,7 +613,7 @@ GameEngine.prototype.renderBuildings = function (buildings) {
             context.stroke();
 
             var maxBarLength = Math.floor(TILE_WIDTH * building.width * 0.8);
-            drawBar(context, xToDrawTo, yToDrawTo, BUILDING_HP_BAR_X_OFFSET, BUILDING_HP_BAR_Y_OFFSET, BUILDING_HP_BAR_HEIGHT, maxBarLength, '#00cc00', building.hp / building.maxHp);
+            this.drawBar(context, xToDrawTo, yToDrawTo, BUILDING_HP_BAR_X_OFFSET, BUILDING_HP_BAR_Y_OFFSET, BUILDING_HP_BAR_HEIGHT, maxBarLength, '#00cc00', building.hp / building.maxHp);
         }
     }
     return building;
@@ -629,7 +631,7 @@ GameEngine.prototype.renderUnits = function (units) {
             var yToDrawTo = (unit.y - this.y) * TILE_HEIGHT;
             var movingCoord = this.shiftMovingUnit(xToDrawTo, yToDrawTo, unit.travelled, unit.viewDirection);
             context.drawImage(unitConfig.sprite, unitConfig.x, unitConfig.y, unitConfig.width, unitConfig.height,
-                    movingCoord.x + unitConfig.xOffset, movingCoord.y + unitConfig.yOffset, unitConfig.width, unitConfig.height);
+                movingCoord.x + unitConfig.xOffset, movingCoord.y + unitConfig.yOffset, unitConfig.width, unitConfig.height);
 
             if ($.inArray(unit.id, this.selectedUnitId) >= 0) {
                 // draw green border near selected unit
@@ -645,13 +647,12 @@ GameEngine.prototype.renderUnits = function (units) {
             }
 
             // draw hp bar near selected unit
-            drawBar(context, movingCoord.x, movingCoord.y, HP_BAR_X_OFFSET, HP_BAR_Y_OFFSET, HP_BAR_HEIGHT, HP_BAR_LENGTH, '#00cc00', unit.hp / unit.maxHp);
+            this.drawBar(context, movingCoord.x, movingCoord.y, HP_BAR_X_OFFSET, HP_BAR_Y_OFFSET, HP_BAR_HEIGHT, HP_BAR_LENGTH, '#00cc00', unit.hp / unit.maxHp);
 
             if (unit.unitType == UNIT_TYPE_HARVESTER) {
                 // draw spice bar near selected unit
-                drawBar(context, movingCoord.x, movingCoord.y, SPICE_BAR_X_OFFSET, SPICE_BAR_Y_OFFSET, SPICE_BAR_HEIGHT, SPICE_BAR_LENGTH, '#e8A65d', unit.spicePercents / 100);
+                this.drawBar(context, movingCoord.x, movingCoord.y, SPICE_BAR_X_OFFSET, SPICE_BAR_Y_OFFSET, SPICE_BAR_HEIGHT, SPICE_BAR_LENGTH, '#e8A65d', unit.spicePercents / 100);
             }
-
 
             if (unit.ownerId == connection._playerId) {
                 var shownUnitInfo = new Object();
@@ -665,7 +666,7 @@ GameEngine.prototype.renderUnits = function (units) {
     }
 };
 
-function drawBar(context, x, y, offsetX, offsetY, barHeight, fullBarLength, barColor, percent) {
+GameEngine.prototype.drawBar = function (context, x, y, offsetX, offsetY, barHeight, fullBarLength, barColor, percent) {
     context.beginPath();
     context.strokeStyle = '#000000';
     context.lineWidth = 1;
@@ -685,7 +686,7 @@ function drawBar(context, x, y, offsetX, offsetY, barHeight, fullBarLength, barC
     context.lineTo(x + offsetX + filledBarLength, y + offsetY);
     context.closePath();
     context.fill();
-}
+};
 
 GameEngine.prototype.renderRectangle = function () {
     var context = this.canvas.getContext("2d");

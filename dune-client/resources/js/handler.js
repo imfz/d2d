@@ -7,33 +7,26 @@ function Handler(map, gameLog, rightMenu, engine, moneyTab) {
     this.centeredOnMain = false;
 }
 
-Handler.prototype.addMessageToChat = function(from, text) {
-    var chat = document.getElementById('chat');
-    var spanFrom = document.createElement('span');
-    spanFrom.className = 'from';
-    spanFrom.innerHTML = from + ':&nbsp;';
-    var spanText = document.createElement('span');
-    spanText.className = 'text';
-    spanText.innerHTML = text;
-    var lineBreak = document.createElement('br');
-    chat.appendChild(spanFrom);
-    chat.appendChild(spanText);
-    chat.appendChild(lineBreak);
+Handler.prototype.addMessageToChat = function (from, text) {
+    var chat = $('#chat');
+    chat.append('<span class="from">' + from + '</span>:&nbsp;');
+    chat.append('<span class="text">' + text + '</span>:&nbsp;');
+    chat.append('<br>');
     chat.scrollTop = chat.scrollHeight - chat.clientHeight;
 };
 
-Handler.prototype.handleIncomingChatMessage = function(data) {
+Handler.prototype.handleIncomingChatMessage = function (data) {
     var message = data.message;
     var from = data.from
-            .replace('<', '&lt;')
-            .replace('>', '&gt;');
+        .replace('<', '&lt;')
+        .replace('>', '&gt;');
     var text = message
-            .replace('<', '&lt;')
-            .replace('>', '&gt;');
+        .replace('<', '&lt;')
+        .replace('>', '&gt;');
     this.addMessageToChat(from, text);
 };
 
-Handler.prototype.handleUpdateMap = function(data) {
+Handler.prototype.handleUpdateMap = function (data) {
 
     if (typeof data.map.units === "undefined") {
         data.map.units = new Array();
@@ -52,7 +45,7 @@ Handler.prototype.handleUpdateMap = function(data) {
     var y = 0;
     for (var i = 0; i < data.map.tiles.length; i++) {
         var tile = data.map.tiles[i];
-        this.map.setTile(x,y,tile);
+        this.map.setTile(x, y, tile);
         y++;
         if (y >= data.map.height) {
             y = 0;
@@ -72,7 +65,7 @@ Handler.prototype.handleUpdateMap = function(data) {
 
 };
 
-Handler.prototype.processSavedUpdates = function() {
+Handler.prototype.processSavedUpdates = function () {
     if (this.updates) {
         for (var i = 0; i < this.updates.length; i++) {
             var update = this.updates[i];
@@ -82,7 +75,7 @@ Handler.prototype.processSavedUpdates = function() {
     }
 };
 
-Handler.prototype.processUpdate = function(update) {
+Handler.prototype.processUpdate = function (update) {
 
     if (typeof update.changedTiles === "undefined") {
         update.changedTiles = new Array();
@@ -110,14 +103,14 @@ Handler.prototype.processUpdate = function(update) {
     }
 };
 
-Handler.prototype.storeUpdateForFutureUse = function(data) {
+Handler.prototype.storeUpdateForFutureUse = function (data) {
     if (!this.updates) {
         this.updates = new Array();
     }
     this.updates.push(data);
 };
 
-Handler.prototype.handleUpdateMapIncremental = function(data) {
+Handler.prototype.handleUpdateMapIncremental = function (data) {
     if (data.tickCount == this.map.tickCount + 1) {
         this.processUpdate(data);
     } else {
@@ -126,19 +119,19 @@ Handler.prototype.handleUpdateMapIncremental = function(data) {
     }
 };
 
-Handler.prototype.handleJoined = function(data) {
+Handler.prototype.handleJoined = function (data) {
     this.addMessageToChat("SYSTEM", data.nickname + " has joined the game");
 };
 
-Handler.prototype.handleLeft = function(data) {
+Handler.prototype.handleLeft = function (data) {
     this.addMessageToChat("SYSTEM", data.nickname + " has left the game");
 };
 
-Handler.prototype.handleUpdateMoney = function(data) {
+Handler.prototype.handleUpdateMoney = function (data) {
     this.moneyTab.setMoney(data.money, data.electricity);
 };
 
-Handler.prototype.handleUpdateConstructionOptions = function(data) {
+Handler.prototype.handleUpdateConstructionOptions = function (data) {
 
     if (typeof data.options === "undefined") {
         data.options = new Array();

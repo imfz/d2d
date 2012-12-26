@@ -11,6 +11,17 @@ div {
     border: 0px solid black;
 }
 
+#error_holder {
+    position: absolute;
+    width: 100%;
+}
+
+#error_container {
+    position: relative;
+    width: 80%;
+    margin: 0 auto;
+}
+
 div#columns {
     clear: none;
     overflow: hidden;
@@ -18,27 +29,27 @@ div#columns {
 }
 
 div#leftcol {
-    float:left;
-    width:635px;
+    float: left;
+    width: 635px;
 
 }
 
 div#rightcol {
-    float:left;
-    width:200px;
+    float: left;
+    width: 200px;
 
 }
 
 div#rightmenu {
-    margin:auto;
-    overflow:auto;
-    width:210px;
-    height:390px
+    margin: auto;
+    overflow: auto;
+    width: 210px;
+    height: 390px
 }
 
 div#rightmenuprogress {
     margin: 0px auto;
-    width:182px;
+    width: 182px;
     text-align: center;
 }
 
@@ -57,24 +68,24 @@ div#chat {
 div#input {
     clear: both;
     width: 620px;
-    padding:6px;
+    padding: 6px;
     background-color: #e0e0e0;
     border: 1px solid black;
     border-top: 0px
 }
 
 input#phrase {
-    height:30px;
+    height: 30px;
     width: 30em;
 }
 
 input#username {
-    height:30px;
+    height: 30px;
     width: 14em;
 }
 
 input#playerId {
-    height:30px;
+    height: 30px;
     width: 14em;
 }
 

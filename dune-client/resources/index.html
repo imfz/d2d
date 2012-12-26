@@ -1,12 +1,16 @@
+<!DOCTYPE html>
 <html>
 
 <head>
-
-    <link rel="stylesheet" type="text/css" href="css/style.css"/>
-    <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.css"/>
+    <title>d2d</title>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.css">
 
     <script src="js/jquery-1.8.3.min.js"></script>
     <script src="js/jquery.json-2.4.min.js"></script>
+    <script src="js/utils.js"></script>
     <script src="js/enums.js"></script>
     <script src="js/log.js"></script>
     <script src="js/sprites.js"></script>
@@ -18,85 +22,14 @@
     <script src="js/handler.js"></script>
     <script src="js/rightmenu.js"></script>
     <script src="js/moneytab.js"></script>
-    <script>
-
-        var gameLog;
-        var engine;
-        var minimapEngine;
-        var map;
-        var chat;
-        var networking;
-        var handler;
-        var rightmenu;
-        var moneyTab;
-        var sprites;
-
-        $(window).load(
-                function () {
-                    var thing = { plugin:'jquery-json', version:2.4 };
-
-                    console.log("Initialized");
-                    gameLog = new GameLog();
-                    sprites = new Sprites();
-                    engine = new GameEngine();
-                    minimapEngine = new MinimapGameEngine();
-                    map = new GameMap();
-                    networking = new Networking();
-                    chat = new Chat();
-                    rightmenu = new RightMenu();
-                    moneyTab = new MoneyTab();
-                    handler = new Handler(map, gameLog, rightmenu, engine, moneyTab);
-
-                    sprites.setMainSprite(document.getElementById("main_sprite"));
-                    sprites.setUnitSprite(document.getElementById("unit_sprite"));
-                    sprites.setBuildingsSprite(document.getElementById("buildings_sprite"));
-                    sprites.setRefinerySprite(document.getElementById("refinery_sprite"));
-                    sprites.setHarvesterSprite(document.getElementById("harvester_sprite"));
-
-                    sprites.setOkButton(document.getElementById("okbutton"));
-                    sprites.setBuildBgGreen(document.getElementById("build_bg_green"));
-                    sprites.setBuildBgRed(document.getElementById("build_bg_red"));
-
-                    var canvas = document.getElementById("canvas");
-                    engine.setCanvas(canvas);
-                    engine.setMap(map);
-                    engine.bindEvents();
-
-                    var minimapCanvas = document.getElementById("minimap");
-                    minimapEngine.setCanvas(minimapCanvas);
-                    minimapEngine.setBufferCanvas(document.getElementById("minimap_buffer"));
-                    minimapEngine.setMap(map);
-                    minimapEngine.setEngine(engine);
-                    minimapEngine.bindEvents();
-
-                    rightmenu.setMainSprite(document.getElementById("buys_sprite"));
-                    rightmenu.bindEvents();
-
-                    gameLog.redraw();
-
-                    networking.init();
-
-                    chat.init();
-
-                    engine.render();
-
-                    minimapEngine.renderBuffer();
-                    minimapEngine.render();
-
-                    rightmenu.setOptions([
-                        {type:BUY_OPTION_SILO},
-                        {type:BUY_OPTION_REFINERY},
-                        {type:BUY_OPTION_REPAIR_DEPO},
-                        {type:BUY_OPTION_AIRBASE},
-                        {type:BUY_OPTION_FACTORY}
-                    ]);
-                }
-        )
-
-    </script>
+    <script src="js/startup.js"></script>
 </head>
 
 <body>
+<div id="error_holder">
+    <div id="error_container"></div>
+</div>
+
 <div id="columns">
     <div id="leftcol">
         <canvas id="canvas" width="630" height="441">
@@ -109,7 +42,7 @@
             <label class="control-label" for="username">Username:</label>
             <input id='username' class="input" type='text'/>
             <label class="control-label" for="playerId">PlayerId:</label>
-            <select id='playerId' class="input" value="1">
+            <select id='playerId' class="input">
                 <option>1</option>
                 <option>2</option>
                 <option>3</option>
@@ -153,17 +86,8 @@
         <div id="gameLog"></div>
     </div>
 </div>
-<img src="images/main_sprite.jpg" id="main_sprite" style="display: none">
-<img src="images/units.png" id="unit_sprite" style="display: none">
-<img src="images/buys.jpg" id="buys_sprite" style="display: none">
-<img src="images/buildings.jpg" id="buildings_sprite" style="display: none">
-<img src="images/harvester.png" id="harvester_sprite" style="display: none">
-<img src="images/refinery.jpg" id="refinery_sprite" style="display: none">
-<img src="images/okbutton.png" id="okbutton" style="display: none">
-<img src="images/build_bg_green.png" id="build_bg_green" style="display: none">
-<img src="images/build_bg_red.png" id="build_bg_red" style="display: none">
-<canvas id="minimap_buffer" width="200" height="200"  style="display: none">
-</canvas>
+
+<canvas id="minimap_buffer" width="200" height="200" style="display: none"></canvas>
 </body>
 
 </html>

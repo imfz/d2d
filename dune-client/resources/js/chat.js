@@ -1,7 +1,3 @@
-function $F() {
-    return document.getElementById(arguments[0]).value;
-}
-
 function getKeyCode(ev) {
     if (window.event) {
         return window.event.keyCode;
@@ -22,24 +18,32 @@ Chat.prototype.sendMessage = function (message) {
 Chat.prototype.init = function () {
     var that = this;
     $('#joinB').click(function (event) {
-        connection.start($F('username'), $F('playerId'));
-        return false;
+        var $username = $('#username');
+        var name = $username.val();
+        if (name == '') {
+            Utils.showError("Type your name!");
+            $username.focus();
+            return false;
+        }
+        connection.start(name, $('#playerId').val());
     });
 
     $('#phrase')
-            .attr({autocomplete:'OFF'})
-            .keyup(function (ev) {
-                var keyc = getKeyCode(ev);
-                if (keyc == 13 || keyc == 10) {
-                    that.sendMessage($F('phrase'));
-                    document.getElementById('phrase').value = '';
-                    return false;
-                }
-                return true;
-            });
+        .attr({autocomplete: 'OFF'})
+        .keyup(function (ev) {
+            var keyc = getKeyCode(ev);
+            if (keyc == 13 || keyc == 10) {
+                var $phrase = $('#phrase');
+                that.sendMessage($phrase.val());
+                $phrase.val('');
+                return false;
+            }
+            return true;
+        });
     $('#sendB').click(function (event) {
-        that.sendMessage($F('phrase'));
-        document.getElementById('phrase').value = '';
+        var $phrase = $('#phrase');
+        that.sendMessage($phrase.val());
+        $phrase.val('');
         return false;
     });
     console.log("Chat initialized");
