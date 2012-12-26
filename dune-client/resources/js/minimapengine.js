@@ -1,6 +1,7 @@
 function MinimapGameEngine() {
     this.frameCount = 0;
     this.startTime = 0;
+    this.isMouseDown = false;
     console.log("Created minimap engine");
 }
 
@@ -20,17 +21,17 @@ MinimapGameEngine.prototype.setEngine = function (engine) {
     this.engine = engine;
 };
 
-MinimapGameEngine.prototype.bindEvents = function() {
-    var that = this;
-    $(this.canvas).mousedown(function(e){
-        var x = Math.floor((e.pageX-$(that.canvas).offset().left));
-        var y = Math.floor((e.pageY-$(that.canvas).offset().top));
+MinimapGameEngine.prototype.bindEvents = function () {
+
+    function changeMinimapPosition(event) {
+        var x = Math.floor((event.pageX - $(that.canvas).offset().left));
+        var y = Math.floor((event.pageY - $(that.canvas).offset().top));
         var mapX = Math.round(x / that.canvas.width * that.map.getWidth());
         var mapY = Math.round(y / that.canvas.height * that.map.getHeight());
 
         switch (event.which) {
         case 1:
-            that.engine.centerOnCoordinates(mapX,mapY);
+            that.engine.centerOnCoordinates(mapX, mapY);
             break;
         case 3:
             if (mapX < 0) {
@@ -40,22 +41,40 @@ MinimapGameEngine.prototype.bindEvents = function() {
                 mapY = 0;
             }
             if (mapX >= that.map.width) {
-                mapX = that.map.width-1;
+                mapX = that.map.width - 1;
             }
             if (mapY >= that.map.height) {
-                mapY = that.map.height-1;
+                mapY = that.map.height - 1;
             }
-            connection.sendUnitAction(that.engine.selectedUnitId,Math.round(mapX),Math.round(mapY));
+            connection.sendUnitAction(that.engine.selectedUnitId, Math.round(mapX), Math.round(mapY));
             break;
         }
-        return false ;
-    });
-    $(this.canvas).bind("contextmenu",function(e){
+        return false;
+    }
+
+    var that = this;
+    $(this.canvas)
+        .mousedown(function (event) {
+            that.isMouseDown = true;
+            changeMinimapPosition(event);
+        })
+
+        .mouseup(function (event) {
+            that.isMouseDown = false;
+        })
+
+        .mousemove(function (event) {
+            if (that.isMouseDown) {
+                changeMinimapPosition(event);
+            }
+        }
+    );
+    $(this.canvas).bind("contextmenu", function (event) {
         return false;
     });
 };
 
-MinimapGameEngine.prototype.renderBuffer =function(){
+MinimapGameEngine.prototype.renderBuffer = function () {
     var canvas = this.buffer;
     var context = canvas.getContext("2d");
     var map = this.map;
@@ -68,10 +87,10 @@ MinimapGameEngine.prototype.renderBuffer =function(){
 
     function putpixel(imgd, ix, iy, rd, gr, bl) {
         var p = (height * iy + ix) * 4;
-        pix[p]   = rd % 256; // red
-        pix[p+1] = gr % 256; // green
-        pix[p+2] = bl % 256; // blue
-        pix[p+3] = 255; // alpha
+        pix[p] = rd % 256; // red
+        pix[p + 1] = gr % 256; // green
+        pix[p + 2] = bl % 256; // blue
+        pix[p + 3] = 255; // alpha
     }
 
     drawTerrain();
@@ -122,7 +141,7 @@ MinimapGameEngine.prototype.render = function () {
     context.clearRect(0, 0, width, height);
     context.drawImage(this.buffer, 0, 0);
 
-    var imgd = context.getImageData(0,0,width, height);
+    var imgd = context.getImageData(0, 0, width, height);
     var pix = imgd.data;
 
 
@@ -137,10 +156,10 @@ MinimapGameEngine.prototype.render = function () {
 
     function putpixel(imgd, ix, iy, rd, gr, bl) {
         var p = (height * iy + ix) * 4;
-        pix[p]   = rd % 256; // red
-        pix[p+1] = gr % 256; // green
-        pix[p+2] = bl % 256; // blue
-        pix[p+3] = 255; // alpha
+        pix[p] = rd % 256; // red
+        pix[p + 1] = gr % 256; // green
+        pix[p + 2] = bl % 256; // blue
+        pix[p + 3] = 255; // alpha
     }
 
     function drawUnits() {
@@ -151,7 +170,7 @@ MinimapGameEngine.prototype.render = function () {
             var x2 = Math.round((unit.x + 1) / map.getWidth() * canvas.width);
             var y2 = Math.round((unit.y + 1) / map.getHeight() * canvas.height);
             var color = sprites.getPlayerColor(unit.ownerId);
-            putPixels(x,y,x2,y2,color);
+            putPixels(x, y, x2, y2, color);
         }
     }
 
@@ -161,9 +180,9 @@ MinimapGameEngine.prototype.render = function () {
             var x = Math.round(building.x / map.getWidth() * canvas.width);
             var y = Math.round(building.y / map.getHeight() * canvas.height);
             var x2 = Math.round((building.x + building.width) / map.getWidth() * canvas.width);
-            var y2 = Math.round((building.y + building.height)/ map.getHeight() * canvas.height);
+            var y2 = Math.round((building.y + building.height) / map.getHeight() * canvas.height);
             var color = sprites.getPlayerColor(building.ownerId);
-            putPixels(x,y,x2,y2,color);
+            putPixels(x, y, x2, y2, color);
         }
     }
 
