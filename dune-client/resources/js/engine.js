@@ -100,6 +100,7 @@ GameEngine.prototype.bindEvents = function () {
         case 55:
         case 56:
         case 57:
+
             if (e.ctrlKey) {
                 that.saveCurrentSelection(keyCode);
             } else {
@@ -302,12 +303,64 @@ GameEngine.prototype.saveCurrentSelection = function (keyCode) {
 GameEngine.prototype.restoreCurrentSelection = function (keyCode) {
     var selectedBuildingWas = this.selectedBuilding;
     var group = this.groups[keyCode];
+
     if (group) {
+        var currentTime = new Date().getTime();
+        if (this.lastTimePressed) {
+            if (this.lastGroupPressed == keyCode) {
+                if (currentTime - this.lastTimePressed < 500) {
+                    this.centerOnGroup(group);
+                }
+            }
+        }
+        this.lastGroupPressed = keyCode;
+        this.lastTimePressed = currentTime;
         this.selectedUnitId = group[0];
         this.selectedBuilding = group[1];
         if (selectedBuildingWas != this.selectedBuilding) {
             connection.sendBuildingSelection(this.selectedBuilding);
         }
+    }
+};
+
+GameEngine.prototype.centerOnGroup = function (group) {
+    if (group) {
+        if (group.length == 2) {
+            if (group[1] > 0) {
+                this.centerOnBuilding(group[1]);
+            } else {
+                this.centerOnUnits(group[0]);
+            }
+        }
+    }
+};
+
+GameEngine.prototype.centerOnBuilding = function (buildingId) {
+    for (var i = 0; i < this.map.buildings.length; i++) {
+        var building = this.map.buildings[i];
+        if (building.id == buildingId) {
+            this.centerOnCoordinates(building.x, building.y);
+            return;
+        }
+    }
+};
+
+GameEngine.prototype.centerOnUnits = function (unitIds) {
+    var unitCount = 0;
+    var totalX = 0;
+    var totalY = 0;
+    for (var i = 0; i < this.map.units.length; i++) {
+        var unit = this.map.units[i];
+        for (var j = 0; j < unitIds.length; j++) {
+            if (unitIds[j] == unit.id) {
+                totalX += unit.x;
+                totalY += unit.y;
+                unitCount++;
+            }
+        }
+    }
+    if (unitCount > 0) {
+        this.centerOnCoordinates(Math.round(totalX / unitCount), Math.round(totalY / unitCount));
     }
 };
 
