@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Random;
 
 import lv.k2611a.domain.Building;
 import lv.k2611a.domain.BuildingType;
@@ -14,6 +15,8 @@ import lv.k2611a.domain.Unit;
 import lv.k2611a.domain.UnitType;
 import lv.k2611a.domain.ViewDirection;
 import lv.k2611a.service.GameServiceImpl;
+import lv.k2611a.util.AStar;
+import lv.k2611a.util.Node;
 import lv.k2611a.util.Point;
 
 public class ReturnToBase implements UnitGoal {
@@ -23,6 +26,7 @@ public class ReturnToBase implements UnitGoal {
 
     private Point targetRefinery;
     private long targetRefineryId;
+    private int ticksToWait;
 
     public ReturnToBase() {
     }
@@ -39,6 +43,10 @@ public class ReturnToBase implements UnitGoal {
 
     @Override
     public void process(Unit unit, Map map, GameServiceImpl gameService) {
+        if (ticksToWait > 0) {
+            ticksToWait--;
+            return;
+        }
         if (unit.getUnitType() != UnitType.HARVESTER) {
             unit.removeGoal(this);
             return;
@@ -97,9 +105,14 @@ public class ReturnToBase implements UnitGoal {
             unit.setTicksCollectingSpice(0);
             unit.removeGoal(this);
             if (unit.getY() > 2) {
-                if (!map.getTile(unit.getX(), unit.getY()-1).isUsedByUnit()) {
-                   unit.setX(unit.getX());
-                   unit.setY(unit.getY()-1);
+                if ((unit.getY() < map.getHeight() - 1) && (map.getTile(unit.getX(), unit.getY() + 1).isPassable())) {
+                    // do nothing, the harvester will find the way
+                } else {
+                    // teleport harvester
+                    if (!map.getTile(unit.getX(), unit.getY() - 1).isUsedByUnit()) {
+                        unit.setX(unit.getX());
+                        unit.setY(unit.getY() - 1);
+                    }
                 }
             }
             unit.setGoal(new Harvest());
@@ -133,8 +146,24 @@ public class ReturnToBase implements UnitGoal {
             // no refinery is found
             return;
         }
-        targetRefinery = targets.get(0).getPoint();
-        targetRefineryId = targets.get(0).getRefineryId();
+        for (Pair target : targets) {
+            Point targetPoint = target.getPoint();
+            if (targetPoint.equals(unitCoordinates)) {
+                targetRefinery = targetPoint;
+                targetRefineryId = target.getRefineryId();
+                return;
+            }
+            AStar aStar = new AStar();
+            List<Node> path = aStar.calcShortestPath(unit.getX(), unit.getY(), targetPoint.getX(), targetPoint.getY(), map, unit.getId(), true, unit.getOwnerId());
+            if (!path.isEmpty()) {
+                targetRefinery = targetPoint;
+                targetRefineryId = target.getRefineryId();
+                return;
+            }
+        }
+        targetRefinery = null;
+        targetRefineryId = 0;
+        ticksToWait = new Random().nextInt(80);
     }
 
     private static class Pair {

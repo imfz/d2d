@@ -16,6 +16,11 @@ public class AStar {
     private SortedSet<Node> openSet;
 
     public List<Node> calcShortestPath(int fromX, int fromY, int toX, int toY, Map map, long unitId, boolean isHarvester, int ownerId) {
+
+        if ((fromX == toX) && (fromY == toY)) {
+            return new ArrayList<Node>();
+        }
+
         Node start = new Node(fromX, fromY);
         Node goal = new Node(toX, toY);
 
@@ -51,7 +56,6 @@ public class AStar {
             }
 
             for (Node neighbor : map.getTileNeighbourNodes(current.getX(), current.getY())) {
-                boolean neighborIsBetter;
                 if (closedSet.contains(neighbor)) {
                     continue;
                 }
