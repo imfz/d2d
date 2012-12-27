@@ -4,12 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 
 import lv.k2611a.network.req.GameStateChanger;
 
 @Service
-@Scope("game")
+@Scope(value = "game", proxyMode = ScopedProxyMode.INTERFACES)
 public class UserActionServiceImpl implements UserActionService {
 
     private List<GameStateChanger> actions = new ArrayList<GameStateChanger>();
