@@ -10,6 +10,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import lv.k2611a.domain.Map;
+import lv.k2611a.domain.Unit;
 
 public class AStar {
     private Set<Node> closedSet;
@@ -89,6 +90,12 @@ public class AStar {
         }
         Collections.reverse(result);
         return result;
+    }
+
+    public static boolean pathExists(Unit unit, Map map, Point targetPoint) {
+        AStar aStar = new AStar();
+        List<Node> path = aStar.calcShortestPath(unit.getX(), unit.getY(), targetPoint.getX(), targetPoint.getY(), map, unit.getId(), true, unit.getOwnerId());
+        return !path.isEmpty();
     }
 
 }

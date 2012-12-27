@@ -15,7 +15,6 @@ import lv.k2611a.domain.UnitType;
 import lv.k2611a.domain.ViewDirection;
 import lv.k2611a.service.GameServiceImpl;
 import lv.k2611a.util.AStar;
-import lv.k2611a.util.Node;
 import lv.k2611a.util.Point;
 
 public class ReturnToBase implements UnitGoal {
@@ -107,17 +106,6 @@ public class ReturnToBase implements UnitGoal {
         if (unit.getTicksCollectingSpice() <= 0) {
             unit.setTicksCollectingSpice(0);
             unit.removeGoal(this);
-            if (unit.getY() > 2) {
-                if ((unit.getY() < map.getHeight() - 1) && (map.getTile(unit.getX(), unit.getY() + 1).isPassable())) {
-                    // do nothing, the harvester will find the way
-                } else {
-                    // teleport harvester
-                    if (!map.getTile(unit.getX(), unit.getY() - 1).isUsedByUnit()) {
-                        unit.setX(unit.getX());
-                        unit.setY(unit.getY() - 1);
-                    }
-                }
-            }
             unit.setGoal(new Harvest());
         }
     }
@@ -161,9 +149,8 @@ public class ReturnToBase implements UnitGoal {
                 targetRefineryId = target.getRefineryId();
                 return;
             }
-            AStar aStar = new AStar();
-            List<Node> path = aStar.calcShortestPath(unit.getX(), unit.getY(), targetPoint.getX(), targetPoint.getY(), map, unit.getId(), true, unit.getOwnerId());
-            if (!path.isEmpty()) {
+            boolean pathExists = AStar.pathExists(unit, map, targetPoint);
+            if (pathExists) {
                 targetRefinery = targetPoint;
                 targetRefineryId = target.getRefineryId();
                 return;
@@ -173,6 +160,8 @@ public class ReturnToBase implements UnitGoal {
         targetRefineryId = 0;
         ticksToWait = new Random().nextInt(80);
     }
+
+
 
     private static class Pair {
         private Point point;

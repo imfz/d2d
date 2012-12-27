@@ -75,6 +75,44 @@ public class ReturnToBaseTest {
     }
 
     @Test
+    public void notFullyLoadedHarvesterReturnsToBaseIfNoSpiceLeft() {
+        Map map = new Map(64,64, TileType.SAND);
+
+        // set the numbers big to no let the harvest unload faster
+        Harvest.TICKS_FOR_FULL = 100000;
+        ReturnToBase.TICKS_COLLECTING_UNLOADED_PER_TICK = 1;
+
+
+        Building building = new Building();
+        building.setType(BuildingType.REFINERY);
+        building.setX(1);
+        building.setY(3);
+        building.setOwnerId(1);
+        map.addBuilding(building);
+
+        Unit harvesterWaitingToUnloaded = new Unit();
+        harvesterWaitingToUnloaded.setUnitType(UnitType.HARVESTER);
+        harvesterWaitingToUnloaded.setTicksCollectingSpice(Harvest.TICKS_FOR_FULL / 2);
+        harvesterWaitingToUnloaded.setGoal(new Harvest());
+        harvesterWaitingToUnloaded.setOwnerId(1);
+        harvesterWaitingToUnloaded.setX(1);
+        harvesterWaitingToUnloaded.setY(1);
+        map.addUnit(harvesterWaitingToUnloaded);
+
+
+        gameService.setMap(map);
+
+        // should be enough ticks to return to base
+        for (int i = 0; i < 1000; i++) {
+            gameService.tick();
+        }
+
+        Point entranceToRefinery = new Point(2,4);
+        assertEquals(entranceToRefinery, harvesterWaitingToUnloaded.getPoint());
+        assertFalse(entranceToRefinery.equals(new Point(1,1)));
+    }
+
+    @Test
     public void unloadedHarvesterLeavesTheBaseEvenIfNoSpiceLeftOnTheMap() {
 
         Map map = new Map(64,64, TileType.SAND);

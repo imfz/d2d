@@ -6,13 +6,18 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import lv.k2611a.util.Node;
 import lv.k2611a.util.Point;
 
 public class Map {
 
+    private static final Logger log = LoggerFactory.getLogger(Map.class);
     private static final int MAX_PLAYER_COUNT = 16;
 
     private Tile[][] tiles;
@@ -23,7 +28,9 @@ public class Map {
     private List<Building> buildings;
 
     private HashMap<Point, RefineryEntrance> refineryEntranceList = new HashMap<Point, RefineryEntrance>();
+    private HashMap<Point, RefineryEntrance> refinerySecondEntranceList = new HashMap<Point, RefineryEntrance>();
     private Set<Integer> harvesters = new HashSet<Integer>();
+    private Set<Integer> freeHarvesters = new HashSet<Integer>();
 
     public Map(int width, int height) {
         this(width, height, TileType.SAND);
@@ -351,6 +358,14 @@ public class Map {
                         return true;
                     }
                 }
+                if (this.freeHarvesters.contains(unitId)) {
+                    RefineryEntrance secondEntrance = this.refinerySecondEntranceList.get(point);
+                    if (secondEntrance != null) {
+                        if (secondEntrance.getOwnerId() == ownerid) {
+                            return true;
+                        }
+                    }
+                }
             }
         }
         return false;
@@ -423,12 +438,37 @@ public class Map {
 
     }
 
+    public Point getRandomFreeTile(Point near, int distanceFrom, int distanceTo) {
+        Random r = new Random();
+        int iterationCount = 0;
+        while (iterationCount < 100) {
+            int x = r.nextInt(width);
+            int y = r.nextInt(height);
+            Point candidate = new Point(x,y);
+            double distanceBetween = Map.getDistanceBetween(near, candidate);
+            if ((distanceBetween > distanceFrom) && (distanceBetween < distanceTo)) {
+                return candidate;
+            }
+            iterationCount++;
+        }
+        log.warn("Cannot find free tile spot in " + iterationCount + " iterations");
+        return null;
+    }
+
     public HashMap<Point, RefineryEntrance> getRefineryEntranceList() {
         return refineryEntranceList;
     }
 
+    public HashMap<Point, RefineryEntrance> getRefinerySecondEntranceList() {
+        return refinerySecondEntranceList;
+    }
+
     public Set<Integer> getHarvesters() {
         return harvesters;
+    }
+
+    public Set<Integer> getFreeHarvesters() {
+        return freeHarvesters;
     }
 
     // precache simultaneously impassable segments, to avoid AStars worse-case scenario calculations. Like moving 100 units to impassable area.

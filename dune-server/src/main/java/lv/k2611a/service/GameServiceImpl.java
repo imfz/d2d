@@ -379,7 +379,9 @@ public class GameServiceImpl implements GameService {
     private void mapFillTileUsage(Map map) {
         map.clearUsageFlag();
         map.getRefineryEntranceList().clear();
+        map.getRefinerySecondEntranceList().clear();
         map.getHarvesters().clear();
+        map.getFreeHarvesters().clear();
         for (Building building : map.getBuildings()) {
             for (int x = 0; x < building.getType().getWidth(); x++) {
                 for (int y = 0; y < building.getType().getHeight(); y++) {
@@ -391,10 +393,18 @@ public class GameServiceImpl implements GameService {
             Point point = building.getPoint();
             point = new Point(point.getX() + 1, point.getY() + 1);
             RefineryEntrance refineryEntrance = new RefineryEntrance(building.getOwnerId(), point, building.getId());
+
+            Point secondEntrance = new Point(building.getPoint().getX()+1, building.getPoint().getY());
+            RefineryEntrance refinerySecondEntrance = new RefineryEntrance(building.getOwnerId(), point, building.getId());
+
             map.getRefineryEntranceList().put(point,refineryEntrance);
+            map.getRefinerySecondEntranceList().put(secondEntrance,refinerySecondEntrance);
         }
         for (Unit unit : map.getUnitsByType(UnitType.HARVESTER)) {
             map.getHarvesters().add(unit.getId());
+            if (unit.getTicksCollectingSpice() == 0) {
+                map.getFreeHarvesters().add(unit.getId());
+            }
         }
 
         for (Unit unit : map.getUnits()) {

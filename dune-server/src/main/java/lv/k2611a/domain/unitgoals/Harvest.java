@@ -13,6 +13,7 @@ import lv.k2611a.domain.Unit;
 import lv.k2611a.domain.UnitType;
 import lv.k2611a.service.GameService;
 import lv.k2611a.service.GameServiceImpl;
+import lv.k2611a.util.AStar;
 import lv.k2611a.util.Point;
 
 public class Harvest implements UnitGoal {
@@ -61,11 +62,23 @@ public class Harvest implements UnitGoal {
         if (targetSpice == null) {
             // still null, seems no spice left on the map
             unit.removeGoal(this);
-            Tile newTarget = map.getNearestFreeTile(unit.getX(), unit.getY());
-            if (newTarget != null) {
-                unit.setGoal(new RepetetiveMove(newTarget.getX(), newTarget.getY()));
+            if (unit.getTicksCollectingSpice() > 0) {
+                // unloaded already collected spice
+                unit.setGoal(new ReturnToBase());
+                return;
+            } else {
+                int iterationCount = 0;
+                while (iterationCount < 10) {
+                    Point newTarget = map.getRandomFreeTile(unit.getPoint(), 7, 25);
+                    if (newTarget != null) {
+                        if (AStar.pathExists(unit, map, newTarget)) {
+                            unit.setGoal(new RepetetiveMove(newTarget.getX(), newTarget.getY()));
+                        }
+                    }
+                    iterationCount++;
+                }
+                return;
             }
-            return;
         }
         // target spice already harvested
         if (map.getTile(targetSpice).getTileType() != TileType.SPICE) {
@@ -91,6 +104,7 @@ public class Harvest implements UnitGoal {
     private void moveToSpice(Unit unit) {
         unit.insertGoalBeforeCurrent(new Move(targetSpice));
     }
+
 
     private void harvestSpice(Unit unit, Map map, GameService gameService) {
         collectingSpice = wasCollectingSpice + 1;
