@@ -17,10 +17,6 @@
           class="lv.k2611a.service.GameServiceImpl">
     </bean>
 
-    <bean id="idGenerator"
-          class="lv.k2611a.service.IdGeneratorServiceImpl">
-    </bean>
-
     <bean id="userActionsService"
           class="lv.k2611a.service.UserActionServiceImpl">
     </bean>

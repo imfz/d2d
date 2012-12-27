@@ -12,7 +12,6 @@ import lv.k2611a.domain.BuildingType;
 import lv.k2611a.domain.Map;
 import lv.k2611a.domain.Tile;
 import lv.k2611a.domain.TileType;
-import lv.k2611a.service.IdGeneratorService;
 
 public class MapGenerator {
 
@@ -25,7 +24,7 @@ public class MapGenerator {
 
     }
 
-    public static Map generateMap(int width, int height, int baseCount, IdGeneratorService idGeneratorService) {
+    public static Map generateMap(int width, int height, int baseCount) {
         log.info("Generating map");
         Map map = new Map(width, height);
         Random random = new Random();
@@ -46,7 +45,7 @@ public class MapGenerator {
                 log.warn("Could not find a spot for base in 1000 iterations");
             }
             placeTiles(map, x, y, TileType.ROCK, BASE_RADIUS, random);
-            placeConYard(map, x,y,i, idGeneratorService.generateBuildingId());
+            placeConYard(map, x,y,i);
         }
 
 
@@ -86,14 +85,13 @@ public class MapGenerator {
         return map;
     }
 
-    private static void placeConYard(Map map, int x, int y, int playerId, int id) {
+    private static void placeConYard(Map map, int x, int y, int playerId) {
         Building building = new Building();
         building.setOwnerId(playerId);
         building.setType(BuildingType.CONSTRUCTIONYARD);
         building.setX(x);
         building.setY(y);
-        building.setId(id);
-        map.getBuildings().add(building);
+        map.addBuilding(building);
     }
 
     private static void fixSandyTiles(Map map) {

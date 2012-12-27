@@ -5,9 +5,9 @@ import lv.k2611a.util.Point;
 public class RefineryEntrance {
     private int ownerId;
     private Point point;
-    private long refineryId;
+    private int refineryId;
 
-    public RefineryEntrance(int ownerId, Point point, long refineryId) {
+    public RefineryEntrance(int ownerId, Point point, int refineryId) {
         this.ownerId = ownerId;
         this.point = point;
         this.refineryId = refineryId;
@@ -29,7 +29,7 @@ public class RefineryEntrance {
         this.point = point;
     }
 
-    public long getRefineryId() {
+    public int getRefineryId() {
         return refineryId;
     }
 }

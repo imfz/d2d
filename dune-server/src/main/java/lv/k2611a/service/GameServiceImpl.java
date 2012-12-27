@@ -62,9 +62,6 @@ public class GameServiceImpl implements GameService {
     private SessionsService sessionsService;
 
     @Autowired
-    private IdGeneratorService idGeneratorService;
-
-    @Autowired
     private UserActionService userActionService;
 
     @Autowired
@@ -77,18 +74,17 @@ public class GameServiceImpl implements GameService {
 
     @PostConstruct
     public void init() {
-        map = MapGenerator.generateMap(64, 64, 8, idGeneratorService);
+        map = MapGenerator.generateMap(64, 64, 8);
         Random r = new Random();
         for (int j = 1; j < 10; j++) {
             for (int i = 0; i < 10; i++) {
                 Unit unit = new Unit();
-                unit.setId(idGeneratorService.generateUnitId());
                 unit.setOwnerId(1);
                 unit.setX(j);
                 unit.setY(i);
                 unit.setGoal(new Move(10 + j, i));
                 unit.setUnitType(UnitType.HARVESTER);
-                map.getUnits().add(unit);
+                map.addUnit(unit);
             }
         }
     }
@@ -318,7 +314,7 @@ public class GameServiceImpl implements GameService {
         for (Building building : map.getBuildings()) {
             try {
                 if (building.getCurrentGoal() != null) {
-                    building.getCurrentGoal().process(building, map, idGeneratorService, this.tickCount);
+                    building.getCurrentGoal().process(building, map, this.tickCount);
                 }
             } catch (RuntimeException e) {
                 log.error("Exception while proccessing building goal", e);

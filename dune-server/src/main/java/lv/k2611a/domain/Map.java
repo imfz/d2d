@@ -1,6 +1,7 @@
 package lv.k2611a.domain;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,7 +23,7 @@ public class Map {
     private List<Building> buildings;
 
     private HashMap<Point, RefineryEntrance> refineryEntranceList = new HashMap<Point, RefineryEntrance>();
-    private Set<Long> harvesters = new HashSet<Long>();
+    private Set<Integer> harvesters = new HashSet<Integer>();
 
     public Map(int width, int height) {
         this(width, height, TileType.SAND);
@@ -79,7 +80,19 @@ public class Map {
     }
 
     public List<Unit> getUnits() {
-        return units;
+        return Collections.unmodifiableList(units);
+    }
+
+    public int addUnit(Unit unit) {
+        units.add(unit);
+        unit.setId(units.size()-1);
+        return unit.getId();
+    }
+
+    public int addBuilding(Building building) {
+        buildings.add(building);
+        building.setId(buildings.size()-1);
+        return building.getId();
     }
 
     public List<Unit> getUnitsByType(UnitType unitType) {
@@ -93,7 +106,7 @@ public class Map {
     }
 
     public List<Building> getBuildings() {
-        return buildings;
+        return Collections.unmodifiableList(buildings);
     }
 
     public List<Tile> getTilesByType(TileType tileType) {
@@ -309,11 +322,11 @@ public class Map {
         return Math.sqrt(deltaX * deltaX + deltaY * deltaY);
     }
 
-    public boolean isObstacle(Node neighbor, long unitId, int ownerid, boolean isHarvester) {
+    public boolean isObstacle(Node neighbor, int unitId, int ownerid, boolean isHarvester) {
         return isObstacle(neighbor.getX(), neighbor.getY(), unitId, ownerid, isHarvester);
     }
 
-    private boolean harvesterCheck(Point point, long unitId, int ownerid, boolean isHarvester) {
+    private boolean harvesterCheck(Point point, int unitId, int ownerid, boolean isHarvester) {
         if (isHarvester) {
             if (getTile(point).isUsedByUnit()) {
                 return false;
@@ -338,7 +351,7 @@ public class Map {
         return !tile.isPassable();
     }
 
-    public boolean isObstacle(int x, int y, long unitId, int ownerid, boolean isHarvester) {
+    public boolean isObstacle(int x, int y, int unitId, int ownerid, boolean isHarvester) {
         if (harvesterCheck(new Point(x, y), unitId, ownerid, isHarvester)) {
             return false;
         }
@@ -359,21 +372,17 @@ public class Map {
     }
 
     public Unit getUnit(int id) {
-        for (Unit unit : units) {
-            if (unit.getId() == id) {
-                return unit;
-            }
+        if (id >= units.size())  {
+            return null;
         }
-        return null;
+        return units.get(id);
     }
 
-    public Building getBuilding(long id) {
-        for (Building building : buildings) {
-            if (building.getId() == id) {
-                return building;
-            }
+    public Building getBuilding(int id) {
+        if (id >= buildings.size()) {
+            return null;
         }
-        return null;
+        return buildings.get(id);
     }
 
     public Player getPlayerById(int id) {
@@ -405,7 +414,7 @@ public class Map {
         return refineryEntranceList;
     }
 
-    public Set<Long> getHarvesters() {
+    public Set<Integer> getHarvesters() {
         return harvesters;
     }
 
@@ -438,5 +447,13 @@ public class Map {
                 }
             }
         }
+    }
+
+    public void removeUnit(Unit unit) {
+        this.units.set(unit.getId(),null);
+    }
+
+    public void removeBuilding(Building building) {
+        this.buildings.set(building.getId(),null);
     }
 }

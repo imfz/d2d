@@ -7,7 +7,7 @@ import lv.k2611a.domain.buildinggoals.BuildingGoal;
 import lv.k2611a.util.Point;
 
 public class Building {
-    private long id;
+    private int id;
     private BuildingType type;
     private int x;
     private int y;
@@ -45,7 +45,7 @@ public class Building {
         this.y = y;
     }
 
-    public long getId() {
+    public int getId() {
         return id;
     }
 
@@ -53,7 +53,7 @@ public class Building {
         return hp;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 

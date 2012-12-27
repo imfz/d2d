@@ -2,7 +2,6 @@ package lv.k2611a.domain;
 
 import org.junit.Test;
 
-import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertSame;
 
 public class BuildingTypeTest {

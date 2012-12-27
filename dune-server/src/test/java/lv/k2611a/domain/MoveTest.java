@@ -29,25 +29,23 @@ public class MoveTest {
         Map map = new Map(2,1);
         Unit unit = new Unit();
         unit.setGoal(new Move(1, 0));
-        int ID = 1;
-        unit.setId(ID);
         unit.setUnitType(UnitType.LAUNCHER);
         unit.setX(0);
         unit.setY(0);
-        map.getUnits().add(unit);
+        int id = map.addUnit(unit);
 
         gameService.setMap(map);
 
         for (int i = 0; i < UnitType.LAUNCHER.getSpeed() -1; i++) {
             gameService.tick();
-            unit = gameService.getMap().getUnit(ID);
+            unit = gameService.getMap().getUnit(id);
             assertEquals(0, unit.getX());
             assertEquals(0, unit.getY());
         }
 
         // one last final tick
         gameService.tick();
-        unit = gameService.getMap().getUnit(ID);
+        unit = gameService.getMap().getUnit(id);
         assertEquals(1, unit.getX());
         assertEquals(0,unit.getY());
 
@@ -62,11 +60,10 @@ public class MoveTest {
         for (int horizontalLineNumber = 0; horizontalLineNumber < mapHeight; horizontalLineNumber++) {
             Unit unit = new Unit();
             unit.setGoal(new Move(mapWidth - 1, horizontalLineNumber));
-            unit.setId(horizontalLineNumber);
             unit.setUnitType(UnitType.BATTLE_TANK);
             unit.setX(0);
             unit.setY(horizontalLineNumber);
-            map.getUnits().add(unit);
+            map.addUnit(unit);
         }
 
         gameService.setMap(map);
@@ -105,11 +102,10 @@ public class MoveTest {
         for (int verticalLineNumber = 0; verticalLineNumber < mapHeight; verticalLineNumber++) {
             Unit unit = new Unit();
             unit.setGoal(new Move(verticalLineNumber, mapHeight - 1));
-            unit.setId(verticalLineNumber);
             unit.setUnitType(UnitType.BATTLE_TANK);
             unit.setX(verticalLineNumber);
             unit.setY(0);
-            map.getUnits().add(unit);
+            map.addUnit(unit);
         }
 
         gameService.setMap(map);

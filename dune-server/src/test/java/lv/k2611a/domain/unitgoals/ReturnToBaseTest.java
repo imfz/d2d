@@ -42,29 +42,26 @@ public class ReturnToBaseTest {
         building.setType(BuildingType.REFINERY);
         building.setX(1);
         building.setY(1);
-        building.setId(1);
         building.setOwnerId(1);
-        map.getBuildings().add(building);
+        map.addBuilding(building);
 
         Unit harvester = new Unit();
-        harvester.setId(2);
         harvester.setUnitType(UnitType.HARVESTER);
         harvester.setTicksCollectingSpice(Harvest.TICKS_FOR_FULL);
         harvester.setGoal(new ReturnToBase());
         harvester.setOwnerId(1);
         harvester.setX(5);
         harvester.setY(5);
-        map.getUnits().add(harvester);
+        map.addUnit(harvester);
 
         Unit harvester2 = new Unit();
-        harvester2.setId(3);
         harvester2.setUnitType(UnitType.HARVESTER);
         harvester2.setTicksCollectingSpice(Harvest.TICKS_FOR_FULL);
         harvester2.setGoal(new ReturnToBase());
         harvester2.setOwnerId(1);
         harvester2.setX(6);
         harvester2.setY(5);
-        map.getUnits().add(harvester2);
+        map.addUnit(harvester2);
 
         gameService.setMap(map);
 
@@ -74,8 +71,6 @@ public class ReturnToBaseTest {
         }
 
         assertFalse(harvester.getPoint().equals(harvester2.getPoint()));
-
-
     }
 
     @Test
@@ -92,35 +87,31 @@ public class ReturnToBaseTest {
         building.setType(BuildingType.REFINERY);
         building.setX(1);
         building.setY(3);
-        building.setId(1);
         building.setOwnerId(1);
-        map.getBuildings().add(building);
+        map.addBuilding(building);
 
         building = new Building();
         building.setType(BuildingType.FACTORY);
         building.setX(1);
         building.setY(5);
-        building.setId(2);
         building.setOwnerId(1);
-        map.getBuildings().add(building);
+        map.addBuilding(building);
 
         building = new Building();
         building.setType(BuildingType.REFINERY);
         building.setX(1);
         building.setY(10);
-        building.setId(3);
         building.setOwnerId(1);
-        map.getBuildings().add(building);
+        map.addBuilding(building);
 
         Unit harvester = new Unit();
-        harvester.setId(4);
         harvester.setUnitType(UnitType.HARVESTER);
         harvester.setTicksCollectingSpice(Harvest.TICKS_FOR_FULL);
         harvester.setGoal(new ReturnToBase());
         harvester.setOwnerId(1);
         harvester.setX(1);
         harvester.setY(1);
-        map.getUnits().add(harvester);
+        map.addUnit(harvester);
 
         gameService.setMap(map);
 

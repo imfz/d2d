@@ -4,10 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import lv.k2611a.domain.Map;
-import lv.k2611a.domain.Tile;
 import lv.k2611a.domain.Unit;
-import lv.k2611a.domain.UnitType;
-import lv.k2611a.domain.unitgoals.Move;
 
 public class UnitStop extends AbstractGameStateChanger {
     private long[] ids;

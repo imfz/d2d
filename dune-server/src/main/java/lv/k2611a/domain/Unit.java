@@ -8,7 +8,7 @@ import lv.k2611a.domain.unitgoals.UnitGoal;
 import lv.k2611a.util.Point;
 
 public class Unit {
-    private long id;
+    private int id;
     private int x;
     private int y;
     private UnitType unitType;
@@ -45,11 +45,11 @@ public class Unit {
         this.y = y;
     }
 
-    public long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 

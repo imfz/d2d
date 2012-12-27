@@ -15,7 +15,7 @@ public class AStar {
     private Set<Node> closedSet;
     private SortedSet<Node> openSet;
 
-    public List<Node> calcShortestPath(int fromX, int fromY, int toX, int toY, Map map, long unitId, boolean isHarvester, int ownerId) {
+    public List<Node> calcShortestPath(int fromX, int fromY, int toX, int toY, Map map, int unitId, boolean isHarvester, int ownerId) {
 
         if ((fromX == toX) && (fromY == toY)) {
             return new ArrayList<Node>();

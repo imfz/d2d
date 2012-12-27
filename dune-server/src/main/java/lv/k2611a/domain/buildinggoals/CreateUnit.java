@@ -10,7 +10,6 @@ import lv.k2611a.domain.Tile;
 import lv.k2611a.domain.Unit;
 import lv.k2611a.domain.UnitType;
 import lv.k2611a.domain.ViewDirection;
-import lv.k2611a.service.IdGeneratorService;
 
 public class CreateUnit implements BuildingGoal {
 
@@ -27,7 +26,7 @@ public class CreateUnit implements BuildingGoal {
     }
 
     @Override
-    public void process(Building building, Map map, IdGeneratorService idGeneratorService, long tickCount) {
+    public void process(Building building, Map map, long tickCount) {
         Player player = map.getPlayerById(building.getOwnerId());
 
         if (player.getElectricity() < 0) {
@@ -46,13 +45,13 @@ public class CreateUnit implements BuildingGoal {
         if (building.getTicksAccumulated() >= unitType.getTicksToBuild()-1) {
             building.setTicksAccumulated(0);
             building.removeGoal(this);
-            placeUnit(map, building, idGeneratorService);
+            placeUnit(map, building);
         } else {
             building.setTicksAccumulated(building.getTicksAccumulated() + 1);
         }
     }
 
-    private void placeUnit(Map map, Building building, IdGeneratorService idGeneratorService) {
+    private void placeUnit(Map map, Building building) {
         int newX = building.getX() + 1;
         int newY = building.getY() +2;
 
@@ -85,13 +84,12 @@ public class CreateUnit implements BuildingGoal {
 
 
         Unit unit = new Unit();
-        unit.setId(idGeneratorService.generateUnitId());
         unit.setOwnerId(building.getOwnerId());
         unit.setX(newX);
         unit.setY(newY);
         unit.setUnitType(unitType);
         unit.setViewDirection(ViewDirection.BOTTOM);
-        map.getUnits().add(unit);
+        map.addUnit(unit);
 
     }
 }

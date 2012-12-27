@@ -108,5 +108,13 @@ public class Move implements UnitGoal {
         unit.setViewDirection(ViewDirection.getDirection(unit.getX(), unit.getY(), next.getX(), next.getY()));
     }
 
-
+    @Override
+    public String toString() {
+        return "Move{" +
+                "goalX=" + goalX +
+                ", goalY=" + goalY +
+                ", path=" + path +
+                ", aStarCache=" + aStarCache +
+                '}';
+    }
 }

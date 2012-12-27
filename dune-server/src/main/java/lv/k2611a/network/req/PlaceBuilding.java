@@ -2,7 +2,6 @@ package lv.k2611a.network.req;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import lv.k2611a.domain.Building;
 import lv.k2611a.domain.BuildingType;
@@ -13,7 +12,6 @@ import lv.k2611a.domain.Unit;
 import lv.k2611a.domain.UnitType;
 import lv.k2611a.domain.ViewDirection;
 import lv.k2611a.domain.unitgoals.Harvest;
-import lv.k2611a.service.IdGeneratorService;
 import lv.k2611a.util.MapUtils;
 
 public class PlaceBuilding extends AbstractGameStateChanger {
@@ -24,9 +22,6 @@ public class PlaceBuilding extends AbstractGameStateChanger {
     private int y;
     // since building is produced by constr. yard, ask con yard id here
     private int builderId;
-
-    @Autowired
-    private IdGeneratorService idGeneratorService;
 
     @Override
     public void changeGameState(Map map) {
@@ -57,9 +52,8 @@ public class PlaceBuilding extends AbstractGameStateChanger {
         building.setType(buildingTypeBuilt);
         building.setX(x);
         building.setY(y);
-        building.setId(idGeneratorService.generateBuildingId());
         building.setOwnerId(conYard.getOwnerId());
-        map.getBuildings().add(building);
+        map.addBuilding(building);
 
         conYard.setAwaitingClick(false);
         conYard.setTicksAccumulated(0);
@@ -92,14 +86,13 @@ public class PlaceBuilding extends AbstractGameStateChanger {
 
 
             Unit unit = new Unit();
-            unit.setId(idGeneratorService.generateUnitId());
             unit.setOwnerId(conYard.getOwnerId());
             unit.setX(newX);
             unit.setY(newY);
             unit.setUnitType(UnitType.HARVESTER);
             unit.setViewDirection(ViewDirection.BOTTOM);
             unit.setGoal(new Harvest());
-            map.getUnits().add(unit);
+            map.addUnit(unit);
         }
 
     }
@@ -152,7 +145,7 @@ public class PlaceBuilding extends AbstractGameStateChanger {
         this.y = y;
     }
 
-    public int getBuilderId() {
+    public long getBuilderId() {
         return builderId;
     }
 

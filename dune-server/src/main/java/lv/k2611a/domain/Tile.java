@@ -49,7 +49,7 @@ public class Tile {
     }
 
     public boolean isUsedByUnit() {
-        return usedBy > 0;
+        return usedBy >= 0;
     }
 
     public long getUsedBy() {

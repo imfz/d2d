@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Random;
 
 import lv.k2611a.domain.Building;
-import lv.k2611a.domain.BuildingType;
 import lv.k2611a.domain.Map;
 import lv.k2611a.domain.Player;
 import lv.k2611a.domain.RefineryEntrance;
@@ -25,13 +24,13 @@ public class ReturnToBase implements UnitGoal {
     public static final int MONEY_PER_TICK = 40;
 
     private Point targetRefinery;
-    private long targetRefineryId;
+    private int targetRefineryId;
     private int ticksToWait;
 
     public ReturnToBase() {
     }
 
-    public ReturnToBase(Point targetRefinery, long targetRefineryId) {
+    public ReturnToBase(Point targetRefinery, int targetRefineryId) {
         this.targetRefinery = targetRefinery;
         this.targetRefineryId = targetRefineryId;
     }
@@ -172,9 +171,9 @@ public class ReturnToBase implements UnitGoal {
     private static class Pair {
         private Point point;
         private double distance;
-        private long refineryId;
+        private int refineryId;
 
-        private Pair(Point point, double distance, long refineryId) {
+        private Pair(Point point, double distance, int refineryId) {
             this.point = point;
             this.distance = distance;
             this.refineryId = refineryId;
@@ -196,12 +195,21 @@ public class ReturnToBase implements UnitGoal {
             this.distance = distance;
         }
 
-        public long getRefineryId() {
+        public int getRefineryId() {
             return refineryId;
         }
 
-        public void setRefineryId(long refineryId) {
+        public void setRefineryId(int refineryId) {
             this.refineryId = refineryId;
         }
+    }
+
+    @Override
+    public String toString() {
+        return "ReturnToBase{" +
+                "targetRefinery=" + targetRefinery +
+                ", targetRefineryId=" + targetRefineryId +
+                ", ticksToWait=" + ticksToWait +
+                '}';
     }
 }
