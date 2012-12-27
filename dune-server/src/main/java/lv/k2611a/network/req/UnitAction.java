@@ -19,7 +19,7 @@ public class UnitAction extends AbstractGameStateChanger {
 
     private int x;
     private int y;
-    private long[] ids;
+    private int[] ids;
 
     public int getX() {
         return x;
@@ -37,11 +37,11 @@ public class UnitAction extends AbstractGameStateChanger {
         this.y = y;
     }
 
-    public long[] getIds() {
+    public int[] getIds() {
         return ids;
     }
 
-    public void setIds(long[] ids) {
+    public void setIds(int[] ids) {
         this.ids = ids;
     }
 
@@ -49,18 +49,16 @@ public class UnitAction extends AbstractGameStateChanger {
     @Override
     public void changeGameState(Map map) {
         if (ids == null) {
-            ids = new long[0];
+            ids = new int[0];
         }
-        Set<Long> unitIds = new HashSet<Long>();
-        for (long id : ids) {
+        Set<Integer> unitIds = new HashSet<Integer>();
+        for (int id : ids) {
             unitIds.add(id);
         }
-        Tile tile = map.getTile(x,y);
-        for (Unit unit : map.getUnits()) {
-            if (unitIds.contains(unit.getId())) {
-                if (unit.getOwnerId() == playerId) {
-                    processUnit(map, tile, unit);
-                }
+        Tile tile = map.getTile(x, y);
+        for (Unit unit : map.getUnitsByIds(unitIds)) {
+            if (unit.getOwnerId() == playerId) {
+                processUnit(map, tile, unit);
             }
         }
     }

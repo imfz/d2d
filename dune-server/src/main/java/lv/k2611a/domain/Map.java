@@ -83,15 +83,28 @@ public class Map {
         return Collections.unmodifiableList(units);
     }
 
+    public List<Unit> getUnitsByIds(Set<Integer> ids) {
+        List<Unit> unitList = new ArrayList<Unit>();
+        for (Integer id : ids) {
+            if (id != null) {
+                Unit unit = getUnit(id);
+                if (unit != null) {
+                    unitList.add(unit);
+                }
+            }
+        }
+        return unitList;
+    }
+
     public int addUnit(Unit unit) {
         units.add(unit);
-        unit.setId(units.size()-1);
+        unit.setId(units.size() - 1);
         return unit.getId();
     }
 
     public int addBuilding(Building building) {
         buildings.add(building);
-        building.setId(buildings.size()-1);
+        building.setId(buildings.size() - 1);
         return building.getId();
     }
 
@@ -372,7 +385,7 @@ public class Map {
     }
 
     public Unit getUnit(int id) {
-        if (id >= units.size())  {
+        if (id >= units.size()) {
             return null;
         }
         return units.get(id);
@@ -450,10 +463,10 @@ public class Map {
     }
 
     public void removeUnit(Unit unit) {
-        this.units.set(unit.getId(),null);
+        this.units.set(unit.getId(), null);
     }
 
     public void removeBuilding(Building building) {
-        this.buildings.set(building.getId(),null);
+        this.buildings.set(building.getId(), null);
     }
 }

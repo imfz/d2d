@@ -3,7 +3,7 @@ package lv.k2611a.network;
 import lv.k2611a.domain.Building;
 
 public class BuildingDTO {
-    private long id;
+    private int id;
     private int x;
     private int y;
     private int type;
@@ -19,7 +19,7 @@ public class BuildingDTO {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 

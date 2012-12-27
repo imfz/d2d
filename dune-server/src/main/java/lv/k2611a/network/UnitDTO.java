@@ -6,7 +6,7 @@ import lv.k2611a.domain.unitgoals.Harvest;
 import lv.k2611a.domain.unitgoals.UnitGoal;
 
 public class UnitDTO {
-    private long id;
+    private int id;
     private int x;
     private int y;
     private int unitType;
@@ -46,7 +46,7 @@ public class UnitDTO {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
