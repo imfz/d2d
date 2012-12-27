@@ -38,12 +38,22 @@ public enum BuildingType implements EntityType {
         }
     };
 
+    private static BuildingType[] indexByJsId;
+
     static {
+        int maxJsId = 0;
         Set<Integer> idsOnJs = new HashSet<Integer>();
         for (BuildingType buildingType : values()) {
+            if (buildingType.getIdOnJS() > maxJsId) {
+                maxJsId = buildingType.getIdOnJS();
+            }
             if (!idsOnJs.add(buildingType.getIdOnJS())) {
                 throw new AssertionError("Duplicate js id");
             }
+        }
+        indexByJsId = new BuildingType[maxJsId + 1];
+        for (BuildingType buildingType : values()) {
+            indexByJsId[buildingType.getIdOnJS()] = buildingType;
         }
     }
 
@@ -124,11 +134,6 @@ public enum BuildingType implements EntityType {
     }
 
     public static BuildingType getByJsId(int idInIs) {
-        for (BuildingType buildingType : values()) {
-            if (buildingType.getIdOnJS() == idInIs) {
-                return buildingType;
-            }
-        }
-        throw new AssertionError("Unknown building type id in js : " + idInIs);
+        return indexByJsId[idInIs];
     }
 }

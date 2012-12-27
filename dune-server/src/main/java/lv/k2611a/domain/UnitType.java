@@ -16,12 +16,23 @@ public enum UnitType implements EntityType {
     MCV(10, 100, 200, 100, 5)
     ;
 
+
+    private static UnitType[] indexByJsId;
+
     static {
+        int maxJsId = 0;
         Set<Integer> idsOnJs = new HashSet<Integer>();
         for (UnitType unitType : values()) {
+            if (unitType.getIdOnJS() > maxJsId) {
+                maxJsId = unitType.getIdOnJS();
+            }
             if (!idsOnJs.add(unitType.getIdOnJS())) {
                 throw new AssertionError("Duplicate js id");
             }
+        }
+        indexByJsId = new UnitType[maxJsId + 1];
+        for (UnitType unitType : values()) {
+            indexByJsId[unitType.getIdOnJS()] = unitType;
         }
     }
 
@@ -76,12 +87,7 @@ public enum UnitType implements EntityType {
 
 
     public static UnitType getByJsId(int idInIs) {
-        for (UnitType unitType : values()) {
-            if (unitType.getIdOnJS() == idInIs) {
-                return unitType;
-            }
-        }
-        throw new AssertionError("Unknown building type id in js : " + idInIs);
+        return indexByJsId[idInIs];
     }
 
 
