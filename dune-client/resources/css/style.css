@@ -65,30 +65,6 @@ div#chat {
     border: 1px solid black;
 }
 
-div#input {
-    clear: both;
-    width: 620px;
-    padding: 6px;
-    background-color: #e0e0e0;
-    border: 1px solid black;
-    border-top: 0px
-}
-
-input#phrase {
-    height: 30px;
-    width: 30em;
-}
-
-input#username {
-    height: 30px;
-    width: 14em;
-}
-
-input#playerId {
-    height: 30px;
-    width: 14em;
-}
-
 div.hidden {
     display: none;
 }

@@ -20,8 +20,8 @@ NetworkConnection.prototype.start = function (name, playerId) {
 
 NetworkConnection.prototype.onopen = function () {
     connection._connEstablished = true;
-    $("#joinform").css("display", "none");
-    $("#joinedform").css("display", "block");
+    $("#joinform").hide();
+    $("#joinedform").show();
     $("#phrase").focus();
     connection.sendJoin(connection._username, connection._playerId);
 };
@@ -103,9 +103,9 @@ NetworkConnection.prototype.onclose = function (m) {
         Utils.showError("Cannot connect to socket");
     }
     connection._ws = null;
-    $("#joinform").css("display", "block");
-    $("#joinedform").css("display", "none");
-    $("#chat").html();
+    $("#joinform").show();
+    $("#joinedform").hide();
+    $("#chat").html('');
     $("#username").focus();
 };
 

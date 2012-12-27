@@ -30,7 +30,7 @@ Chat.prototype.init = function () {
     });
 
     $('#phrase')
-        .attr({autocomplete: 'OFF'})
+        .attr({autocomplete: 'off'})
         .keyup(function (ev) {
             var keyc = getKeyCode(ev);
             if (keyc == 13 || keyc == 10) {
