@@ -58,6 +58,7 @@ public class ReturnToBase implements UnitGoal {
         if (targetRefinery == null) {
             searchBase(unit, map);
         }
+
         if (targetRefinery == null) {
             // no refinery found.
             ticksToWait = new Random().nextInt(10);
@@ -65,7 +66,7 @@ public class ReturnToBase implements UnitGoal {
         }
         Building building = map.getBuilding(targetRefineryId);
         if (building == null) {
-            // refinery dissappeared
+            // refinery disappeared
             targetRefinery = null;
             targetRefineryId = 0;
             ticksToWait = new Random().nextInt(10);
@@ -129,6 +130,11 @@ public class ReturnToBase implements UnitGoal {
         for (java.util.Map.Entry<Point, RefineryEntrance> pointRefineryEntranceEntry : map.getRefineryEntranceList().entrySet()) {
             RefineryEntrance refineryEntrance = pointRefineryEntranceEntry.getValue();
             if (refineryEntrance.getOwnerId() == unit.getOwnerId()) {
+                if (refineryEntrance.getPoint().equals(unit.getPoint())) {
+                    targetRefinery = refineryEntrance.getPoint();
+                    targetRefineryId = refineryEntrance.getRefineryId();
+                    return;
+                }
                 Point point = refineryEntrance.getPoint();
                 if (!map.getTile(point).isUsedByUnit()) {
                     double distanceBetween = Map.getDistanceBetween(point, unitCoordinates);
