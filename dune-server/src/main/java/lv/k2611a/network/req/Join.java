@@ -8,7 +8,7 @@ import lv.k2611a.ClientConnection;
 import lv.k2611a.network.resp.Joined;
 import lv.k2611a.network.resp.UpdateMap;
 import lv.k2611a.service.GameService;
-import lv.k2611a.service.SessionsService;
+import lv.k2611a.service.GameSessionsService;
 
 public class Join implements Request {
 
@@ -34,7 +34,7 @@ public class Join implements Request {
     }
 
     @Autowired
-    private SessionsService sessionsService;
+    private GameSessionsService sessionsService;
 
     @Autowired
     private GameService mapService;

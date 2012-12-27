@@ -18,8 +18,9 @@ import com.alibaba.fastjson.JSON;
 import lv.k2611a.network.req.Request;
 import lv.k2611a.network.resp.Left;
 import lv.k2611a.network.resp.Response;
-import lv.k2611a.network.resp.UpdateConstructionOptions;
-import lv.k2611a.service.SessionsService;
+import lv.k2611a.service.GlobalSessionService;
+import lv.k2611a.service.scope.ContextService;
+import lv.k2611a.service.scope.GameKey;
 
 public class ClientConnection implements WebSocket.OnTextMessage, Runnable {
 
@@ -39,14 +40,19 @@ public class ClientConnection implements WebSocket.OnTextMessage, Runnable {
     }
 
     @Autowired
-    private SessionsService sessionsService;
+    private GlobalSessionService globalSessionService;
 
     @Autowired
     private AutowireCapableBeanFactory autowireCapableBeanFactory;
 
+    @Autowired
+    private ContextService contextService;
+
     private String username;
 
     private int playerId;
+
+    private final GameKey gameKey;
 
     private Integer selectedBuildingId;
 
@@ -54,26 +60,66 @@ public class ClientConnection implements WebSocket.OnTextMessage, Runnable {
 
     private ExecutorService exec = Executors.newFixedThreadPool(1);
 
-    public ClientConnection() {
+    private volatile boolean closed = false;
+
+    public ClientConnection(GameKey gameKey) {
+        this.gameKey = gameKey;
     }
 
     public void onOpen(Connection connection) {
+        try {
+            contextService.setSessionKey(gameKey);
+            processOnOpen(connection);
+        } finally {
+            contextService.clearCurrentSessionKey();
+        }
+    }
+
+    private void processOnOpen(Connection connection) {
+        if (!closed) {
+            closed = true;
+        } else {
+            return;
+        }
         _connection = connection;
         exec.execute(this);
-        sessionsService.add(this);
+        globalSessionService.add(this);
         log.info("Connection opened");
     }
 
     public void onClose(int closeCode, String message) {
+        closeInContext();
+    }
+
+    private void closeInContext() {
+        try {
+            contextService.setSessionKey(gameKey);
+            processOnClose();
+        } finally {
+            contextService.clearCurrentSessionKey();
+        }
+    }
+
+    private void processOnClose() {
         exec.shutdown();
-        sessionsService.remove(this);
+        globalSessionService.remove(this);
         Left left = new Left();
         left.setNickname(username);
-        sessionsService.sendUpdate(left);
+        globalSessionService.sendUpdate(left);
         log.info("Connection closed");
     }
 
     public void onMessage(String data) {
+        try {
+            contextService.setSessionKey(gameKey);
+            processMessage(data);
+        } finally {
+            contextService.clearCurrentSessionKey();
+        }
+
+    }
+
+    private void processMessage(String data) {
         NetworkPacket networkPacket = JSON.parseObject(data, NetworkPacket.class);
         Request request = null;
         try {
@@ -86,7 +132,6 @@ public class ClientConnection implements WebSocket.OnTextMessage, Runnable {
         } finally {
             localConnection.remove();
         }
-
     }
 
     @Override
@@ -108,10 +153,6 @@ public class ClientConnection implements WebSocket.OnTextMessage, Runnable {
                 String toSend = JSON.toJSONString(networkPacket);
                 byteCount += toSend.length() * 2;
                 _connection.sendMessage(toSend);
-
-                if (response.getClass() == UpdateConstructionOptions.class) {
-                    //System.out.println(toSend);
-                }
             } catch (IOException e) {
                 log.error("Exception happened while working with websocket", e);
                 break;
@@ -132,6 +173,7 @@ public class ClientConnection implements WebSocket.OnTextMessage, Runnable {
             speed = byteCount / (timePassed / 1000);
         }
         log.info("Message writer closed. Total bytes sent : " + byteCount + " . Time passed : " + timePassed + " . Speed : " + speed + " bytes / sec");
+        closeInContext();
     }
 
     public void sendMessage(Response response) {

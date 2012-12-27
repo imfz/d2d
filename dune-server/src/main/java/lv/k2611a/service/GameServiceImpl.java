@@ -4,19 +4,23 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.annotation.Scope;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 
+import lv.k2611a.App;
 import lv.k2611a.ClientConnection;
 import lv.k2611a.domain.Building;
 import lv.k2611a.domain.BuildingType;
@@ -30,7 +34,6 @@ import lv.k2611a.domain.Unit;
 import lv.k2611a.domain.UnitType;
 import lv.k2611a.domain.buildinggoals.CreateBuilding;
 import lv.k2611a.domain.buildinggoals.CreateUnit;
-import lv.k2611a.domain.unitgoals.Move;
 import lv.k2611a.jmx.ServerMonitor;
 import lv.k2611a.network.BuildingDTO;
 import lv.k2611a.network.MapDTO;
@@ -43,29 +46,41 @@ import lv.k2611a.network.resp.UpdateConstructionOptions;
 import lv.k2611a.network.resp.UpdateMap;
 import lv.k2611a.network.resp.UpdateMapIncremental;
 import lv.k2611a.network.resp.UpdateMoney;
+import lv.k2611a.service.scope.ContextService;
+import lv.k2611a.service.scope.GameKey;
 import lv.k2611a.util.MapGenerator;
 import lv.k2611a.util.Point;
 
 @Service
-@Scope("singleton")
+@Scope(value = "game", proxyMode = ScopedProxyMode.INTERFACES)
 public class GameServiceImpl implements GameService {
 
     private static final Logger log = LoggerFactory.getLogger(GameServiceImpl.class);
     public static final int TICK_LENGTH = 1000 / 20;
     public static final int BUILDING_USAGE_FLAG = -2;
-    public static final int REFINERY_ENTRY_USAGE_FLAG = -3;
 
     @Autowired
     private AutowireCapableBeanFactory autowireCapableBeanFactory;
 
     @Autowired
-    private SessionsService sessionsService;
+    private GameSessionsService sessionsService;
 
     @Autowired
     private UserActionService userActionService;
 
     @Autowired
     private ServerMonitor serverMonitor;
+
+    @Autowired
+    private ContextService contextService;
+
+    private boolean testMode = false;
+
+    public void setTestMode(boolean testMode) {
+        this.testMode = testMode;
+    }
+
+    private ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
 
     private volatile Map map;
     private volatile long tickCount = 0;
@@ -74,19 +89,37 @@ public class GameServiceImpl implements GameService {
 
     @PostConstruct
     public void init() {
+        log.info("Initializing game");
         map = MapGenerator.generateMap(64, 64, 8);
-        Random r = new Random();
-        for (int j = 1; j < 10; j++) {
-            for (int i = 0; i < 10; i++) {
-                Unit unit = new Unit();
-                unit.setOwnerId(1);
-                unit.setX(j);
-                unit.setY(i);
-                unit.setGoal(new Move(10 + j, i));
-                unit.setUnitType(UnitType.HARVESTER);
-                map.addUnit(unit);
-            }
+        Runnable ticker = createTicker(contextService.getCurrentContextKey());
+        if (!testMode) {
+            exec.scheduleAtFixedRate(ticker, 0, TICK_LENGTH, TimeUnit.MILLISECONDS);
+            log.info("Scheduler started");
         }
+    }
+
+    private Runnable createTicker(final GameKey currentContextKey) {
+        return new Runnable() {
+                @Override
+                public void run() {
+                    ContextService contextService = App.autowireCapableBeanFactory.getBean(ContextService.class);
+                    try {
+                        contextService.setSessionKey(currentContextKey);
+                        tick();
+                    } catch (Exception e) {
+                        log.error("Exception while processing tick", e);
+                    } finally {
+                        contextService.clearCurrentSessionKey();
+                    }
+                }
+            };
+    }
+
+    @PreDestroy
+    public void destroy() {
+        log.info("Destroying game");
+        exec.shutdown();
+        log.info("Scheduler stopped");
     }
 
     public Map getMap() {
@@ -151,7 +184,6 @@ public class GameServiceImpl implements GameService {
         return unitDTOList;
     }
 
-    @Scheduled(fixedRate = TICK_LENGTH)
     public synchronized void tick() {
         long startTime = System.currentTimeMillis();
 
@@ -167,7 +199,6 @@ public class GameServiceImpl implements GameService {
         processUserClicks(map);
         processBuildingGoals(map);
         processUnitsGoals(map);
-
         sendIncrementalUpdate();
         sendAvalaibleConstructionOptionsUpdate();
         sendUpdateMoney();
@@ -263,7 +294,8 @@ public class GameServiceImpl implements GameService {
                             int percentsDone = (int) Math.round(done * 100);
                             updateConstructionOptions.setPercentsDone(percentsDone);
                         }
-                    }if (building.getCurrentGoal() instanceof CreateUnit) {
+                    }
+                    if (building.getCurrentGoal() instanceof CreateUnit) {
                         CreateUnit createUnit = (CreateUnit) building.getCurrentGoal();
                         UnitType unitType = createUnit.getUnitType();
                         if (unitType != null) {
@@ -394,11 +426,11 @@ public class GameServiceImpl implements GameService {
             point = new Point(point.getX() + 1, point.getY() + 1);
             RefineryEntrance refineryEntrance = new RefineryEntrance(building.getOwnerId(), point, building.getId());
 
-            Point secondEntrance = new Point(building.getPoint().getX()+1, building.getPoint().getY());
+            Point secondEntrance = new Point(building.getPoint().getX() + 1, building.getPoint().getY());
             RefineryEntrance refinerySecondEntrance = new RefineryEntrance(building.getOwnerId(), point, building.getId());
 
-            map.getRefineryEntranceList().put(point,refineryEntrance);
-            map.getRefinerySecondEntranceList().put(secondEntrance,refinerySecondEntrance);
+            map.getRefineryEntranceList().put(point, refineryEntrance);
+            map.getRefinerySecondEntranceList().put(secondEntrance, refinerySecondEntrance);
         }
         for (Unit unit : map.getUnitsByType(UnitType.HARVESTER)) {
             map.getHarvesters().add(unit.getId());

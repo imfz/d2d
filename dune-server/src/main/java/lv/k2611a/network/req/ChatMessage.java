@@ -4,14 +4,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import lv.k2611a.ClientConnection;
 import lv.k2611a.network.resp.IncomingChatMessage;
-import lv.k2611a.service.SessionServiceImpl;
+import lv.k2611a.service.GlobalSessionService;
 
 public class ChatMessage implements Request {
 
     private String message;
 
     @Autowired
-    private SessionServiceImpl sessionService;
+    private GlobalSessionService sessionService;
 
     public String getMessage() {
         return message;

@@ -5,7 +5,7 @@ import java.util.Set;
 import lv.k2611a.ClientConnection;
 import lv.k2611a.network.resp.Response;
 
-public interface SessionsService {
+public interface GameSessionsService {
     boolean add(ClientConnection clientConnection);
 
     boolean remove(Object o);

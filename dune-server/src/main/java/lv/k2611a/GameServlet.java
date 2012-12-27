@@ -10,9 +10,16 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.websocket.WebSocket;
 import org.eclipse.jetty.websocket.WebSocketFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import lv.k2611a.service.scope.ContextService;
+import lv.k2611a.service.scope.GameKey;
 
 public class GameServlet extends HttpServlet {
     private WebSocketFactory _wsFactory;
+
+    private static final Logger log = LoggerFactory.getLogger(GameServlet.class);
 
 
     @Override
@@ -24,8 +31,22 @@ public class GameServlet extends HttpServlet {
 
             public WebSocket doWebSocketConnect(HttpServletRequest request, String protocol) {
                 if ("chat".equals(protocol)) {
-                    ClientConnection clientConnection = new ClientConnection();
+                    ContextService contextService = App.autowireCapableBeanFactory.getBean(ContextService.class);
+                    String gameIdAttribute = request.getParameter("gameId");
+                    if (gameIdAttribute == null) {
+                        log.warn("Game id not found in url attributes");
+                        return null;
+                    }
+                    try {
+                        contextService.setSessionKey(new GameKey(Integer.valueOf(gameIdAttribute)));
+                    } catch (NumberFormatException e) {
+                        log.warn("Game id not parsable in url attributes: " + gameIdAttribute);
+                        return null;
+                    }
+                    log.info("Connection established to game " + gameIdAttribute);
+                    ClientConnection clientConnection = new ClientConnection(contextService.getCurrentContextKey());
                     App.autowireCapableBeanFactory.autowireBean(clientConnection);
+                    contextService.clearCurrentSessionKey();
                     return clientConnection;
                 }
                 return null;

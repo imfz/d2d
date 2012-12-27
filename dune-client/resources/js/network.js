@@ -2,7 +2,6 @@ function NetworkConnection() {
     this.username = null;
     this.playerId = -1;
     this.connEstablished = false;
-    this.location = "ws://localhost:8080/chat";
     this.ws = null;
 }
 
@@ -11,7 +10,7 @@ NetworkConnection.prototype.start = function (name, playerId) {
     this._username = name;
     this._playerId = playerId;
     this._connEstablished = false;
-    var location = "ws://localhost:8080/chat";
+    var location = "ws://localhost:8080/chat?gameId=2";
     this._ws = new WebSocket(location, "chat");
     this._ws.onopen = this.onopen;
     this._ws.onmessage = this.onmessage;

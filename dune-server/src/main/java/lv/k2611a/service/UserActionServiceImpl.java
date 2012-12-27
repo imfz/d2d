@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import lv.k2611a.network.req.GameStateChanger;
 
 @Service
-@Scope("singleton")
+@Scope("game")
 public class UserActionServiceImpl implements UserActionService {
 
     private List<GameStateChanger> actions = new ArrayList<GameStateChanger>();
