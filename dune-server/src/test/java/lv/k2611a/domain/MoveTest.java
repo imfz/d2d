@@ -8,7 +8,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import lv.k2611a.domain.unitgoals.Move;
-import lv.k2611a.service.GameServiceImpl;
+import lv.k2611a.service.game.GameServiceImpl;
 
 import static org.junit.Assert.assertEquals;
 

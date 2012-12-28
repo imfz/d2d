@@ -1,4 +1,4 @@
-package lv.k2611a.service;
+package lv.k2611a.service.game;
 
 import java.util.List;
 

@@ -37,17 +37,22 @@ public class GameServlet extends HttpServlet {
                         log.warn("Game id not found in url attributes");
                         return null;
                     }
+                    GameKey value;
                     try {
-                        contextService.setSessionKey(new GameKey(Integer.valueOf(gameIdAttribute)));
+                        value = new GameKey(Integer.valueOf(gameIdAttribute));
                     } catch (NumberFormatException e) {
                         log.warn("Game id not parsable in url attributes: " + gameIdAttribute);
                         return null;
                     }
                     log.info("Connection established to game " + gameIdAttribute);
-                    ClientConnection clientConnection = new ClientConnection(contextService.getCurrentContextKey());
-                    App.autowireCapableBeanFactory.autowireBean(clientConnection);
-                    contextService.clearCurrentSessionKey();
-                    return clientConnection;
+                    try {
+                        contextService.setSessionKey(value);
+                        ClientConnection clientConnection = new ClientConnection(contextService.getCurrentContextKey());
+                        App.autowireCapableBeanFactory.autowireBean(clientConnection);
+                        return clientConnection;
+                    } finally {
+                        contextService.clearCurrentSessionKey();
+                    }
                 }
                 return null;
             }

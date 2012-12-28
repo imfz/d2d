@@ -4,7 +4,7 @@ import java.util.Random;
 
 import lv.k2611a.domain.Map;
 import lv.k2611a.domain.Unit;
-import lv.k2611a.service.GameServiceImpl;
+import lv.k2611a.service.game.GameServiceImpl;
 
 public class RepetetiveMove implements UnitGoal {
 

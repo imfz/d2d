@@ -18,7 +18,7 @@ import com.alibaba.fastjson.JSON;
 import lv.k2611a.network.req.Request;
 import lv.k2611a.network.resp.Left;
 import lv.k2611a.network.resp.Response;
-import lv.k2611a.service.GlobalSessionService;
+import lv.k2611a.service.global.GlobalSessionService;
 import lv.k2611a.service.scope.ContextService;
 import lv.k2611a.service.scope.GameKey;
 
@@ -76,11 +76,6 @@ public class ClientConnection implements WebSocket.OnTextMessage, Runnable {
     }
 
     private void processOnOpen(Connection connection) {
-        if (!closed) {
-            closed = true;
-        } else {
-            return;
-        }
         _connection = connection;
         exec.execute(this);
         globalSessionService.add(this);
@@ -101,6 +96,11 @@ public class ClientConnection implements WebSocket.OnTextMessage, Runnable {
     }
 
     private void processOnClose() {
+        if (!closed) {
+            closed = true;
+        } else {
+            return;
+        }
         exec.shutdown();
         globalSessionService.remove(this);
         Left left = new Left();
@@ -128,7 +128,7 @@ public class ClientConnection implements WebSocket.OnTextMessage, Runnable {
             autowireCapableBeanFactory.autowireBean(request);
             request.process();
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Exception while processing message");
         } finally {
             localConnection.remove();
         }

@@ -1,4 +1,4 @@
-package lv.k2611a.service;
+package lv.k2611a.service.game;
 
 import lv.k2611a.network.resp.UpdateMap;
 import lv.k2611a.util.Point;

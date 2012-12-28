@@ -8,7 +8,7 @@ import lv.k2611a.domain.Tile;
 import lv.k2611a.domain.Unit;
 import lv.k2611a.domain.UnitType;
 import lv.k2611a.domain.ViewDirection;
-import lv.k2611a.service.GameServiceImpl;
+import lv.k2611a.service.game.GameServiceImpl;
 import lv.k2611a.util.AStar;
 import lv.k2611a.util.Node;
 import lv.k2611a.util.Point;

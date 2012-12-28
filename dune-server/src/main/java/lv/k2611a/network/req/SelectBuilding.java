@@ -3,7 +3,7 @@ package lv.k2611a.network.req;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import lv.k2611a.ClientConnection;
-import lv.k2611a.service.GameService;
+import lv.k2611a.service.game.GameService;
 
 public class SelectBuilding implements Request {
 

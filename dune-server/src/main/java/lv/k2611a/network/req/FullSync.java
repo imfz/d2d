@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import lv.k2611a.ClientConnection;
 import lv.k2611a.network.resp.UpdateMap;
-import lv.k2611a.service.GameService;
+import lv.k2611a.service.game.GameService;
 
 public class FullSync implements Request {
 

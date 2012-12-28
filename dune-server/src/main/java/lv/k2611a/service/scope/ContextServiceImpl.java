@@ -20,19 +20,6 @@ public class ContextServiceImpl implements ContextService {
 
     private ConcurrentHashMap<GameKey, GameContext> games = new ConcurrentHashMap<GameKey, GameContext>();
 
-    private class SessionExpirationListener implements RemovalListener<GameKey, GameContext> {
-        @Override
-        public void onRemoval(RemovalNotification<GameKey, GameContext> sessionKeySessionContextRemovalNotification) {
-            GameContext value = sessionKeySessionContextRemovalNotification.getValue();
-            if (value != null) {
-                value.clear();
-            } else {
-                LOG.error("Removing Game which is null");
-            }
-            LOG.info("Game destroyed : " + sessionKeySessionContextRemovalNotification.getKey());
-        }
-    }
-
     @Override
     public synchronized GameContext getCurrentGameContext() {
         if (currentSessionKey.get() == null) {

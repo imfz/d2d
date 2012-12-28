@@ -1,33 +1,27 @@
-package lv.k2611a.service;
+package lv.k2611a.service.game;
 
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 
 import lv.k2611a.ClientConnection;
 import lv.k2611a.network.resp.Response;
 
 @Service
-@Scope("singleton")
-public class GlobalSessionServiceImpl implements GlobalSessionService {
-
-    @Autowired
-    private GameSessionsService gameSessionsService;
-
+@Scope(value = "game", proxyMode = ScopedProxyMode.INTERFACES)
+public class GameSessionServiceImpl implements GameSessionsService {
     private final Set<ClientConnection> members = new CopyOnWriteArraySet<ClientConnection>();
 
     @Override
     public boolean add(ClientConnection clientConnection) {
-        gameSessionsService.add(clientConnection);
         return members.add(clientConnection);
     }
 
     @Override
     public boolean remove(Object o) {
-        gameSessionsService.remove(o);
         return members.remove(o);
     }
 

@@ -14,12 +14,12 @@
     <!--beans, which should be mocked in tests should be implemented in lv.k2611a.testContext/ as *TestImpl.java-->
 
     <bean id="gameService"
-          class="lv.k2611a.service.GameServiceImpl" scope="singleton">
+          class="lv.k2611a.service.game.GameServiceImpl" scope="singleton">
         <property name="testMode" value="true" />
     </bean>
 
     <bean id="userActionsService"
-          class="lv.k2611a.service.UserActionServiceImpl">
+          class="lv.k2611a.service.game.UserActionServiceImpl">
     </bean>
 
 

@@ -1,11 +1,11 @@
-package lv.k2611a.service;
+package lv.k2611a.service.global;
 
 import java.util.Set;
 
 import lv.k2611a.ClientConnection;
 import lv.k2611a.network.resp.Response;
 
-public interface GameSessionsService {
+public interface GlobalSessionService {
     boolean add(ClientConnection clientConnection);
 
     boolean remove(Object o);

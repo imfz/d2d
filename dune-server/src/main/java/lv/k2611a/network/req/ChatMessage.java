@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import lv.k2611a.ClientConnection;
 import lv.k2611a.network.resp.IncomingChatMessage;
-import lv.k2611a.service.GlobalSessionService;
+import lv.k2611a.service.global.GlobalSessionService;
 
 public class ChatMessage implements Request {
 

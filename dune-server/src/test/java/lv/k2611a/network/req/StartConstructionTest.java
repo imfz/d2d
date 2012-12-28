@@ -13,8 +13,8 @@ import lv.k2611a.domain.Map;
 import lv.k2611a.domain.TileType;
 import lv.k2611a.domain.Unit;
 import lv.k2611a.domain.UnitType;
-import lv.k2611a.service.GameServiceImpl;
-import lv.k2611a.service.UserActionService;
+import lv.k2611a.service.game.GameServiceImpl;
+import lv.k2611a.service.game.UserActionService;
 
 import static junit.framework.Assert.assertEquals;
 

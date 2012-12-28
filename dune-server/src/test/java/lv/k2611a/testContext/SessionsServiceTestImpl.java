@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 import lv.k2611a.ClientConnection;
 import lv.k2611a.network.resp.Response;
-import lv.k2611a.service.GameSessionsService;
+import lv.k2611a.service.game.GameSessionsService;
 
 @Service
 public class SessionsServiceTestImpl implements GameSessionsService {

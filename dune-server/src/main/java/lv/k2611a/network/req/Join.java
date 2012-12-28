@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import lv.k2611a.ClientConnection;
 import lv.k2611a.network.resp.Joined;
 import lv.k2611a.network.resp.UpdateMap;
-import lv.k2611a.service.GameService;
-import lv.k2611a.service.GameSessionsService;
+import lv.k2611a.service.game.GameService;
+import lv.k2611a.service.game.GameSessionsService;
 
 public class Join implements Request {
 
