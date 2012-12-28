@@ -11,8 +11,8 @@ import lv.k2611a.domain.Tile;
 import lv.k2611a.domain.TileType;
 import lv.k2611a.domain.Unit;
 import lv.k2611a.domain.UnitType;
-import lv.k2611a.service.GameService;
-import lv.k2611a.service.GameServiceImpl;
+import lv.k2611a.service.game.GameService;
+import lv.k2611a.service.game.GameServiceImpl;
 import lv.k2611a.util.AStar;
 import lv.k2611a.util.Point;
 
