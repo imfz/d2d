@@ -55,6 +55,69 @@ Serializers[2] = function (payload) {
     return ["UpdateMapIncremental", result];
 };
 
+
+Serializers[3] = function (payload) {
+    var result = new Array();
+    var position = 0;
+
+    var mapDTO = new Array();
+    result["map"] = mapDTO;
+
+    position = readMapDTO(mapDTO, payload, position);
+
+    result["tickCount"] = getLongAt(payload,position);
+    position+=8;
+
+
+    if (position != payload.length) {
+        console.log("Read " + position + " bytes from payloads " + payload.length);
+    }
+
+    return ["UpdateMap", result];
+};
+
+function readMapDTO(dto, payload, position) {
+    var units = new Array();
+    var unitsLength = getIntAt(payload, position);
+    position += 4;
+    for (var i = 0; i < unitsLength; i++) {
+        var unitDTO = new Array();
+        position = readUnitDTO(unitDTO, payload, position);
+        units.push(unitDTO);
+    }
+    dto["units"] = units;
+
+
+    var buildings = new Array();
+    var buildingsLength = getIntAt(payload, position);
+    position += 4;
+    for (i = 0; i < buildingsLength; i++) {
+        var buildingDTO = new Array();
+        position = readBuildingDTO(buildingDTO, payload, position);
+        buildings.push(buildingDTO);
+    }
+    dto["buildings"] = buildings;
+
+    var tiles = new Array();
+    var tileLength = getIntAt(payload, position);
+    position += 4;
+    for (i = 0; i < tileLength; i++) {
+        var tileDTO = new Array();
+        position = readTileDTO(tileDTO, payload, position);
+        tiles.push(tileDTO);
+    }
+
+    dto["tiles"] = tiles;
+
+    dto["width"] = getShortAt(payload, position);
+    position += 2;
+
+    dto["height"] = getShortAt(payload, position);
+    position += 2;
+
+    return position;
+}
+
 function readUnitDTO(dto, payload, position) {
     dto["id"] = getIntAt(payload,position);
     position+=4;
@@ -118,6 +181,12 @@ function readChangedTileDTO(dto, payload, position) {
     position+=2;
     dto["y"] = getShortAt(payload,position);
     position+=2;
+    return position;
+}
+
+function readTileDTO(dto, payload, position) {
+    dto["tileType"] = payload[position];
+    position++;
     return position;
 }
 

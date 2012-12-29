@@ -137,8 +137,8 @@ public class GameServiceImpl implements GameService {
         List<UnitDTO> unitDTOList = getMapUnits();
         List<BuildingDTO> buildingDTOList = getBuildings();
 
-        mapDTO.setWidth(map.getWidth());
-        mapDTO.setHeight(map.getHeight());
+        mapDTO.setWidth((short) map.getWidth());
+        mapDTO.setHeight((short) map.getHeight());
         mapDTO.setTiles(tileDTOList.toArray(new TileDTO[tileDTOList.size()]));
         mapDTO.setUnits(unitDTOList.toArray(new UnitDTO[unitDTOList.size()]));
         mapDTO.setBuildings(buildingDTOList.toArray(new BuildingDTO[buildingDTOList.size()]));
