@@ -7,9 +7,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import com.google.common.cache.RemovalListener;
-import com.google.common.cache.RemovalNotification;
-
 @Service(value = "contextService")
 @Scope("singleton")
 public class ContextServiceImpl implements ContextService {

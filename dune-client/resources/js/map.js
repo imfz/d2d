@@ -103,31 +103,31 @@ GameMap.prototype.isTileOkForBuilding = function (x, y, units, buildings) {
         if ((unit.x == x) && (unit.y == y)) {
             return CELL_BAD;
         }
-        if (unit.travelled > 0) {
-            if ((unit.x == x - 1 ) && (unit.y == y) && (unit.viewDirection == VIEW_DIRECTION_RIGHT) && (unit.travelled > 0)) {
+        if (unit.travelledPercents > 0) {
+            if ((unit.x == x - 1 ) && (unit.y == y) && (unit.viewDirection == VIEW_DIRECTION_RIGHT)) {
                 return CELL_BAD;
             }
-            if ((unit.x == x - 1 ) && (unit.y == y - 1) && (unit.viewDirection == VIEW_DIRECTION_BOTTOMRIGHT) && (unit.travelled > 0)) {
+            if ((unit.x == x - 1 ) && (unit.y == y - 1) && (unit.viewDirection == VIEW_DIRECTION_BOTTOMRIGHT)) {
                 return CELL_BAD;
             }
-            if ((unit.x == x - 1 ) && (unit.y == y + 1) && (unit.viewDirection == VIEW_DIRECTION_TOPRIGHT) && (unit.travelled > 0)) {
+            if ((unit.x == x - 1 ) && (unit.y == y + 1) && (unit.viewDirection == VIEW_DIRECTION_TOPRIGHT)) {
                 return CELL_BAD;
             }
-            if ((unit.x == x + 1) && (unit.y == y) && (unit.viewDirection == VIEW_DIRECTION_LEFT) && (unit.travelled > 0)) {
+            if ((unit.x == x + 1) && (unit.y == y) && (unit.viewDirection == VIEW_DIRECTION_LEFT)) {
                 return CELL_BAD;
             }
-            if ((unit.x == x + 1) && (unit.y == y - 1) && (unit.viewDirection == VIEW_DIRECTION_BOTTOMLEFT) && (unit.travelled > 0)) {
+            if ((unit.x == x + 1) && (unit.y == y - 1) && (unit.viewDirection == VIEW_DIRECTION_BOTTOMLEFT)) {
                 return CELL_BAD;
             }
-            if ((unit.x == x + 1) && (unit.y == y + 1) && (unit.viewDirection == VIEW_DIRECTION_TOPLEFT) && (unit.travelled > 0)) {
-                return CELL_BAD;
-            }
-
-            if ((unit.x == x) && (unit.y == y - 1) && (unit.viewDirection == VIEW_DIRECTION_BOTTOM) && (unit.travelled > 0)) {
+            if ((unit.x == x + 1) && (unit.y == y + 1) && (unit.viewDirection == VIEW_DIRECTION_TOPLEFT)) {
                 return CELL_BAD;
             }
 
-            if ((unit.x == x) && (unit.y == y + 1) && (unit.viewDirection == VIEW_DIRECTION_TOP) && (unit.travelled > 0)) {
+            if ((unit.x == x) && (unit.y == y - 1) && (unit.viewDirection == VIEW_DIRECTION_BOTTOM)) {
+                return CELL_BAD;
+            }
+
+            if ((unit.x == x) && (unit.y == y + 1) && (unit.viewDirection == VIEW_DIRECTION_TOP)) {
                 return CELL_BAD;
             }
         }

@@ -99,7 +99,8 @@ NetworkConnection.prototype.onmessage = function (m) {
             func.call(handler, $.parseJSON(obj.payload));
         } else {
             var byteArray = new Uint8Array(m.data);
-            var data = Serializers[byteArray[0]](byteArray);
+            var serializerId = byteArray[0];
+            var data = Serializers[serializerId](byteArray.subarray(1));
             func = handler["handle" + data[0]];
             func.call(handler, data[1]);
         }

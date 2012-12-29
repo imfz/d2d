@@ -455,37 +455,37 @@ GameEngine.prototype.centerOnCoordinates = function (x, y) {
     this.setCoordinates(mapX, mapY);
 };
 
-GameEngine.prototype.shiftMovingUnit = function (x, y, travelled, viewDirection) {
+GameEngine.prototype.shiftMovingUnit = function (x, y, travelledPercents, viewDirection) {
     var newX = x;
     var newY = y;
 
     if (viewDirection == VIEW_DIRECTION_TOP) {
-        newY -= TILE_HEIGHT * travelled;
+        newY -= TILE_HEIGHT * travelledPercents / 100;
     }
     if (viewDirection == VIEW_DIRECTION_TOPLEFT) {
-        newY -= TILE_HEIGHT * travelled;
-        newX -= TILE_WIDTH * travelled;
+        newY -= TILE_HEIGHT * travelledPercents / 100;
+        newX -= TILE_WIDTH * travelledPercents / 100;
     }
     if (viewDirection == VIEW_DIRECTION_TOPRIGHT) {
-        newY -= TILE_HEIGHT * travelled;
-        newX += TILE_WIDTH * travelled;
+        newY -= TILE_HEIGHT * travelledPercents / 100;
+        newX += TILE_WIDTH * travelledPercents / 100;
     }
     if (viewDirection == VIEW_DIRECTION_LEFT) {
-        newX -= TILE_WIDTH * travelled;
+        newX -= TILE_WIDTH * travelledPercents / 100;
     }
     if (viewDirection == VIEW_DIRECTION_RIGHT) {
-        newX += TILE_WIDTH * travelled;
+        newX += TILE_WIDTH * travelledPercents / 100;
     }
     if (viewDirection == VIEW_DIRECTION_BOTTOMLEFT) {
-        newY += TILE_HEIGHT * travelled;
-        newX -= TILE_WIDTH * travelled;
+        newY += TILE_HEIGHT * travelledPercents / 100;
+        newX -= TILE_WIDTH * travelledPercents / 100;
     }
     if (viewDirection == VIEW_DIRECTION_BOTTOMRIGHT) {
-        newY += TILE_HEIGHT * travelled;
-        newX += TILE_WIDTH * travelled;
+        newY += TILE_HEIGHT * travelledPercents / 100;
+        newX += TILE_WIDTH * travelledPercents / 100;
     }
     if (viewDirection == VIEW_DIRECTION_BOTTOM) {
-        newY += TILE_HEIGHT * travelled;
+        newY += TILE_HEIGHT * travelledPercents / 100;
     }
 
     var result = new Object();
@@ -710,7 +710,7 @@ GameEngine.prototype.renderUnits = function (units) {
         if (unitConfig) {
             var xToDrawTo = (unit.x - this.x) * TILE_WIDTH;
             var yToDrawTo = (unit.y - this.y) * TILE_HEIGHT;
-            var movingCoord = this.shiftMovingUnit(xToDrawTo, yToDrawTo, unit.travelled, unit.viewDirection);
+            var movingCoord = this.shiftMovingUnit(xToDrawTo, yToDrawTo, unit.travelledPercents, unit.viewDirection);
             context.drawImage(unitConfig.sprite, unitConfig.x, unitConfig.y, unitConfig.width, unitConfig.height,
                 movingCoord.x + unitConfig.xOffset, movingCoord.y + unitConfig.yOffset, unitConfig.width, unitConfig.height);
 

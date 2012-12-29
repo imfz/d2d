@@ -150,8 +150,11 @@ public class ClientConnection implements WebSocket.OnTextMessage, Runnable {
                 }
                 if (response instanceof CustomSerialization) {
                     CustomSerialization responseCasted = (CustomSerialization) response;
-                    byte[] data = responseCasted.getData();
-                    _connection.sendMessage(data, 0, data.length);
+                    byte[] data = responseCasted.toBytes();
+                    byte[] payload = new byte[data.length + 1];
+                    payload[0] = responseCasted.serializerId();
+                    System.arraycopy(data,0,payload,1,data.length);
+                    _connection.sendMessage(payload, 0, payload.length);
                     byteCount += data.length;
                 } else {
                     NetworkPacket networkPacket = new NetworkPacket();

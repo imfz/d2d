@@ -4,25 +4,27 @@ import lv.k2611a.domain.Unit;
 import lv.k2611a.domain.UnitType;
 import lv.k2611a.domain.unitgoals.Harvest;
 import lv.k2611a.domain.unitgoals.UnitGoal;
+import lv.k2611a.network.resp.CustomSerialization;
+import lv.k2611a.util.ByteUtils;
 
-public class UnitDTO {
+public class UnitDTO  implements CustomSerialization {
     private int id;
-    private int x;
-    private int y;
-    private int unitType;
-    private int viewDirection;
-    private double travelled;
-    private int hp;
-    private int maxHp;
-    private int spicePercents;
-    private int ownerId;
-    private int harvesting;
+    private short x;
+    private short y;
+    private byte unitType;
+    private byte viewDirection;
+    private byte travelledPercents;
+    private short hp;
+    private short maxHp;
+    private byte spicePercents;
+    private byte ownerId;
+    private byte harvesting;
 
     public int getUnitType() {
         return unitType;
     }
 
-    public void setUnitType(int unitType) {
+    public void setUnitType(byte unitType) {
         this.unitType = unitType;
     }
 
@@ -30,7 +32,7 @@ public class UnitDTO {
         return x;
     }
 
-    public void setX(int x) {
+    public void setX(short x) {
         this.x = x;
     }
 
@@ -38,7 +40,7 @@ public class UnitDTO {
         return y;
     }
 
-    public void setY(int y) {
+    public void setY(short y) {
         this.y = y;
     }
 
@@ -54,23 +56,23 @@ public class UnitDTO {
         return viewDirection;
     }
 
-    public void setViewDirection(int viewDirection) {
+    public void setViewDirection(byte viewDirection) {
         this.viewDirection = viewDirection;
     }
 
-    public double getTravelled() {
-        return travelled;
+    public byte getTravelledPercents() {
+        return travelledPercents;
     }
 
-    public void setTravelled(double travelled) {
-        this.travelled = travelled;
+    public void setTravelledPercents(byte travelledPercents) {
+        this.travelledPercents = travelledPercents;
     }
 
     public int getHp() {
         return hp;
     }
 
-    public void setHp(int hp) {
+    public void setHp(short hp) {
         this.hp = hp;
     }
 
@@ -78,7 +80,7 @@ public class UnitDTO {
         return maxHp;
     }
 
-    public void setMaxHp(int maxHp) {
+    public void setMaxHp(short maxHp) {
         this.maxHp = maxHp;
     }
 
@@ -86,7 +88,7 @@ public class UnitDTO {
         return ownerId;
     }
 
-    public void setOwnerId(int ownerId) {
+    public void setOwnerId(byte ownerId) {
         this.ownerId = ownerId;
     }
 
@@ -94,7 +96,7 @@ public class UnitDTO {
         return spicePercents;
     }
 
-    public void setSpicePercents(int spicePercents) {
+    public void setSpicePercents(byte spicePercents) {
         this.spicePercents = spicePercents;
     }
 
@@ -102,28 +104,75 @@ public class UnitDTO {
         return harvesting;
     }
 
-    public void setHarvesting(int harvesting) {
+    public void setHarvesting(byte harvesting) {
         this.harvesting = harvesting;
+    }
+
+    @Override
+    public byte serializerId() {
+        throw new IllegalArgumentException("This entity can be used in response only as an embedded entity");
+    }
+
+    @Override
+    public int getSize() {
+        return 18;
+    }
+
+    @Override
+    public byte[] toBytes() {
+        byte[] payload = new byte[getSize()];
+        byte[] idBytes = ByteUtils.intToBytes(id);
+        byte[] xBytes = ByteUtils.shortToBytes(x);
+        byte[] yBytes = ByteUtils.shortToBytes(y);
+        byte[] hpBytes = ByteUtils.shortToBytes(hp);
+        byte[] maxHpBytes = ByteUtils.shortToBytes(maxHp);
+
+        payload[0] = idBytes[0];
+        payload[1] = idBytes[1];
+        payload[2] = idBytes[2];
+        payload[3] = idBytes[3];
+
+        payload[4] = xBytes[0];
+        payload[5] = xBytes[1];
+
+        payload[6] = yBytes[0];
+        payload[7] = yBytes[1];
+
+        payload[8] = hpBytes[0];
+        payload[9] = hpBytes[1];
+
+        payload[10] = maxHpBytes[0];
+        payload[11] = maxHpBytes[1];
+
+        payload[12] = unitType;
+        payload[13] = viewDirection;
+        payload[14] = travelledPercents;
+
+        payload[15] = spicePercents;
+        payload[16] = ownerId;
+        payload[17] = harvesting;
+        return payload;
     }
 
     public static UnitDTO fromUnit(Unit unit) {
         UnitDTO dto = new UnitDTO();
-        dto.setUnitType(unit.getUnitType().getIdOnJS());
-        dto.setX(unit.getX());
-        dto.setY(unit.getY());
-        dto.setHp(unit.getHp());
-        dto.setMaxHp(unit.getUnitType().getHp());
+        dto.setUnitType((byte) unit.getUnitType().getIdOnJS());
+        dto.setX((short) unit.getX());
+        dto.setY((short) unit.getY());
+        dto.setHp((short) unit.getHp());
+        dto.setMaxHp((short) unit.getUnitType().getHp());
         dto.setId(unit.getId());
-        dto.setViewDirection(unit.getViewDirection().getIdOnJS());
-        dto.setTravelled((double)unit.getTicksMovingToNextCell() / unit.getUnitType().getSpeed());
-        dto.setOwnerId(unit.getOwnerId());
+        dto.setViewDirection((byte) unit.getViewDirection().getIdOnJS());
+        double travelledPercents = (double) unit.getTicksMovingToNextCell() / unit.getUnitType().getSpeed() * 100;
+        dto.setTravelledPercents((byte) travelledPercents);
+        dto.setOwnerId((byte) unit.getOwnerId());
         if (unit.getUnitType() == UnitType.HARVESTER) {
             int spicePercents = (int) ((double) unit.getTicksCollectingSpice() / Harvest.TICKS_FOR_FULL * 100);
-            dto.setSpicePercents(spicePercents);
+            dto.setSpicePercents((byte) spicePercents);
             UnitGoal uncasted = unit.getCurrentGoal();
             if (uncasted instanceof Harvest) {
                 Harvest casted = (Harvest)uncasted;
-                dto.setHarvesting(casted.getCollectingSpice());
+                dto.setHarvesting((byte) casted.getCollectingSpice());
             }
         }
         return dto;

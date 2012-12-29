@@ -236,8 +236,8 @@ public class GameServiceImpl implements GameService {
             int playerId = clientConnection.getPlayerId();
             Player player = map.getPlayerById(playerId);
             UpdateMoney updateMoney = new UpdateMoney();
-            updateMoney.setMoney(player.getMoney());
-            updateMoney.setElectricity(player.getElectricity());
+            updateMoney.setMoney((int) player.getMoney());
+            updateMoney.setElectricity((int) player.getElectricity());
             clientConnection.sendMessage(updateMoney);
         }
     }
