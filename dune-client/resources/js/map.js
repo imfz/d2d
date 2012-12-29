@@ -81,7 +81,7 @@ GameMap.prototype.isTileOkForBuilding = function (x, y, units, buildings) {
     var allocatedCellsByBuildings = [];
     for (var i = 0; i < buildings.length; i++) {
         var building = buildings[i];
-        if (building.ownerId != connection._playerId || !building.constructionComplete) {
+        if (building.ownerId != connection._playerId) {
             continue;
         }
         for (var j = 0; j < building.width; j++) {
@@ -101,30 +101,30 @@ GameMap.prototype.isTileOkForBuilding = function (x, y, units, buildings) {
             return CELL_BAD;
         }
         if (unit.travelled > 0) {
-            if ((unit.x == x - 1 ) && (unit.y == y) && (unit.viewDirection == VIEW_DIRECTION_RIGHT)) {
+            if ((unit.x == x - 1 ) && (unit.y == y) && (unit.viewDirection == VIEW_DIRECTION_RIGHT) && (unit.travelled > 0)) {
                 return CELL_BAD;
             }
-            if ((unit.x == x - 1 ) && (unit.y == y - 1) && (unit.viewDirection == VIEW_DIRECTION_BOTTOMRIGHT)) {
+            if ((unit.x == x - 1 ) && (unit.y == y - 1) && (unit.viewDirection == VIEW_DIRECTION_BOTTOMRIGHT) && (unit.travelled > 0)) {
                 return CELL_BAD;
             }
-            if ((unit.x == x - 1 ) && (unit.y == y + 1) && (unit.viewDirection == VIEW_DIRECTION_TOPRIGHT)) {
+            if ((unit.x == x - 1 ) && (unit.y == y + 1) && (unit.viewDirection == VIEW_DIRECTION_TOPRIGHT) && (unit.travelled > 0)) {
                 return CELL_BAD;
             }
-            if ((unit.x == x + 1) && (unit.y == y) && (unit.viewDirection == VIEW_DIRECTION_LEFT)) {
+            if ((unit.x == x + 1) && (unit.y == y) && (unit.viewDirection == VIEW_DIRECTION_LEFT) && (unit.travelled > 0)) {
                 return CELL_BAD;
             }
-            if ((unit.x == x + 1) && (unit.y == y - 1) && (unit.viewDirection == VIEW_DIRECTION_BOTTOMLEFT)) {
+            if ((unit.x == x + 1) && (unit.y == y - 1) && (unit.viewDirection == VIEW_DIRECTION_BOTTOMLEFT) && (unit.travelled > 0)) {
                 return CELL_BAD;
             }
-            if ((unit.x == x + 1) && (unit.y == y + 1) && (unit.viewDirection == VIEW_DIRECTION_TOPLEFT)) {
-                return CELL_BAD;
-            }
-
-            if ((unit.x == x) && (unit.y == y - 1) && (unit.viewDirection == VIEW_DIRECTION_BOTTOM)) {
+            if ((unit.x == x + 1) && (unit.y == y + 1) && (unit.viewDirection == VIEW_DIRECTION_TOPLEFT) && (unit.travelled > 0)) {
                 return CELL_BAD;
             }
 
-            if ((unit.x == x) && (unit.y == y + 1) && (unit.viewDirection == VIEW_DIRECTION_TOP)) {
+            if ((unit.x == x) && (unit.y == y - 1) && (unit.viewDirection == VIEW_DIRECTION_BOTTOM) && (unit.travelled > 0)) {
+                return CELL_BAD;
+            }
+
+            if ((unit.x == x) && (unit.y == y + 1) && (unit.viewDirection == VIEW_DIRECTION_TOP) && (unit.travelled > 0)) {
                 return CELL_BAD;
             }
         }
