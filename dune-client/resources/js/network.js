@@ -12,6 +12,7 @@ NetworkConnection.prototype.start = function (name, playerId) {
     this._connEstablished = false;
     var location = "ws://localhost:8080/chat?gameId=2";
     this._ws = new WebSocket(location, "chat");
+    this._ws.binaryType = "arraybuffer";
     this._ws.onopen = this.onopen;
     this._ws.onmessage = this.onmessage;
     this._ws.onclose = this.onclose;
@@ -91,9 +92,17 @@ NetworkConnection.prototype.sendNetworkRequest = function (messageName, messageO
 NetworkConnection.prototype.onmessage = function (m) {
     var that = this;
     if (m.data) {
-        obj = $.parseJSON(m.data);
-        func = handler["handle" + obj.messageName];
-        func.call(handler, $.parseJSON(obj.payload));
+        if (typeof m.data === "string") {
+            var jsonPayload = m.data.substring(0);
+            obj = $.parseJSON(jsonPayload);
+            func = handler["handle" + obj.messageName];
+            func.call(handler, $.parseJSON(obj.payload));
+        } else {
+            var byteArray = new Uint8Array(m.data);
+            var data = Serializers[byteArray[0]](byteArray);
+            func = handler["handle" + data[0]];
+            func.call(handler, data[1]);
+        }
     }
 };
 

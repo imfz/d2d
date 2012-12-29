@@ -16,6 +16,7 @@ import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import com.alibaba.fastjson.JSON;
 
 import lv.k2611a.network.req.Request;
+import lv.k2611a.network.resp.CustomSerialization;
 import lv.k2611a.network.resp.Left;
 import lv.k2611a.network.resp.Response;
 import lv.k2611a.service.global.GlobalSessionService;
@@ -147,12 +148,19 @@ public class ClientConnection implements WebSocket.OnTextMessage, Runnable {
                 if (response == null) {
                     continue;
                 }
-                NetworkPacket networkPacket = new NetworkPacket();
-                networkPacket.setMessageName(response.getClass().getSimpleName());
-                networkPacket.setPayload(JSON.toJSONString(response));
-                String toSend = JSON.toJSONString(networkPacket);
-                byteCount += toSend.length() * 2;
-                _connection.sendMessage(toSend);
+                if (response instanceof CustomSerialization) {
+                    CustomSerialization responseCasted = (CustomSerialization) response;
+                    byte[] data = responseCasted.getData();
+                    _connection.sendMessage(data, 0, data.length);
+                    byteCount += data.length;
+                } else {
+                    NetworkPacket networkPacket = new NetworkPacket();
+                    networkPacket.setMessageName(response.getClass().getSimpleName());
+                    networkPacket.setPayload(JSON.toJSONString(response));
+                    String toSend = JSON.toJSONString(networkPacket);
+                    byteCount += toSend.length() * 2;
+                    _connection.sendMessage(toSend);
+                }
             } catch (IOException e) {
                 log.error("Exception happened while working with websocket", e);
                 break;
