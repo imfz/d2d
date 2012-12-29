@@ -134,8 +134,8 @@ GameEngine.prototype.bindEvents = function () {
     });
 
     $(this.canvas).dblclick(function (event) {
-        var x = Math.floor((event.pageX - $(that.canvas).offset().left));
-        var y = Math.floor((event.pageY - $(that.canvas).offset().top));
+        var x = Math.floor((event.pageX - $(that.canvas).offset().left) * engine.scale);
+        var y = Math.floor((event.pageY - $(that.canvas).offset().top) * engine.scale);
         selectUnitsByType(x, y, event.shiftKey);
     });
     

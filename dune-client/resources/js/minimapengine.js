@@ -24,8 +24,10 @@ MinimapGameEngine.prototype.setEngine = function (engine) {
 MinimapGameEngine.prototype.bindEvents = function () {
 
     function changeMinimapPosition(event) {
+        // don't need engine.scale multiplication here!
         var x = Math.floor((event.pageX - $(that.canvas).offset().left));
         var y = Math.floor((event.pageY - $(that.canvas).offset().top));
+        
         var mapX = Math.round(x / that.canvas.width * that.map.getWidth());
         var mapY = Math.round(y / that.canvas.height * that.map.getHeight());
 
