@@ -7,7 +7,7 @@ import lv.k2611a.domain.unitgoals.UnitGoal;
 import lv.k2611a.network.resp.CustomSerialization;
 import lv.k2611a.util.ByteUtils;
 
-public class UnitDTO  implements CustomSerialization {
+public class UnitDTO implements CustomSerialization {
     private int id;
     private short x;
     private short y;
@@ -106,11 +106,6 @@ public class UnitDTO  implements CustomSerialization {
 
     public void setHarvesting(byte harvesting) {
         this.harvesting = harvesting;
-    }
-
-    @Override
-    public byte serializerId() {
-        throw new IllegalArgumentException("This entity can be used in response only as an embedded entity");
     }
 
     @Override

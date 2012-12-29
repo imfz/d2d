@@ -16,7 +16,7 @@ import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import com.alibaba.fastjson.JSON;
 
 import lv.k2611a.network.req.Request;
-import lv.k2611a.network.resp.CustomSerialization;
+import lv.k2611a.network.resp.CustomSerializationHeader;
 import lv.k2611a.network.resp.Left;
 import lv.k2611a.network.resp.Response;
 import lv.k2611a.service.global.GlobalSessionService;
@@ -148,8 +148,8 @@ public class ClientConnection implements WebSocket.OnTextMessage, Runnable {
                 if (response == null) {
                     continue;
                 }
-                if (response instanceof CustomSerialization) {
-                    CustomSerialization responseCasted = (CustomSerialization) response;
+                if (response instanceof CustomSerializationHeader) {
+                    CustomSerializationHeader responseCasted = (CustomSerializationHeader) response;
                     byte[] data = responseCasted.toBytes();
                     byte[] payload = new byte[data.length + 1];
                     payload[0] = responseCasted.serializerId();

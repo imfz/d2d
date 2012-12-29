@@ -42,11 +42,6 @@ public class TileWithCoordinatesDTO implements CustomSerialization {
     }
 
     @Override
-    public byte serializerId() {
-        throw new IllegalArgumentException("This entity can be used in response only as an embedded entity");
-    }
-
-    @Override
     public int getSize() {
         return 5;
     }

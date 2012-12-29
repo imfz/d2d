@@ -2,7 +2,7 @@ package lv.k2611a.network.resp;
 
 import lv.k2611a.util.ByteUtils;
 
-public class UpdateMoney implements Response, CustomSerialization {
+public class UpdateMoney implements Response, CustomSerializationHeader {
     private int money;
     private int electricity;
 

@@ -5,7 +5,7 @@ import lv.k2611a.network.TileWithCoordinatesDTO;
 import lv.k2611a.network.UnitDTO;
 import lv.k2611a.util.ByteUtils;
 
-public class UpdateMapIncremental implements Response, CustomSerialization {
+public class UpdateMapIncremental implements Response, CustomSerializationHeader {
     private UnitDTO[] units;
     private BuildingDTO[] buildings;
     private TileWithCoordinatesDTO[] changedTiles;
