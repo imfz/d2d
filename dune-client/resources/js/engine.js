@@ -538,6 +538,7 @@ GameEngine.prototype.render = function () {
 
     this.renderTiles(units, buildings);
     this.renderBuildings(buildings);
+    this.renderBuildingPlacement(units, buildings);
     this.renderUnits(units);
     this.renderRectangle();
 
@@ -563,6 +564,25 @@ requestAnimFrame = (function () {
 GameEngine.prototype.renderTiles = function (units, buildings) {
     var context = this.canvas.getContext("2d");
 
+    for (var x = this.x; x < this.x + this.widthInTiles; x++) {
+        for (var y = this.y; y < this.y + this.heightInTiles; y++) {
+            var tileConfig = sprites.getTileConfig(x, y, this.map);
+            if (tileConfig) {
+                context.drawImage(tileConfig.sprite, tileConfig.x, tileConfig.y, TILE_WIDTH, TILE_HEIGHT, (x - this.x) * TILE_WIDTH, (y - this.y) * TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT);
+            }
+
+        }
+    }
+
+};
+
+
+GameEngine.prototype.renderBuildingPlacement = function (units, buildings) {
+    if (!this.placementEnabled) {
+        return;
+    }
+    var context = this.canvas.getContext("2d");
+
     function drawPlacementTile(x, y, color) {
         context.drawImage(color, 0, 0, TILE_WIDTH, TILE_HEIGHT, x * TILE_WIDTH, y * TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT);
     }
@@ -573,57 +593,47 @@ GameEngine.prototype.renderTiles = function (units, buildings) {
     var tileColors = [];
     var foundBadTile = false;
     var foundGoodTile = false;
+    var foundGoodFarTile = false;
     for (var x = this.x; x < this.x + this.widthInTiles; x++) {
         for (var y = this.y; y < this.y + this.heightInTiles; y++) {
-            //console.log("Rendering tile x: " + x + " y: " + y);
-            var tileConfig = sprites.getTileConfig(x, y, this.map);
-            if (tileConfig) {
-                context.drawImage(tileConfig.sprite, tileConfig.x, tileConfig.y, TILE_WIDTH, TILE_HEIGHT, (x - this.x) * TILE_WIDTH, (y - this.y) * TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT);
-            }
-            if (this.placementEnabled) {
-                if (x >= currentMouseMapX && x < currentMouseMapX + this.placementWidth) {
-                    if (y >= currentMouseMapY && y < currentMouseMapY + this.placementHeight) {
-                        var tileStateForBuilding = this.map.isTileOkForBuilding(x, y, units, buildings);
-                        switch (tileStateForBuilding) {
-                        case CELL_OK:
-                            foundGoodTile = true;
-                            tileColors.push({x: x - this.x, y: y - this.y, type: CELL_OK});
-                            break;
-                        case CELL_OK_FAR:
-                            tileColors.push({x: x - this.x, y: y - this.y, type: CELL_OK_FAR});
-                            break;
-                        case CELL_BAD:
-                            foundBadTile = true;
-                            tileColors.push({x: x - this.x, y: y - this.y, type: CELL_BAD});
-                            break;
-                        }
+            if (x >= currentMouseMapX && x < currentMouseMapX + this.placementWidth) {
+                if (y >= currentMouseMapY && y < currentMouseMapY + this.placementHeight) {
+                    var tileStateForBuilding = this.map.isTileOkForBuilding(x, y, units, buildings);
+                    switch (tileStateForBuilding) {
+                    case CELL_OK:
+                        foundGoodTile = true;
+                        tileColors.push({x:x - this.x, y:y - this.y, type:CELL_OK});
+                        break;
+                    case CELL_OK_FAR:
+                        foundGoodFarTile = true;
+                        tileColors.push({x:x - this.x, y:y - this.y, type:CELL_OK_FAR});
+                        break;
+                    case CELL_BAD:
+                        foundBadTile = true;
+                        tileColors.push({x:x - this.x, y:y - this.y, type:CELL_BAD});
+                        break;
                     }
                 }
             }
 
         }
     }
-    
-    if (this.placementEnabled) {
-        for (var i = 0; i < tileColors.length; i++) {
-            var tile = tileColors[i];
-            if (tile.type == CELL_OK) {
-                if (foundBadTile || !foundGoodTile) {
-                    drawPlacementTile(tile.x, tile.y, sprites.bgYellowSprite);
-                } else {
-                    drawPlacementTile(tile.x, tile.y, sprites.bgGreenSprite);
-                }
+
+    for (var i = 0; i < tileColors.length; i++) {
+        var tile = tileColors[i];
+        if (tile.type == CELL_OK) {
+            drawPlacementTile(tile.x, tile.y, sprites.bgGreenSprite);
+        }
+        if (tile.type == CELL_OK_FAR) {
+            if (foundGoodTile) {
+                // one of building tiles is near another building, so we can build
+                drawPlacementTile(tile.x, tile.y, sprites.bgGreenSprite);
+            } else {
+                drawPlacementTile(tile.x, tile.y, sprites.bgYellowSprite);
             }
-            if (tile.type == CELL_OK_FAR) {
-                if (foundGoodTile) {
-                    drawPlacementTile(tile.x, tile.y, sprites.bgYellowSprite);
-                } else {
-                    drawPlacementTile(tile.x, tile.y, sprites.bgRedSprite);
-                }
-            }
-            if (tile.type == CELL_BAD) {
-                drawPlacementTile(tile.x, tile.y, sprites.bgRedSprite);
-            }
+        }
+        if (tile.type == CELL_BAD) {
+            drawPlacementTile(tile.x, tile.y, sprites.bgRedSprite);
         }
     }
 };

@@ -79,6 +79,7 @@ GameMap.prototype.isTileOkForBuilding = function (x, y, units, buildings) {
     }
 
     var allocatedCellsByBuildings = [];
+    var usedCellsByBuildings = [];
     for (var i = 0; i < buildings.length; i++) {
         var building = buildings[i];
         if (building.ownerId != connection._playerId) {
@@ -86,7 +87,9 @@ GameMap.prototype.isTileOkForBuilding = function (x, y, units, buildings) {
         }
         for (var j = 0; j < building.width; j++) {
             for (var k = 0; k < building.height; k++) {
-                getSurroundedCells({x: building.x + j, y: building.y + k}, allocatedCellsByBuildings);
+                var centerCell = {x: building.x + j, y: building.y + k};
+                getSurroundedCells(centerCell, allocatedCellsByBuildings);
+                usedCellsByBuildings.push(centerCell);
             }
         }
     }
@@ -129,7 +132,12 @@ GameMap.prototype.isTileOkForBuilding = function (x, y, units, buildings) {
             }
         }
     }
-
+    for (var i = 0; i < usedCellsByBuildings.length; i++) {
+        var usedCell = usedCellsByBuildings[i];
+        if (usedCell.x == x && usedCell.y == y) {
+            return CELL_BAD;
+        }
+    }
     for (var i = 0; i < allocatedCellsByBuildings.length; i++) {
         var allocatedCell = allocatedCellsByBuildings[i];
         if (allocatedCell.x == x && allocatedCell.y == y) {
