@@ -6,10 +6,11 @@
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 
     <link rel="stylesheet" type="text/css" href="css/style.css">
-    <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.css">
+    <link href="http://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet">
 
-    <script src="js/jquery-1.8.3.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
     <script src="js/jquery.json-2.4.min.js"></script>
+    <script src="js/jquery.mousewheel-3.0.6.js"></script>
     <script src="js/utils.js"></script>
     <script src="js/enums.js"></script>
     <script src="js/log.js"></script>
@@ -32,33 +33,35 @@
 
 <div id="columns">
     <div id="leftcol">
-        <canvas id="canvas" width="630" height="441">
+        <canvas id="canvas" width="693" height="441">
             This text is displayed if your browser does not support HTML5 canvas
         </canvas>
 
-        <div id='chat'></div>
+        <div id="chat"></div>
 
-        <div id="joinform">
-            <label style="display:inline-block;margin-bottom: 10px;vertical-align: middle" for="username">Username:</label>
-            <input id='username' type='text'/>
-            <label style="display:inline-block;margin-bottom: 10px;vertical-align: middle" for="playerId">PlayerId:</label>
-            <select id='playerId' class="input">
-                <option>1</option>
-                <option>2</option>
-                <option>3</option>
-                <option>4</option>
-                <option>5</option>
-                <option>6</option>
-                <option>7</option>
-                <option>8</option>
-            </select>
-            <button id='joinB' class='btn' style="margin-bottom: 10px">Join</button>
+        <div style="position: relative;width:100%;">
+            <div id="joinform">
+                <label for="username">Username:</label>
+                <input id="username" type="text" value=""/>
+                <label for="playerId">PlayerId:</label>
+                <select id="playerId" class="input">
+                    <option>1</option>
+                    <option>2</option>
+                    <option>3</option>
+                    <option>4</option>
+                    <option>5</option>
+                    <option>6</option>
+                    <option>7</option>
+                    <option>8</option>
+                </select>
+                <button id="joinB" class="btn" style="margin-bottom: 10px">Join</button>
+            </div>
         </div>
 
         <div id="joinedform" style="display:none">
             <label style="display:inline-block;margin-bottom: 10px;vertical-align: middle" for="phrase">Chat:</label>
-            <input id='phrase' style="width:30em;" type='text'/>
-            <button id='sendB' class='btn' style="margin-bottom: 10px">Send</button>
+            <input id="phrase" style="width:40em;" type="text"/>
+            <button id="sendB" class="btn" style="margin-bottom: 10px">Send</button>
         </div>
     </div>
     <div id="rightcol" style="text-align:center; ">
@@ -66,7 +69,10 @@
         <canvas id="minimap" width="200" height="200">
             This text is displayed if your browser does not support HTML5 canvas
         </canvas>
-        <div style="height:5px"></div>
+        <div style="height:1.5em">
+            <a href="javascript:void(0)" onclick="engine.setScale(2.0);">Scale &times;<b>2.0</b></a>&nbsp;
+            <a href="javascript:void(0)" onclick="engine.setScale(0.5);">Scale &times;<b>0.5</b></a>
+        </div>
 
         <div id="rightmenu">
             <div class="rightmenulist">

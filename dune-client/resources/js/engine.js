@@ -18,9 +18,16 @@ var BUILDING_HP_BAR_X_OFFSET = 15;
 var BUILDING_HP_BAR_Y_OFFSET = 3;
 
 
+var ZOOM_IN_FACTOR = 2;
+var ZOOM_OUT_FACTOR = 0.5;
+var MAX_ZOOM = 4;
+var MIN_ZOOM = 0.2;
+
+
 function GameEngine() {
     this.x = 0;
     this.y = 0;
+    this.scale = 1.0;
     this.frameCount = 0;
     this.startTime = 0;
     this.shownUnits = new Array();
@@ -32,12 +39,17 @@ function GameEngine() {
 
 GameEngine.prototype.setCanvas = function (canvas) {
     this.canvas = canvas;
-    this.widthInTiles = Math.ceil(canvas.width / TILE_WIDTH);
-    this.heightInTiles = Math.ceil(canvas.height / TILE_HEIGHT);
+    this.setFieldSizeInTiles();
     console.log("Width in tiles : " + this.widthInTiles);
     console.log("Height in tiles : " + this.heightInTiles);
 };
 
+
+GameEngine.prototype.setFieldSizeInTiles = function () {
+    this.widthInTiles = Math.ceil(this.canvas.width / (TILE_WIDTH * (1 / engine.scale)));
+    this.heightInTiles = Math.ceil(this.canvas.height / (TILE_HEIGHT * (1 / engine.scale)));
+
+};
 
 GameEngine.prototype.setMap = function (map) {
     this.map = map;
@@ -121,17 +133,25 @@ GameEngine.prototype.bindEvents = function () {
 
     });
 
-    $(this.canvas).dblclick(function (e) {
-        var x = Math.floor((e.pageX - $(that.canvas).offset().left));
-        var y = Math.floor((e.pageY - $(that.canvas).offset().top));
-        selectUnitsByType(x, y, e.shiftKey);
+    $(this.canvas).dblclick(function (event) {
+        var x = Math.floor((event.pageX - $(that.canvas).offset().left));
+        var y = Math.floor((event.pageY - $(that.canvas).offset().top));
+        selectUnitsByType(x, y, event.shiftKey);
+    });
+    
+    $(this.canvas).mousewheel(function (event, delta, deltaX, deltaY) {
+        if (delta > 0) {
+            that.setScale(ZOOM_OUT_FACTOR);
+        } else {
+            that.setScale(ZOOM_IN_FACTOR);
+        }
     });
 
     $(this.canvas).mouseup(function (event) {
         switch (event.which) {
         case 1:
-            var x = Math.floor((event.pageX - $(that.canvas).offset().left));
-            var y = Math.floor((event.pageY - $(that.canvas).offset().top));
+            var x = Math.floor((event.pageX - $(that.canvas).offset().left) * engine.scale);
+            var y = Math.floor((event.pageY - $(that.canvas).offset().top) * engine.scale);
             var x2 = that.xMouseDown;
             var y2 = that.yMouseDown;
             var tmp;
@@ -168,21 +188,24 @@ GameEngine.prototype.bindEvents = function () {
         }
         return false;
     });
-    $(this.canvas).mousemove(function (e) {
-        var x = Math.floor((e.pageX - $(that.canvas).offset().left));
-        var y = Math.floor((e.pageY - $(that.canvas).offset().top));
+    
+    $(this.canvas).mousemove(function (event) {
+        var x = Math.floor((event.pageX - $(that.canvas).offset().left) * engine.scale);
+        var y = Math.floor((event.pageY - $(that.canvas).offset().top) * engine.scale);
         that.xCurrentMouse = x;
         that.yCurrentMouse = y;
     });
-    $(this.canvas).mouseleave(function (e) {
-        var x = Math.floor((e.pageX - $(that.canvas).offset().left));
-        var y = Math.floor((e.pageY - $(that.canvas).offset().top));
+    
+    $(this.canvas).mouseleave(function (event) {
+        var x = Math.floor((event.pageX - $(that.canvas).offset().left) * engine.scale);
+        var y = Math.floor((event.pageY - $(that.canvas).offset().top) * engine.scale);
         that.xMouseDown = null;
         that.yMouseDown = null;
     });
+    
     $(this.canvas).mousedown(function (event) {
-        var x = Math.floor((event.pageX - $(that.canvas).offset().left));
-        var y = Math.floor((event.pageY - $(that.canvas).offset().top));
+        var x = Math.floor((event.pageX - $(that.canvas).offset().left) * engine.scale);
+        var y = Math.floor((event.pageY - $(that.canvas).offset().top) * engine.scale);
         switch (event.which) {
         case 1:
             // remember mousedown for rectangle selection
@@ -201,6 +224,7 @@ GameEngine.prototype.bindEvents = function () {
         }
         return false;
     });
+    
     $(this.canvas).bind("contextmenu", function (e) {
         return false;
     });
@@ -411,11 +435,11 @@ GameEngine.prototype.setCoordinates = function (x, y) {
 };
 
 GameEngine.prototype.centerOnCoordinates = function (x, y) {
-    // because x,y represent topright corner, and the desired coordinates represent the middle of the screen
+    // because x,y represent top-right corner, and the desired coordinates represent the middle of the screen
     var mapX = x;
     var mapY = y;
-    mapX = Math.round(mapX - this.widthInTiles / 2);
-    mapY = Math.round(mapY - this.heightInTiles / 2);
+    mapX = Math.round(mapX - this.widthInTiles + (this.widthInTiles / 2));
+    mapY = Math.round(mapY - this.heightInTiles + (this.heightInTiles / 2));
     this.setCoordinates(mapX, mapY);
 };
 
@@ -696,7 +720,7 @@ GameEngine.prototype.renderRectangle = function () {
             if (this.yMouseDown) {
                 context.beginPath();
                 context.strokeStyle = '#00cc00';
-                context.lineWidth = 2;
+                context.lineWidth = 2 * engine.scale;
                 context.moveTo(this.xCurrentMouse, this.yCurrentMouse);
                 context.lineTo(this.xMouseDown, this.yCurrentMouse);
                 context.lineTo(this.xMouseDown, this.yMouseDown);
@@ -708,6 +732,19 @@ GameEngine.prototype.renderRectangle = function () {
     }
 };
 
+GameEngine.prototype.setScale = function (factor) {
+    if (this.scale / factor > MAX_ZOOM || this.scale / factor < MIN_ZOOM) {
+        return;
+    }
 
+    var currCenterX = Math.ceil(engine.x + engine.widthInTiles / 2);
+    var currCenterY = Math.ceil(engine.y + engine.heightInTiles / 2);
 
+    this.scale /= factor;
+    this.canvas.getContext('2d').scale(factor, factor);
+    this.setFieldSizeInTiles();
 
+    var newX = Math.floor(currCenterX - engine.widthInTiles / 2);
+    var newY = Math.floor(currCenterY - engine.heightInTiles / 2);
+    this.setCoordinates(newX, newY);
+};

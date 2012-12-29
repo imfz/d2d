@@ -67,8 +67,14 @@ MinimapGameEngine.prototype.bindEvents = function () {
             if (that.isMouseDown) {
                 changeMinimapPosition(event);
             }
-        }
-    );
+        })
+        .mousewheel(function (event, delta, deltaX, deltaY) {
+            if (delta > 0) {
+                engine.setScale(ZOOM_OUT_FACTOR);
+            } else {
+                engine.setScale(ZOOM_IN_FACTOR);
+            }
+        });
     $(this.canvas).bind("contextmenu", function (event) {
         return false;
     });
@@ -123,7 +129,7 @@ MinimapGameEngine.prototype.renderBuffer = function () {
             }
         }
     }
-}
+};
 
 
 MinimapGameEngine.prototype.render = function () {
@@ -151,7 +157,7 @@ MinimapGameEngine.prototype.render = function () {
     drawRectangle();
     var that = this;
     requestAnimFrame(function () {
-        that.render()
+        that.render();
     });
 
     function putpixel(imgd, ix, iy, rd, gr, bl) {
@@ -202,9 +208,10 @@ MinimapGameEngine.prototype.render = function () {
 
         context.strokeStyle = "#000000";
         context.lineWidth = 2;
-        context.strokeRect(x1, y1, x2 - x1, y2 - y1);
+        var rectWidth = (x2 - x1);
+        var rectHeight = (y2 - y1);
+        context.strokeRect(x1, y1, rectWidth, rectHeight);
     }
-
 };
 
 
