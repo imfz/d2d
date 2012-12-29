@@ -18,8 +18,8 @@ var BUILDING_HP_BAR_X_OFFSET = 15;
 var BUILDING_HP_BAR_Y_OFFSET = 3;
 
 
-var ZOOM_IN_FACTOR = 2;
-var ZOOM_OUT_FACTOR = 0.5;
+var ZOOM_IN_FACTOR = 0.5;
+var ZOOM_OUT_FACTOR = 2;
 var MAX_ZOOM = 4;
 var MIN_ZOOM = 0.2;
 
@@ -110,6 +110,18 @@ GameEngine.prototype.bindEvents = function () {
             // handle P button
             that.placementEnabled = true;
             return false;
+        case 109:
+        case 173:
+            that.setScale(ZOOM_OUT_FACTOR);
+            return false;
+        case 107:
+            that.setScale(ZOOM_IN_FACTOR);
+            return false;
+        case 61:
+            if (e.shiftKey) {
+                that.setScale(ZOOM_IN_FACTOR);
+            }
+            return false;
         case 48:
         case 49:
         case 50:
@@ -138,7 +150,7 @@ GameEngine.prototype.bindEvents = function () {
         var y = Math.floor((event.pageY - $(that.canvas).offset().top) * engine.scale);
         selectUnitsByType(x, y, event.shiftKey);
     });
-    
+
     $(this.canvas).mousewheel(function (event, delta, deltaX, deltaY) {
         if (delta > 0) {
             that.setScale(ZOOM_OUT_FACTOR);
@@ -188,21 +200,21 @@ GameEngine.prototype.bindEvents = function () {
         }
         return false;
     });
-    
+
     $(this.canvas).mousemove(function (event) {
         var x = Math.floor((event.pageX - $(that.canvas).offset().left) * engine.scale);
         var y = Math.floor((event.pageY - $(that.canvas).offset().top) * engine.scale);
         that.xCurrentMouse = x;
         that.yCurrentMouse = y;
     });
-    
+
     $(this.canvas).mouseleave(function (event) {
         var x = Math.floor((event.pageX - $(that.canvas).offset().left) * engine.scale);
         var y = Math.floor((event.pageY - $(that.canvas).offset().top) * engine.scale);
         that.xMouseDown = null;
         that.yMouseDown = null;
     });
-    
+
     $(this.canvas).mousedown(function (event) {
         var x = Math.floor((event.pageX - $(that.canvas).offset().left) * engine.scale);
         var y = Math.floor((event.pageY - $(that.canvas).offset().top) * engine.scale);
@@ -224,7 +236,7 @@ GameEngine.prototype.bindEvents = function () {
         }
         return false;
     });
-    
+
     $(this.canvas).bind("contextmenu", function (e) {
         return false;
     });
@@ -550,8 +562,17 @@ requestAnimFrame = (function () {
 
 GameEngine.prototype.renderTiles = function (units, buildings) {
     var context = this.canvas.getContext("2d");
+
+    function drawPlacementTile(x, y, color) {
+        context.drawImage(color, 0, 0, TILE_WIDTH, TILE_HEIGHT, x * TILE_WIDTH, y * TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT);
+    }
+
     var currentMouseMapX = Math.floor(this.xCurrentMouse / TILE_WIDTH + this.x);
     var currentMouseMapY = Math.floor(this.yCurrentMouse / TILE_HEIGHT + this.y);
+
+    var tileColors = [];
+    var foundBadTile = false;
+    var foundGoodTile = false;
     for (var x = this.x; x < this.x + this.widthInTiles; x++) {
         for (var y = this.y; y < this.y + this.heightInTiles; y++) {
             //console.log("Rendering tile x: " + x + " y: " + y);
@@ -562,21 +583,47 @@ GameEngine.prototype.renderTiles = function (units, buildings) {
             if (this.placementEnabled) {
                 if (x >= currentMouseMapX && x < currentMouseMapX + this.placementWidth) {
                     if (y >= currentMouseMapY && y < currentMouseMapY + this.placementHeight) {
-                        if (this.map.isTileOkForBuilding(x, y, units, buildings)) {
-                            context.drawImage(sprites.bgGreenSprite,
-                                0, 0, TILE_WIDTH, TILE_HEIGHT,
-                                (x - this.x) * TILE_WIDTH, (y - this.y) * TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT
-                            );
-                        } else {
-                            context.drawImage(sprites.bgRedSprite,
-                                0, 0, TILE_WIDTH, TILE_HEIGHT,
-                                (x - this.x) * TILE_WIDTH, (y - this.y) * TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT
-                            )
+                        var tileStateForBuilding = this.map.isTileOkForBuilding(x, y, units, buildings);
+                        switch (tileStateForBuilding) {
+                        case CELL_OK:
+                            foundGoodTile = true;
+                            tileColors.push({x: x - this.x, y: y - this.y, type: CELL_OK});
+                            break;
+                        case CELL_OK_FAR:
+                            tileColors.push({x: x - this.x, y: y - this.y, type: CELL_OK_FAR});
+                            break;
+                        case CELL_BAD:
+                            foundBadTile = true;
+                            tileColors.push({x: x - this.x, y: y - this.y, type: CELL_BAD});
+                            break;
                         }
                     }
                 }
             }
 
+        }
+    }
+    
+    if (this.placementEnabled) {
+        for (var i = 0; i < tileColors.length; i++) {
+            var tile = tileColors[i];
+            if (tile.type == CELL_OK) {
+                if (foundBadTile || !foundGoodTile) {
+                    drawPlacementTile(tile.x, tile.y, sprites.bgYellowSprite);
+                } else {
+                    drawPlacementTile(tile.x, tile.y, sprites.bgGreenSprite);
+                }
+            }
+            if (tile.type == CELL_OK_FAR) {
+                if (foundGoodTile) {
+                    drawPlacementTile(tile.x, tile.y, sprites.bgYellowSprite);
+                } else {
+                    drawPlacementTile(tile.x, tile.y, sprites.bgRedSprite);
+                }
+            }
+            if (tile.type == CELL_BAD) {
+                drawPlacementTile(tile.x, tile.y, sprites.bgRedSprite);
+            }
         }
     }
 };

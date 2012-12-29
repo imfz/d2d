@@ -33,6 +33,7 @@ $(function () {
     sprites.setOkButton(Utils.getImageElement("images/okbutton.png"));
     sprites.setBuildBgGreen(Utils.getImageElement("images/build_bg_green.png"));
     sprites.setBuildBgRed(Utils.getImageElement("images/build_bg_red.png"));
+    sprites.setBuildBgYellow(Utils.getImageElement("images/build_bg_yellow.png"));
 
     var canvas = $("#canvas").get(0);
     engine.setCanvas(canvas);

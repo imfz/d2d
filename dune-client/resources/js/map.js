@@ -1,3 +1,7 @@
+var CELL_BAD = 1;
+var CELL_OK = 2;
+var CELL_OK_FAR = 3;
+
 function GameMap() {
     this.tiles = new Array();
     this.units = new Array();
@@ -61,52 +65,84 @@ GameMap.prototype.getUnits = function (x, y, x2, y2) {
 };
 
 GameMap.prototype.isTileOkForBuilding = function (x, y, units, buildings) {
+
+    function getSurroundedCells(centerCell, cellStore) {
+        cellStore.push({x: centerCell.x - 1, y: centerCell.y - 1});
+        cellStore.push({x: centerCell.x - 1, y: centerCell.y});
+        cellStore.push({x: centerCell.x - 1, y: centerCell.y + 1});
+        cellStore.push({x: centerCell.x, y: centerCell.y - 1});
+        cellStore.push({x: centerCell.x, y: centerCell.y});
+        cellStore.push({x: centerCell.x, y: centerCell.y + 1});
+        cellStore.push({x: centerCell.x + 1, y: centerCell.y - 1});
+        cellStore.push({x: centerCell.x + 1, y: centerCell.y});
+        cellStore.push({x: centerCell.x + 1, y: centerCell.y + 1});
+    }
+
+    var allocatedCellsByBuildings = [];
+    for (var i = 0; i < buildings.length; i++) {
+        var building = buildings[i];
+        if (building.ownerId != connection._playerId || !building.constructionComplete) {
+            continue;
+        }
+        for (var j = 0; j < building.width; j++) {
+            for (var k = 0; k < building.height; k++) {
+                getSurroundedCells({x: building.x + j, y: building.y + k}, allocatedCellsByBuildings);
+            }
+        }
+    }
+
     var tileType = this.getTileType(x, y);
     if (tileType != TILE_TYPE_ROCK) {
-        return false;
+        return CELL_BAD;
     }
     for (var i = 0; i < units.length; i++) {
         var unit = units[i];
         if ((unit.x == x) && (unit.y == y)) {
-            return false;
+            return CELL_BAD;
         }
         if (unit.travelled > 0) {
             if ((unit.x == x - 1 ) && (unit.y == y) && (unit.viewDirection == VIEW_DIRECTION_RIGHT)) {
-                return false;
+                return CELL_BAD;
             }
-            if ((unit.x == x - 1 ) && (unit.y == y-1) && (unit.viewDirection == VIEW_DIRECTION_BOTTOMRIGHT)) {
-                return false;
+            if ((unit.x == x - 1 ) && (unit.y == y - 1) && (unit.viewDirection == VIEW_DIRECTION_BOTTOMRIGHT)) {
+                return CELL_BAD;
             }
-            if ((unit.x == x - 1 ) && (unit.y == y+1) && (unit.viewDirection == VIEW_DIRECTION_TOPRIGHT)) {
-                return false;
+            if ((unit.x == x - 1 ) && (unit.y == y + 1) && (unit.viewDirection == VIEW_DIRECTION_TOPRIGHT)) {
+                return CELL_BAD;
             }
             if ((unit.x == x + 1) && (unit.y == y) && (unit.viewDirection == VIEW_DIRECTION_LEFT)) {
-                return false;
+                return CELL_BAD;
             }
-            if ((unit.x == x + 1) && (unit.y == y-1) && (unit.viewDirection == VIEW_DIRECTION_BOTTOMLEFT)) {
-                return false;
+            if ((unit.x == x + 1) && (unit.y == y - 1) && (unit.viewDirection == VIEW_DIRECTION_BOTTOMLEFT)) {
+                return CELL_BAD;
             }
-            if ((unit.x == x + 1) && (unit.y == y+1) && (unit.viewDirection == VIEW_DIRECTION_TOPLEFT)) {
-                return false;
+            if ((unit.x == x + 1) && (unit.y == y + 1) && (unit.viewDirection == VIEW_DIRECTION_TOPLEFT)) {
+                return CELL_BAD;
             }
 
             if ((unit.x == x) && (unit.y == y - 1) && (unit.viewDirection == VIEW_DIRECTION_BOTTOM)) {
-                return false;
+                return CELL_BAD;
             }
 
             if ((unit.x == x) && (unit.y == y + 1) && (unit.viewDirection == VIEW_DIRECTION_TOP)) {
-                return false;
+                return CELL_BAD;
             }
         }
     }
 
-    return true;
+    for (var i = 0; i < allocatedCellsByBuildings.length; i++) {
+        var allocatedCell = allocatedCellsByBuildings[i];
+        if (allocatedCell.x == x && allocatedCell.y == y) {
+            return CELL_OK;
+        }
+    }
+    return CELL_OK_FAR;
 };
 
 GameMap.prototype.getBuildings = function (x, y, x2, y2) {
     //TODO: optimization
     return this.buildings;
-}
+};
 
 
 GameMap.prototype.getTileType = function (x, y) {

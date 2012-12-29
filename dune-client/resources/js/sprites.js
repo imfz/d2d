@@ -239,6 +239,10 @@ Sprites.prototype.setBuildBgRed = function (bgRed) {
     this.bgRedSprite = bgRed;
 };
 
+Sprites.prototype.setBuildBgYellow = function (bgYellow) {
+    this.bgYellowSprite = bgYellow;
+};
+
 Sprites.prototype.setUnitSprite = function (unitSprite) {
     this.unitSprite = unitSprite;
 };
