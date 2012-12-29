@@ -1,7 +1,7 @@
 package lv.k2611a.domain;
 
 public interface EntityType {
-    int getIdOnJS();
+    byte getIdOnJS();
 
     int getCost();
 

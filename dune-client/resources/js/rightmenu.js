@@ -3,7 +3,7 @@ var BUY_OPTION_WIDTH = 182;
 
 function RightMenu() {
     this.builderid = -1;
-    this.currentlyBuildingOptionId = -1;
+    this.currentlyBuildingOptionType = -1;
     var that = this;
     $("#rightmenucancelbutton").click(function () {
         connection.sendCancelConstruction(that.builderId);
@@ -106,7 +106,7 @@ RightMenu.prototype.bindEvents = function () {
     });
 };
 
-RightMenu.prototype.setOptions = function (builderId, options, percentsDone, currentlyBuildingId, currentlyBuildingOptionId) {
+RightMenu.prototype.setOptions = function (builderId, options, percentsDone, currentlyBuildingId, currentlyBuildingOptionType) {
     if (!options) {
         options = new Array();
     }
@@ -126,14 +126,14 @@ RightMenu.prototype.setOptions = function (builderId, options, percentsDone, cur
         if (this.currentlyBuildingId != currentlyBuildingId) {
             foundDiff = true;
         }
-        if (this.currentlyBuildingOptionId != currentlyBuildingOptionId) {
+        if (this.currentlyBuildingOptionType != currentlyBuildingOptionType) {
             foundDiff = true;
         }
     } else {
         foundDiff = true;
     }
     this.currentlyBuildingId = currentlyBuildingId;
-    this.currentlyBuildingOptionId = currentlyBuildingOptionId;
+    this.currentlyBuildingOptionType = currentlyBuildingOptionType;
     this.percentsDone = percentsDone;
     this.builderId = builderId;
 
@@ -159,13 +159,13 @@ RightMenu.prototype.redraw = function () {
 
         );
         $("#rightmenucancel").css("display", "block");
-        if (this.currentlyBuildingOptionId >= 0) {
+        if (this.currentlyBuildingOptionType >= 0) {
             var currentlyBuildingCanvas = $('<canvas></canvas>').attr({width:BUY_OPTION_WIDTH, height:BUY_OPTION_HEIGHT});
             $("#currentlyBuildingCanvas").append(currentlyBuildingCanvas);
             var currentlyBuildingCanvasEl = currentlyBuildingCanvas[0];
             currentlyBuildingCanvasEl.height = BUY_OPTION_HEIGHT;
             var ctx = currentlyBuildingCanvasEl.getContext("2d");
-            var buildingOptionConfig = this.getBuyOptionConfig(this.currentlyBuildingOptionId);
+            var buildingOptionConfig = this.getBuyOptionConfig(this.currentlyBuildingOptionType);
             ctx.drawImage(this.mainSprite, buildingOptionConfig.x, buildingOptionConfig.y, BUY_OPTION_WIDTH, BUY_OPTION_HEIGHT, 0, 0, BUY_OPTION_WIDTH, BUY_OPTION_HEIGHT);
         }
     } else {
@@ -195,17 +195,34 @@ RightMenu.prototype.redraw = function () {
             context = descr[0].getContext("2d");
             context.font = '15px Arial Bold';
             context.fillStyle = 'black';
-            context.fillText(option.name, 5, 15);
-            context.fillText(option.cost, 140, 15);
+            context.fillText(getConstructionOptionName(option), 5, 10);
+            context.fillText(option.cost, 140, 10);
 
-            canvas.click(sendStartConnectionClosure(this.builderId, option.entityToBuildId));
+            canvas.click(sendStartConnectionClosure(this.builderId, option.entityToBuildType));
         }
     }
 };
 
-function sendStartConnectionClosure(builderId, entityToBuildId) {
+function getConstructionOptionName(option) {
+    switch (option.type) {
+    case BUY_OPTION_POWERPLANT:
+        return "Powerplant";
+    case BUY_OPTION_REFINERY:
+        return "Refinery";
+    case BUY_OPTION_FACTORY:
+        return "Factory";
+    case BUY_OPTION_SILO:
+        return "Silo";
+    case BUY_OPTION_SIEGE_TANK:
+        return "Siege tank";
+    }
+
+    return "";
+}
+
+function sendStartConnectionClosure(builderId, entityToBuildType) {
     var thatBuilderId = builderId;
-    var thatEntityToBuildId = entityToBuildId;
+    var thatEntityToBuildId = entityToBuildType;
     return function () {
         connection.sendStartConstruction(thatBuilderId, thatEntityToBuildId);
     }

@@ -189,7 +189,7 @@ public abstract class AbstractSeriaizationTest<E extends CustomSerialization> {
 
     private void serializeAndCompareAssertNoEquality(E entity, List<byte[]> alreadySerializedEntities, Field field, String newValue) {
         byte[] serializedNew = entity.toBytes();
-        assertEquals(entity.getSize(), serializedNew.length);
+        assertEquals("Entity should not change length", entity.getSize(), serializedNew.length);
         for (byte[] alreadySerializedEntity : alreadySerializedEntities) {
             assertFalse("Serialized entity cannot remain equal after field " + field.getName() + " has been changed to " + newValue, Arrays.equals(alreadySerializedEntity, serializedNew));
         }

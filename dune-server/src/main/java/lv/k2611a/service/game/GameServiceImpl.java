@@ -267,31 +267,20 @@ public class GameServiceImpl implements GameService {
 
                 List<OptionDTO> options = new ArrayList<OptionDTO>();
                 for (ConstructionOption constructionOption : constructionOptions) {
-                    OptionDTO option = new OptionDTO();
-                    option.setType(constructionOption.getIdOnJS());
-                    option.setEntityToBuildId(constructionOption.getEntityToBuildIdOnJs());
-                    option.setCost(constructionOption.getCost());
-                    option.setName(constructionOption.getName());
+                    OptionDTO option = OptionDTO.fromConstructionOption(constructionOption);
                     options.add(option);
                 }
                 UpdateConstructionOptions updateConstructionOptions = new UpdateConstructionOptions();
                 updateConstructionOptions.setBuilderId(clientConnection.getSelectedBuildingId());
-                if (!(building.isAwaitingClick())) {
-                    updateConstructionOptions.setReadyToBuild(true);
-                } else {
-                    updateConstructionOptions.setCurrentlyBuildingId(building.getBuildingTypeBuilt().getIdOnJS());
-                    updateConstructionOptions.setCurrentlyBuildingOptionId(getConstructionOption(building.getType().getConstructionOptions(), building.getBuildingTypeBuilt()));
-                    updateConstructionOptions.setPercentsDone(100);
-                }
                 if (building.getCurrentGoal() != null) {
                     if (building.getCurrentGoal() instanceof CreateBuilding) {
                         CreateBuilding createBuilding = (CreateBuilding) building.getCurrentGoal();
                         BuildingType buildingTypeBuilt = createBuilding.getBuildingType();
                         if (buildingTypeBuilt != null) {
                             updateConstructionOptions.setCurrentlyBuildingId(buildingTypeBuilt.getIdOnJS());
-                            updateConstructionOptions.setCurrentlyBuildingOptionId(getConstructionOption(building.getType().getConstructionOptions(), buildingTypeBuilt));
+                            updateConstructionOptions.setCurrentlyBuildingOptionType(getConstructionOption(building.getType().getConstructionOptions(), buildingTypeBuilt));
                             double done = (double) building.getTicksAccumulated() / buildingTypeBuilt.getTicksToBuild();
-                            int percentsDone = (int) Math.round(done * 100);
+                            byte percentsDone = (byte) Math.round(done * 100);
                             updateConstructionOptions.setPercentsDone(percentsDone);
                         }
                     }
@@ -300,11 +289,19 @@ public class GameServiceImpl implements GameService {
                         UnitType unitType = createUnit.getUnitType();
                         if (unitType != null) {
                             updateConstructionOptions.setCurrentlyBuildingId(unitType.getIdOnJS());
-                            updateConstructionOptions.setCurrentlyBuildingOptionId(getConstructionOption(building.getType().getConstructionOptions(), unitType));
+                            updateConstructionOptions.setCurrentlyBuildingOptionType(getConstructionOption(building.getType().getConstructionOptions(), unitType));
                             double done = (double) building.getTicksAccumulated() / unitType.getTicksToBuild();
-                            int percentsDone = (int) Math.round(done * 100);
+                            byte percentsDone = (byte) Math.round(done * 100);
                             updateConstructionOptions.setPercentsDone(percentsDone);
                         }
+                    }
+                } else {
+                    if (!(building.isAwaitingClick())) {
+                        updateConstructionOptions.setReadyToBuild(true);
+                    } else {
+                        updateConstructionOptions.setCurrentlyBuildingId(building.getBuildingTypeBuilt().getIdOnJS());
+                        updateConstructionOptions.setCurrentlyBuildingOptionType(getConstructionOption(building.getType().getConstructionOptions(), building.getBuildingTypeBuilt()));
+                        updateConstructionOptions.setPercentsDone((byte)100);
                     }
                 }
                 updateConstructionOptions.setOptions(options.toArray(new OptionDTO[options.size()]));
@@ -333,7 +330,7 @@ public class GameServiceImpl implements GameService {
         return filtered;
     }
 
-    private int getConstructionOption(EnumSet<ConstructionOption> constructionOptions, EntityType buildingTypeBuilt) {
+    private byte getConstructionOption(EnumSet<ConstructionOption> constructionOptions, EntityType buildingTypeBuilt) {
         for (ConstructionOption constructionOption : constructionOptions) {
             if (constructionOption.getEntityToBuildIdOnJs() == buildingTypeBuilt.getIdOnJS()) {
                 return constructionOption.getIdOnJS();

@@ -4,16 +4,16 @@ import java.util.HashSet;
 import java.util.Set;
 
 public enum UnitType implements EntityType {
-    BATTLE_TANK(1, 40, 100, 100, 5),
-    SIEGE_TANK(2, 60, 120, 120, 5),
-    LAUNCHER(3, 30, 50, 100, 5),
-    DEVASTATOR(4, 100, 200, 200, 5),
-    HARVESTER(5, 10, 200, 150, 5),
-    JEEP(6, 100, 200, 50, 5),
-    TRIKE(7, 100, 200, 20, 5),
-    SONIC_TANK(8, 100, 200, 40, 5),
-    DEVIATOR(9, 100, 200, 50, 5),
-    MCV(10, 100, 200, 100, 5)
+    BATTLE_TANK((byte)1, 40, 100, 100, 5),
+    SIEGE_TANK((byte)2, 60, 120, 120, 5),
+    LAUNCHER((byte)3, 30, 50, 100, 5),
+    DEVASTATOR((byte)4, 100, 200, 200, 5),
+    HARVESTER((byte)5, 10, 200, 150, 5),
+    JEEP((byte)6, 100, 200, 50, 5),
+    TRIKE((byte)7, 100, 200, 20, 5),
+    SONIC_TANK((byte)8, 100, 200, 40, 5),
+    DEVIATOR((byte)9, 100, 200, 50, 5),
+    MCV((byte)10, 100, 200, 100, 5)
     ;
 
 
@@ -21,7 +21,7 @@ public enum UnitType implements EntityType {
 
     static {
         int maxJsId = 0;
-        Set<Integer> idsOnJs = new HashSet<Integer>();
+        Set<Byte> idsOnJs = new HashSet<Byte>();
         for (UnitType unitType : values()) {
             if (unitType.getIdOnJS() > maxJsId) {
                 maxJsId = unitType.getIdOnJS();
@@ -36,13 +36,13 @@ public enum UnitType implements EntityType {
         }
     }
 
-    private final int idOnJS;
+    private final byte idOnJS;
     private final int speed; // ticks for cell
     private final int hp;
     private final int ticksToBuild;
     private final int costPerTick;
 
-    private UnitType(int idOnJS, int speed, int hp, int ticksToBuild, int costPerTick) {
+    private UnitType(byte idOnJS, int speed, int hp, int ticksToBuild, int costPerTick) {
         this.idOnJS = idOnJS;
         this.speed = speed;
         this.hp = hp;
@@ -50,7 +50,7 @@ public enum UnitType implements EntityType {
         this.costPerTick = costPerTick;
     }
 
-    public int getIdOnJS() {
+    public byte getIdOnJS() {
         return idOnJS;
     }
 

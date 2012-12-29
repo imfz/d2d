@@ -76,6 +76,44 @@ Serializers[3] = function (payload) {
     return ["UpdateMap", result];
 };
 
+
+Serializers[4] = function (payload) {
+    var result = new Array();
+    var position = 0;
+
+    var options = new Array();
+    var optionsDTOLength = getIntAt(payload, position);
+    position += 4;
+    for (i = 0; i < optionsDTOLength; i++) {
+        var optionDTO = new Array();
+        position = readOptionDTO(optionDTO, payload, position);
+        options.push(optionDTO);
+    }
+    result["options"] = options;
+
+    result["builderId"] = getIntAt(payload,position);
+    position+=4;
+
+    result["currentlyBuildingId"] = getIntAt(payload,position);
+    position+=4;
+
+    result["readyToBuild"] = getBooleanAt(payload,position);
+    position+=1;
+
+    result["percentsDone"] = payload[position];
+    position+=1;
+
+    result["currentlyBuildingOptionType"] = payload[position];
+    position+=1;
+
+
+    if (position != payload.length) {
+        console.log("Read " + position + " bytes from payloads " + payload.length);
+    }
+
+    return ["UpdateConstructionOptions", result];
+};
+
 function readMapDTO(dto, payload, position) {
     var units = new Array();
     var unitsLength = getIntAt(payload, position);
@@ -181,6 +219,17 @@ function readChangedTileDTO(dto, payload, position) {
     position+=2;
     dto["y"] = getShortAt(payload,position);
     position+=2;
+    return position;
+}
+
+
+function readOptionDTO(dto, payload, position) {
+    dto["cost"] = getShortAt(payload,position);
+    position+=2;
+    dto["type"] = payload[position];
+    position++;
+    dto["entityToBuildType"] = payload[position];
+    position++;
     return position;
 }
 

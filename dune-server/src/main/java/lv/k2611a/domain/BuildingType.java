@@ -6,17 +6,17 @@ import java.util.Set;
 
 public enum BuildingType implements EntityType {
 
-    POWERPLANT(2,2,2,50,100, 10, +100, null),
-    SILO(1,2,2,50,50, 10, -5, new BuildingType[]{BuildingType.POWERPLANT}),
-    AIRBASE(9,2,2,50,100, 10, -20, new BuildingType[]{BuildingType.POWERPLANT}),
-    WALL(14,1,1,50,100, 10, 0, new BuildingType[]{BuildingType.POWERPLANT}),
-    REPAIRSHOP(3,3,2,50,100, 10, -15, new BuildingType[]{BuildingType.POWERPLANT}),
-    TURRET(10,1,1,50,100, 10, -5, new BuildingType[]{BuildingType.POWERPLANT}),
-    ROCKET_TURRET(13,1,1,50,100, 10, -20, new BuildingType[]{BuildingType.POWERPLANT}),
-    RADAR(5,2,2,50,100, 10, -15, new BuildingType[]{BuildingType.POWERPLANT}),
-    CONCRETE(11,2,2,50,100, 10, 0, new BuildingType[]{BuildingType.POWERPLANT}),
-    REFINERY(12,3,2,50,30, 10, -25, new BuildingType[]{BuildingType.POWERPLANT}),
-    FACTORY(8,3,2,50,100, 10, -25, new BuildingType[]{BuildingType.POWERPLANT}) {
+    POWERPLANT((byte)2,2,2,50,100, 10, +100, null),
+    SILO((byte)1,2,2,50,50, 10, -5, new BuildingType[]{BuildingType.POWERPLANT}),
+    AIRBASE((byte)9,2,2,50,100, 10, -20, new BuildingType[]{BuildingType.POWERPLANT}),
+    WALL((byte)14,1,1,50,100, 10, 0, new BuildingType[]{BuildingType.POWERPLANT}),
+    REPAIRSHOP((byte)3,3,2,50,100, 10, -15, new BuildingType[]{BuildingType.POWERPLANT}),
+    TURRET((byte)10,1,1,50,100, 10, -5, new BuildingType[]{BuildingType.POWERPLANT}),
+    ROCKET_TURRET((byte)13,1,1,50,100, 10, -20, new BuildingType[]{BuildingType.POWERPLANT}),
+    RADAR((byte)5,2,2,50,100, 10, -15, new BuildingType[]{BuildingType.POWERPLANT}),
+    CONCRETE((byte)11,2,2,50,100, 10, 0, new BuildingType[]{BuildingType.POWERPLANT}),
+    REFINERY((byte)12,3,2,50,30, 10, -25, new BuildingType[]{BuildingType.POWERPLANT}),
+    FACTORY((byte)8,3,2,50,100, 10, -25, new BuildingType[]{BuildingType.POWERPLANT}) {
         @Override
         public EnumSet<ConstructionOption> getConstructionOptions() {
             EnumSet<ConstructionOption> constructionOptions = EnumSet.of(
@@ -25,7 +25,7 @@ public enum BuildingType implements EntityType {
             return constructionOptions;
         }
     },
-    CONSTRUCTIONYARD(7,2,2,50,150, 10, 0, null) {
+    CONSTRUCTIONYARD((byte)7,2,2,50,150, 10, 0, null) {
         @Override
         public EnumSet<ConstructionOption> getConstructionOptions() {
             EnumSet<ConstructionOption> constructionOptions = EnumSet.of(
@@ -42,7 +42,7 @@ public enum BuildingType implements EntityType {
 
     static {
         int maxJsId = 0;
-        Set<Integer> idsOnJs = new HashSet<Integer>();
+        Set<Byte> idsOnJs = new HashSet<Byte>();
         for (BuildingType buildingType : values()) {
             if (buildingType.getIdOnJS() > maxJsId) {
                 maxJsId = buildingType.getIdOnJS();
@@ -57,7 +57,7 @@ public enum BuildingType implements EntityType {
         }
     }
 
-    private final int idOnJS;
+    private final byte idOnJS;
     private final int width;
     private final int height;
     private final int hp;
@@ -66,7 +66,7 @@ public enum BuildingType implements EntityType {
     private final int electricityDelta;
     private final BuildingType[] prerequisites;
 
-    private BuildingType(int idOnJS, int width, int height, int hp, int ticksToBuild, int costPerTick, int electricityDelta, BuildingType[] prerequisites) {
+    private BuildingType(byte idOnJS, int width, int height, int hp, int ticksToBuild, int costPerTick, int electricityDelta, BuildingType[] prerequisites) {
         this.idOnJS = idOnJS;
         this.width = width;
         this.height = height;
@@ -82,7 +82,7 @@ public enum BuildingType implements EntityType {
     }
 
     @Override
-    public int getIdOnJS() {
+    public byte getIdOnJS() {
         return idOnJS;
     }
 
