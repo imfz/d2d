@@ -4,12 +4,15 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import lv.k2611a.domain.Building;
+import lv.k2611a.domain.Entity;
 import lv.k2611a.domain.Map;
 import lv.k2611a.domain.RefineryEntrance;
 import lv.k2611a.domain.Tile;
 import lv.k2611a.domain.TileType;
 import lv.k2611a.domain.Unit;
 import lv.k2611a.domain.UnitType;
+import lv.k2611a.domain.unitgoals.Attack;
 import lv.k2611a.domain.unitgoals.Harvest;
 import lv.k2611a.domain.unitgoals.RepetetiveMove;
 import lv.k2611a.domain.unitgoals.ReturnToBase;
@@ -67,7 +70,12 @@ public class UnitAction extends AbstractGameStateChanger {
         if (unit.getUnitType() == UnitType.HARVESTER) {
             processHarvester(map, tile, unit);
         } else {
-            unit.setGoal(new RepetetiveMove(x, y));
+            Building building = map.getBuildingAt(x, y);
+            if (building != null) {
+                unit.setGoal(new Attack(Entity.BUILDING,building.getId()));
+            } else {
+                unit.setGoal(new RepetetiveMove(x, y));
+            }
         }
     }
 

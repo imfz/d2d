@@ -247,6 +247,10 @@ Sprites.prototype.setUnitSprite = function (unitSprite) {
     this.unitSprite = unitSprite;
 };
 
+Sprites.prototype.setBulletSprite = function (bulletSprite) {
+    this.bulletSprite = bulletSprite;
+};
+
 Sprites.prototype.colorPlayerIdSelector = function() {
     var that = this;
 

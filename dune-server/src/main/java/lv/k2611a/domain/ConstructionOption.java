@@ -7,7 +7,7 @@ public enum ConstructionOption {
 
     DEVASTATOR((byte)1,UnitType.DEVASTATOR),
     SIEGE_TANK((byte)2,UnitType.SIEGE_TANK),
-    TANK((byte)3,UnitType.SIEGE_TANK),
+    TANK((byte)3,UnitType.BATTLE_TANK),
     LAUNCHER((byte)4,UnitType.LAUNCHER),
 
     POWERPLANT((byte)5,BuildingType.POWERPLANT),

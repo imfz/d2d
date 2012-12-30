@@ -113,4 +113,16 @@ public class Building {
     public Point getPoint() {
         return new Point(x,y);
     }
+
+    public Point getPoint2() {
+        return new Point(x+getType().getWidth()-1,y);
+    }
+
+    public Point getPoint3() {
+        return new Point(x+getType().getWidth()-1,y+getType().getHeight()-1);
+    }
+
+    public Point getPoint4() {
+        return new Point(x,y+getType().getHeight()-1);
+    }
 }

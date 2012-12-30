@@ -26,6 +26,7 @@ $(function () {
 
     sprites.setMainSprite(Utils.getImageElement("images/main_sprite.jpg"));
     sprites.setUnitSprite(Utils.getImageElement("images/units.png"));
+    sprites.setBulletSprite(Utils.getImageElement("images/bullet.png"));
     sprites.setBuildingsSprite(Utils.getImageElement("images/buildings.jpg"));
     sprites.setRefinerySprite(Utils.getImageElement("images/refinery.jpg"));
     sprites.setHarvesterSprite(Utils.getImageElement("images/harvester.png"));

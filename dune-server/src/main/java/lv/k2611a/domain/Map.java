@@ -126,7 +126,17 @@ public class Map {
     }
 
     public List<Building> getBuildings() {
-        return Collections.unmodifiableList(buildings);
+        return Collections.unmodifiableList(filterNonNulls(buildings));
+    }
+
+    private List<? extends Building> filterNonNulls(List<Building> buildings) {
+        List<Building> result = new ArrayList<Building>();
+        for (Building building : buildings) {
+            if (building != null) {
+                result.add(building);
+            }
+        }
+        return result;
     }
 
     public List<Tile> getTilesByType(TileType tileType) {
@@ -143,7 +153,7 @@ public class Map {
 
     public List<Building> getBuildingsByType(BuildingType buildingType) {
         List<Building> result = new ArrayList<Building>();
-        for (Building building : buildings) {
+        for (Building building : filterNonNulls(buildings)) {
             if (building.getType() == buildingType) {
                 result.add(building);
             }
@@ -153,7 +163,7 @@ public class Map {
 
     public List<Building> getBuildingsByTypeAndOwner(BuildingType buildingType, int ownerId) {
         List<Building> result = new ArrayList<Building>();
-        for (Building building : buildings) {
+        for (Building building : filterNonNulls(buildings)) {
             if (building.getType() == buildingType) {
                 if (building.getOwnerId() == ownerId) {
                     result.add(building);
@@ -166,7 +176,7 @@ public class Map {
 
     public List<Building> getBuildingsByOwner(int ownerId) {
         List<Building> result = new ArrayList<Building>();
-        for (Building building : buildings) {
+        for (Building building : filterNonNulls(buildings)) {
             if (building.getOwnerId() == ownerId) {
                 result.add(building);
             }
@@ -293,6 +303,17 @@ public class Map {
         return false;
     }
 
+    public Building getBuildingAt(int x, int y) {
+        for (Building building : filterNonNulls(buildings)) {
+            if (building.getX() <= x && building.getX() + building.getType().getWidth() - 1 >= x ) {
+                if (building.getY() <= y && building.getY() + building.getType().getHeight() - 1 >= y ) {
+                    return building;
+                }
+            }
+        }
+        return null;
+    }
+
     public boolean hasBuildingInSquare(int x, int y, int radius) {
         for (int currentX = x - radius; currentX < x + radius; currentX++) {
             for (int currentY = y - radius; currentY < y + radius; currentY++) {
@@ -300,7 +321,7 @@ public class Map {
                     if (currentY > 0) {
                         if (currentX < width) {
                             if (currentY < height) {
-                                for (Building building : buildings) {
+                                for (Building building : filterNonNulls(buildings)) {
                                     if (building.getX() == currentX) {
                                         if (building.getY() == currentY) {
                                             return true;
@@ -314,6 +335,19 @@ public class Map {
             }
         }
         return false;
+    }
+
+    public static Point getClosestNode(Point current, List<Point> points) {
+        Point bestNode = null;
+        double bestDistance = Double.MAX_VALUE;
+        for (Point point : points) {
+            double currentDistance = Map.getDistanceBetween(current, point);
+            if (bestDistance > currentDistance) {
+                bestNode = point;
+                bestDistance = currentDistance;
+            }
+        }
+        return bestNode;
     }
 
     public static double getDistanceBetween(Point node1, Point node2) {
@@ -509,4 +543,5 @@ public class Map {
     public void removeBuilding(Building building) {
         this.buildings.set(building.getId(), null);
     }
+
 }

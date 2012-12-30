@@ -68,6 +68,10 @@ public enum ViewDirection {
 
     public abstract Point apply(Point point, int distance);
 
+    public static ViewDirection getDirection(Point point1, Point point2) {
+        return getDirection(point1.getX(),point1.getY(),point2.getX(),point2.getY());
+    }
+
     public static ViewDirection getDirection(int x, int y, int toX, int toY) {
         int deltaX = x - toX;
         int deltaY = y - toY;

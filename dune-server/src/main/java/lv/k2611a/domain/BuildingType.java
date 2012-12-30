@@ -6,7 +6,7 @@ import java.util.Set;
 
 public enum BuildingType implements EntityType {
 
-    POWERPLANT((byte)2,2,2,50,100, 10, +100, null),
+    POWERPLANT((byte)2,2,2,50,10, 10, +100, null),
     SILO((byte)1,2,2,50,50, 10, -5, new BuildingType[]{BuildingType.POWERPLANT}),
     AIRBASE((byte)9,2,2,50,100, 10, -20, new BuildingType[]{BuildingType.POWERPLANT}),
     WALL((byte)14,1,1,50,100, 10, 0, new BuildingType[]{BuildingType.POWERPLANT}),
@@ -16,7 +16,7 @@ public enum BuildingType implements EntityType {
     RADAR((byte)5,2,2,50,100, 10, -15, new BuildingType[]{BuildingType.POWERPLANT}),
     CONCRETE((byte)11,2,2,50,100, 10, 0, new BuildingType[]{BuildingType.POWERPLANT}),
     REFINERY((byte)12,3,2,50,30, 10, -25, new BuildingType[]{BuildingType.POWERPLANT}),
-    FACTORY((byte)8,3,2,50,100, 10, -25, new BuildingType[]{BuildingType.POWERPLANT}) {
+    FACTORY((byte)8,3,2,50,10, 10, -25, new BuildingType[]{BuildingType.POWERPLANT}) {
         @Override
         public EnumSet<ConstructionOption> getConstructionOptions() {
             EnumSet<ConstructionOption> constructionOptions = EnumSet.of(

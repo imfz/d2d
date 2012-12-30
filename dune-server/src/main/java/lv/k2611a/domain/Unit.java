@@ -18,6 +18,7 @@ public class Unit {
     private int hp;
     private int ownerId;
     private int ticksCollectingSpice;
+    private int ticksReloading;
 
     public UnitType getUnitType() {
         return unitType;
@@ -119,5 +120,13 @@ public class Unit {
 
     public void clearGoals() {
         this.goals = new ArrayList<UnitGoal>();
+    }
+
+    public int getTicksReloading() {
+        return ticksReloading;
+    }
+
+    public void setTicksReloading(int ticksReloading) {
+        this.ticksReloading = ticksReloading;
     }
 }
