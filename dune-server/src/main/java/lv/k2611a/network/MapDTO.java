@@ -9,6 +9,7 @@ public class MapDTO implements CustomSerialization {
     private TileDTO[] tiles;
     private UnitDTO[] units;
     private BuildingDTO[] buildings;
+    private BulletDTO[] bullets;
 
     public short getHeight() {
         return height;
@@ -50,6 +51,14 @@ public class MapDTO implements CustomSerialization {
         this.buildings = buildings;
     }
 
+    public BulletDTO[] getBullets() {
+        return bullets;
+    }
+
+    public void setBullets(BulletDTO[] bullets) {
+        this.bullets = bullets;
+    }
+
     @Override
     public byte[] toBytes() {
         byte[] payload = new byte[getSize()];
@@ -66,6 +75,10 @@ public class MapDTO implements CustomSerialization {
             position += bytes.length;
         }
 
+
+
+
+
         sizeBytes = ByteUtils.intToBytes(buildings.length);
         System.arraycopy(sizeBytes,0,payload,position,sizeBytes.length);
         position+=4;
@@ -76,6 +89,10 @@ public class MapDTO implements CustomSerialization {
             position += bytes.length;
         }
 
+
+
+
+
         sizeBytes = ByteUtils.intToBytes(tiles.length);
         System.arraycopy(sizeBytes,0,payload,position,sizeBytes.length);
         position+=4;
@@ -85,6 +102,23 @@ public class MapDTO implements CustomSerialization {
             System.arraycopy(bytes,0,payload,position,bytes.length);
             position += bytes.length;
         }
+
+
+
+
+
+        sizeBytes = ByteUtils.intToBytes(bullets.length);
+        System.arraycopy(sizeBytes,0,payload,position,sizeBytes.length);
+        position+=4;
+
+        for (BulletDTO bulletDTO : bullets) {
+            byte[] bytes = bulletDTO.toBytes();
+            System.arraycopy(bytes,0,payload,position,bytes.length);
+            position += bytes.length;
+        }
+
+
+
 
         byte[] widthBytes = ByteUtils.shortToBytes(width);
         payload[position] = widthBytes[0];
@@ -116,6 +150,11 @@ public class MapDTO implements CustomSerialization {
         totalSize += 4;
         for (TileDTO tile : tiles) {
             totalSize += tile.getSize();
+        }
+
+        totalSize += 4;
+        for (BulletDTO bullet : bullets) {
+            totalSize += bullet.getSize();
         }
 
         totalSize += 4;

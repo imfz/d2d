@@ -15,6 +15,7 @@ import lv.k2611a.domain.Unit;
 import lv.k2611a.domain.UnitType;
 import lv.k2611a.service.game.GameServiceImpl;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -55,5 +56,6 @@ public class AttackTest {
         }
 
         assertNull(map.getBuilding(buildingId));
+        assertEquals(0,map.getBullets().size());
     }
 }

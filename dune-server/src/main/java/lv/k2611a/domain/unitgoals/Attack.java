@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lv.k2611a.domain.Building;
+import lv.k2611a.domain.Bullet;
+import lv.k2611a.domain.BulletType;
 import lv.k2611a.domain.Entity;
 import lv.k2611a.domain.Map;
 import lv.k2611a.domain.Unit;
@@ -50,7 +52,7 @@ public class Attack implements UnitGoal {
     private void attackBuilding(Unit unit, Map map, GameServiceImpl gameService) {
         Building building = map.getBuilding(entityId);
         if (inRange(building,unit,map)) {
-            fire(building,unit,map);
+            fire(building,unit,map,gameService);
         } else {
             move(building,unit,map);
         }
@@ -71,16 +73,20 @@ public class Attack implements UnitGoal {
         return Map.getClosestNode(unit.getPoint(), points);
     }
 
-    private void fire(Building building, Unit unit, Map map) {
-        unit.setViewDirection(ViewDirection.getDirection(unit.getPoint(),getClosestPoint(building, unit)));
-        if (unit.getTicksReloading() > 0) {
-            unit.setTicksReloading(unit.getTicksReloading() - 1);
-        } else {
-            unit.setTicksReloading(0);
-            building.setHp(building.getHp() - unit.getUnitType().getAttackDamage());
-            if (building.getHp() <= 0) {
-                map.removeBuilding(building);
-            }
+    private void fire(Building building, Unit unit, Map map, GameServiceImpl gameService) {
+        Point closestPoint = getClosestPoint(building, unit);
+        unit.setViewDirection(ViewDirection.getDirection(unit.getPoint(), closestPoint));
+        if (unit.getTicksReloading() == 0) {
+            Bullet bullet = new Bullet();
+            bullet.setDamageToDeal(unit.getUnitType().getAttackDamage());
+            bullet.setStartX(unit.getX());
+            bullet.setStartY(unit.getY());
+            bullet.setGoalX(closestPoint.getX());
+            bullet.setGoalY(closestPoint.getY());
+            bullet.setTicksToMove(unit.getUnitType().getBulletSpeed());
+            bullet.setTicksToMoveTotal(unit.getUnitType().getBulletSpeed());
+            bullet.setBulletType(BulletType.TANK_SHOT);
+            map.addBullet(bullet);
             unit.setTicksReloading(unit.getUnitType().getTicksToAttack());
         }
     }

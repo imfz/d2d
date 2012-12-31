@@ -3,6 +3,7 @@ package lv.k2611a.network.resp;
 import lv.k2611a.domain.AbstractSeriaizationTest;
 import lv.k2611a.domain.EntityFactory;
 import lv.k2611a.network.BuildingDTO;
+import lv.k2611a.network.BulletDTO;
 import lv.k2611a.network.TileWithCoordinatesDTO;
 import lv.k2611a.network.UnitDTO;
 
@@ -13,6 +14,7 @@ public class UpdateMapIncrementalTest extends AbstractSeriaizationTest<UpdateMap
         updateMapIncremental.setBuildings(createBuildings());
         updateMapIncremental.setChangedTiles(createChangedTiles());
         updateMapIncremental.setUnits(createUnits());
+        updateMapIncremental.setBullets(createBullets());
         return updateMapIncremental;
     }
 
@@ -32,5 +34,11 @@ public class UpdateMapIncrementalTest extends AbstractSeriaizationTest<UpdateMap
         BuildingDTO dto1 = new BuildingDTO();
         BuildingDTO dto2 = new BuildingDTO();
         return new BuildingDTO[]{dto1,dto2};
+    }
+
+    private static BulletDTO[] createBullets() {
+        BulletDTO dto1 = new BulletDTO();
+        BulletDTO dto2 = new BulletDTO();
+        return new BulletDTO[]{dto1,dto2};
     }
 }

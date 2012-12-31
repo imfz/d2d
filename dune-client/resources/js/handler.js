@@ -37,6 +37,9 @@ Handler.prototype.handleUpdateMap = function (data) {
     if (typeof data.map.tiles === "undefined") {
         data.map.tiles = new Array();
     }
+    if (typeof data.map.bullets === "undefined") {
+        data.map.bullets = new Array();
+    }
 
     this.map.setHeight(data.map.height);
     this.map.setWidth(data.map.width);
@@ -56,6 +59,7 @@ Handler.prototype.handleUpdateMap = function (data) {
 
     this.map.setUnits(data.map.units);
     this.map.setBuildings(data.map.buildings);
+    this.map.setBullets(data.map.bullets);
     console.log("Map loaded. Processing saved updates");
     this.processSavedUpdates();
     if (!this.centeredOnMain) {
@@ -89,6 +93,10 @@ Handler.prototype.processUpdate = function (update) {
         update.units = new Array();
     }
 
+    if (typeof update.bullets === "undefined") {
+        update.bullets = new Array();
+    }
+
     if (update.tickCount == this.map.tickCount + 1) {
         this.map.tickCount++;
         this.gameLog.setMapVersion(this.map.tickCount);
@@ -97,6 +105,7 @@ Handler.prototype.processUpdate = function (update) {
     }
     this.map.setUnits(update.units);
     this.map.setBuildings(update.buildings);
+    this.map.setBullets(update.bullets);
     for (var i = 0; i < update.changedTiles.length; i++) {
         var tile = update.changedTiles[i];
         this.map.setTile(tile.x, tile.y, tile);

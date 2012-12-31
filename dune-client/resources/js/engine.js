@@ -534,12 +534,14 @@ GameEngine.prototype.render = function () {
     context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
     var buildings = this.map.getBuildings(this.x - 1, this.y - 1, this.x + this.widthInTiles + 1, this.y + this.heightInTiles + 1);
+    var bullets = this.map.getBullets(this.x - 1, this.y - 1, this.x + this.widthInTiles + 1, this.y + this.heightInTiles + 1);
     var units = this.map.getUnits(this.x - 1, this.y - 1, this.x + this.widthInTiles, this.y + this.heightInTiles);
 
     this.renderTiles(units, buildings);
     this.renderBuildings(buildings);
     this.renderBuildingPlacement(units, buildings);
     this.renderUnits(units);
+    this.renderBullets(bullets);
     this.renderRectangle();
 
     var that = this;
@@ -743,6 +745,31 @@ GameEngine.prototype.renderUnits = function (units) {
                 shownUnitInfo.unitType = unit.unitType;
                 this.shownUnits.push(shownUnitInfo);
             }
+        }
+    }
+};
+
+GameEngine.prototype.renderBullets = function (bullets) {
+    var context = this.canvas.getContext("2d");
+    for (var i = 0; i < bullets.length; i++) {
+        var bullet = bullets[i];
+        var bulletConfig = sprites.getBulletConfig(bullet);
+        if (bulletConfig) {
+
+            var xToDrawTo = bullet.x + ((bullet.goalX - bullet.x) / 100 * bullet.progress);
+            xToDrawTo -= this.x;
+            xToDrawTo = xToDrawTo * TILE_WIDTH;
+            var yToDrawTo = bullet.y + ((bullet.goalY - bullet.y) / 100 * bullet.progress);
+            yToDrawTo -= this.y;
+            yToDrawTo = yToDrawTo * TILE_HEIGHT;
+
+            xToDrawTo += (TILE_WIDTH - bulletConfig.width) / 2;
+            yToDrawTo += (TILE_HEIGHT - bulletConfig.height) / 2;
+
+            context.drawImage(bulletConfig.sprite, bulletConfig.x, bulletConfig.y, bulletConfig.width, bulletConfig.height,
+                    xToDrawTo, yToDrawTo, bulletConfig.width, bulletConfig.height);
+
+
         }
     }
 };

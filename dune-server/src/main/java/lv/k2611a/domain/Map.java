@@ -26,6 +26,8 @@ public class Map {
     private int height;
     private List<Unit> units;
     private List<Building> buildings;
+    private List<Bullet> bullets;
+    private int lastBulletId = 0;
 
     private HashMap<Point, RefineryEntrance> refineryEntranceList = new HashMap<Point, RefineryEntrance>();
     private HashMap<Point, RefineryEntrance> refinerySecondEntranceList = new HashMap<Point, RefineryEntrance>();
@@ -52,6 +54,7 @@ public class Map {
         }
         units = new ArrayList<Unit>();
         buildings = new ArrayList<Building>();
+        bullets = new ArrayList<Bullet>();
         players = new Player[MAX_PLAYER_COUNT];
         for (int i = 0; i < MAX_PLAYER_COUNT; i++) {
             players[i] = new Player();
@@ -380,7 +383,7 @@ public class Map {
         return isObstacle(neighbor.getX(), neighbor.getY(), unitId, ownerid, isHarvester);
     }
 
-    private boolean harvesterCheck(Point point, int unitId, int ownerid, boolean isHarvester) {
+     private boolean harvesterCheck(Point point, int unitId, int ownerid, boolean isHarvester) {
         if (isHarvester) {
             if (getTile(point).isUsedByUnit()) {
                 return false;
@@ -542,6 +545,25 @@ public class Map {
 
     public void removeBuilding(Building building) {
         this.buildings.set(building.getId(), null);
+    }
+
+    public void removeBullet(Bullet bullet) {
+        this.bullets.remove(bullet);
+    }
+
+    public void removeBullets(List<Bullet> bullets) {
+        this.bullets.removeAll(bullets);
+    }
+
+    public int addBullet(Bullet bullet) {
+        lastBulletId++;
+        bullet.setId(lastBulletId);
+        this.bullets.add(bullet);
+        return lastBulletId;
+    }
+
+    public List<Bullet> getBullets() {
+        return Collections.unmodifiableList(bullets);
     }
 
 }

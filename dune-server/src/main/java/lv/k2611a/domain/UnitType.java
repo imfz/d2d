@@ -4,16 +4,16 @@ import java.util.HashSet;
 import java.util.Set;
 
 public enum UnitType implements EntityType {
-    BATTLE_TANK((byte)1, 30, 100, 10, 5, 20, 5, 5),
-    SIEGE_TANK((byte)2, 60, 120, 120, 5, 1, 5, 5),
-    LAUNCHER((byte)3, 30, 50, 100, 5, 1, 5, 5),
-    DEVASTATOR((byte)4, 100, 200, 200, 5, 1, 5, 5),
-    HARVESTER((byte)5, 10, 200, 150, 5, 1, 5, 5),
-    JEEP((byte)6, 100, 200, 50, 5, 1, 5, 5),
-    TRIKE((byte)7, 100, 200, 20, 5, 1, 5, 5),
-    SONIC_TANK((byte)8, 100, 200, 40, 5, 20, 5, 5),
-    DEVIATOR((byte)9, 100, 200, 50, 5, 20, 5, 5),
-    MCV((byte)10, 100, 200, 100, 5, 20, 5, 5)
+    BATTLE_TANK((byte)1, 30, 100, 10, 5, 20, 5, 5, 20, BulletType.TANK_SHOT),
+    SIEGE_TANK((byte)2, 60, 120, 120, 5, 1, 5, 5, 3, BulletType.TANK_SHOT),
+    LAUNCHER((byte)3, 30, 50, 100, 5, 1, 5, 5, 3, BulletType.TANK_SHOT),
+    DEVASTATOR((byte)4, 100, 200, 200, 5, 1, 5, 5, 3, BulletType.TANK_SHOT),
+    HARVESTER((byte)5, 10, 200, 150, 5, 1, 5, 5, 3, BulletType.TANK_SHOT),
+    JEEP((byte)6, 100, 200, 50, 5, 1, 5, 5, 3, BulletType.TANK_SHOT),
+    TRIKE((byte)7, 100, 200, 20, 5, 1, 5, 5, 3, BulletType.TANK_SHOT),
+    SONIC_TANK((byte)8, 100, 200, 40, 5, 20, 5, 5, 3, BulletType.TANK_SHOT),
+    DEVIATOR((byte)9, 100, 200, 50, 5, 20, 5, 5, 3, BulletType.TANK_SHOT),
+    MCV((byte)10, 100, 200, 100, 5, 20, 5, 5, 3, BulletType.TANK_SHOT)
     ;
 
     private static UnitType[] indexByJsId;
@@ -43,8 +43,10 @@ public enum UnitType implements EntityType {
     private final int ticksToAttack;
     private final int attackRange;
     private final int attackDamage;
+    private final int bulletSpeed; // ticks for bullet to fly
+    private final BulletType bulletType;
 
-    private UnitType(byte idOnJS, int speed, int hp, int ticksToBuild, int costPerTick, int ticksToAttack, int attackRange, int attackDamage) {
+    private UnitType(byte idOnJS, int speed, int hp, int ticksToBuild, int costPerTick, int ticksToAttack, int attackRange, int attackDamage, int bulletSpeed, BulletType bulletType) {
         this.idOnJS = idOnJS;
         this.speed = speed;
         this.hp = hp;
@@ -53,6 +55,8 @@ public enum UnitType implements EntityType {
         this.ticksToAttack = ticksToAttack;
         this.attackRange = attackRange;
         this.attackDamage = attackDamage;
+        this.bulletSpeed = bulletSpeed;
+        this.bulletType = bulletType;
     }
 
     public byte getIdOnJS() {
@@ -104,5 +108,13 @@ public enum UnitType implements EntityType {
 
     public int getAttackDamage() {
         return attackDamage;
+    }
+
+    public int getBulletSpeed() {
+        return bulletSpeed;
+    }
+
+    public BulletType getBulletType() {
+        return bulletType;
     }
 }

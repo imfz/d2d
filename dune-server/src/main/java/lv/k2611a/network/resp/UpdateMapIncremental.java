@@ -1,6 +1,7 @@
 package lv.k2611a.network.resp;
 
 import lv.k2611a.network.BuildingDTO;
+import lv.k2611a.network.BulletDTO;
 import lv.k2611a.network.TileWithCoordinatesDTO;
 import lv.k2611a.network.UnitDTO;
 import lv.k2611a.util.ByteUtils;
@@ -8,6 +9,7 @@ import lv.k2611a.util.ByteUtils;
 public class UpdateMapIncremental implements Response, CustomSerializationHeader {
     private UnitDTO[] units;
     private BuildingDTO[] buildings;
+    private BulletDTO[] bullets;
     private TileWithCoordinatesDTO[] changedTiles;
     private long tickCount;
 
@@ -43,6 +45,14 @@ public class UpdateMapIncremental implements Response, CustomSerializationHeader
         this.tickCount = tickCount;
     }
 
+    public BulletDTO[] getBullets() {
+        return bullets;
+    }
+
+    public void setBullets(BulletDTO[] bullets) {
+        this.bullets = bullets;
+    }
+
     @Override
     public byte serializerId() {
         return 2;
@@ -66,6 +76,7 @@ public class UpdateMapIncremental implements Response, CustomSerializationHeader
 
 
 
+
         sizeBytes = ByteUtils.intToBytes(buildings.length);
         System.arraycopy(sizeBytes,0,payload,position,sizeBytes.length);
         position+=4;
@@ -75,6 +86,19 @@ public class UpdateMapIncremental implements Response, CustomSerializationHeader
             System.arraycopy(bytes,0,payload,position,bytes.length);
             position += bytes.length;
         }
+
+
+
+        sizeBytes = ByteUtils.intToBytes(bullets.length);
+        System.arraycopy(sizeBytes,0,payload,position,sizeBytes.length);
+        position+=4;
+
+        for (BulletDTO bullet : bullets) {
+            byte[] bytes = bullet.toBytes();
+            System.arraycopy(bytes,0,payload,position,bytes.length);
+            position += bytes.length;
+        }
+
 
 
 
@@ -112,6 +136,11 @@ public class UpdateMapIncremental implements Response, CustomSerializationHeader
         totalSize += 4;
         for (BuildingDTO building : buildings) {
             totalSize += building.getSize();
+        }
+
+        totalSize += 4;
+        for (BulletDTO bullet : bullets) {
+            totalSize += bullet.getSize();
         }
 
         totalSize += 4;

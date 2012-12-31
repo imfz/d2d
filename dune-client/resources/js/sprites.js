@@ -269,6 +269,21 @@ function colorToHex(red,green,blue) {
     return '#' + rgb.toString(16);
 };
 
+
+Sprites.prototype.getBulletConfig = function (bullet) {
+    var sprite = this.bulletSprite;
+
+    var result = new Object();
+
+    result.sprite = sprite;
+    result.x = 0;
+    result.y = 0;
+    result.width = 10;
+    result.height = 10;
+    return result;
+
+};
+
 Sprites.prototype.getBuildingConfig = function (building) {
     var x = 0;
     var y = 0;

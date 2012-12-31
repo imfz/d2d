@@ -14,7 +14,14 @@ public class MapDTOTest extends AbstractSeriaizationTest<MapDTO> {
         mapDTO.setBuildings(createBuildings());
         mapDTO.setTiles(createTiles());
         mapDTO.setUnits(createUnits());
+        mapDTO.setBullets(createBullets());
         return mapDTO;
+    }
+
+    private static BulletDTO[] createBullets() {
+        BulletDTO dto1 = new BulletDTO();
+        BulletDTO dto2 = new BulletDTO();
+        return new BulletDTO[]{dto1,dto2};
     }
 
     private static TileDTO[] createTiles() {

@@ -24,6 +24,7 @@ import lv.k2611a.App;
 import lv.k2611a.ClientConnection;
 import lv.k2611a.domain.Building;
 import lv.k2611a.domain.BuildingType;
+import lv.k2611a.domain.Bullet;
 import lv.k2611a.domain.ConstructionOption;
 import lv.k2611a.domain.EntityType;
 import lv.k2611a.domain.Map;
@@ -36,6 +37,7 @@ import lv.k2611a.domain.buildinggoals.CreateBuilding;
 import lv.k2611a.domain.buildinggoals.CreateUnit;
 import lv.k2611a.jmx.ServerMonitor;
 import lv.k2611a.network.BuildingDTO;
+import lv.k2611a.network.BulletDTO;
 import lv.k2611a.network.MapDTO;
 import lv.k2611a.network.OptionDTO;
 import lv.k2611a.network.TileDTO;
@@ -87,6 +89,7 @@ public class GameServiceImpl implements GameService {
 
     private Set<Point> changedTiles;
 
+
     @PostConstruct
     public void init() {
         log.info("Initializing game");
@@ -100,19 +103,19 @@ public class GameServiceImpl implements GameService {
 
     private Runnable createTicker(final GameKey currentContextKey) {
         return new Runnable() {
-                @Override
-                public void run() {
-                    ContextService contextService = App.autowireCapableBeanFactory.getBean(ContextService.class);
-                    try {
-                        contextService.setSessionKey(currentContextKey);
-                        tick();
-                    } catch (Exception e) {
-                        log.error("Exception while processing tick", e);
-                    } finally {
-                        contextService.clearCurrentSessionKey();
-                    }
+            @Override
+            public void run() {
+                ContextService contextService = App.autowireCapableBeanFactory.getBean(ContextService.class);
+                try {
+                    contextService.setSessionKey(currentContextKey);
+                    tick();
+                } catch (Exception e) {
+                    log.error("Exception while processing tick", e);
+                } finally {
+                    contextService.clearCurrentSessionKey();
                 }
-            };
+            }
+        };
     }
 
     @PreDestroy
@@ -136,17 +139,20 @@ public class GameServiceImpl implements GameService {
         List<TileDTO> tileDTOList = getMapTiles();
         List<UnitDTO> unitDTOList = getMapUnits();
         List<BuildingDTO> buildingDTOList = getBuildings();
+        List<BulletDTO> bulletDTOList = getBullets();
 
         mapDTO.setWidth((short) map.getWidth());
         mapDTO.setHeight((short) map.getHeight());
         mapDTO.setTiles(tileDTOList.toArray(new TileDTO[tileDTOList.size()]));
         mapDTO.setUnits(unitDTOList.toArray(new UnitDTO[unitDTOList.size()]));
+        mapDTO.setBullets(bulletDTOList.toArray(new BulletDTO[bulletDTOList.size()]));
         mapDTO.setBuildings(buildingDTOList.toArray(new BuildingDTO[buildingDTOList.size()]));
         UpdateMap updateMap = new UpdateMap();
         updateMap.setMap(mapDTO);
         updateMap.setTickCount(tickCount);
         return updateMap;
     }
+
 
     @Override
     public synchronized boolean isOwner(int buildingId, int playerId) {
@@ -184,6 +190,14 @@ public class GameServiceImpl implements GameService {
         return unitDTOList;
     }
 
+    private List<BulletDTO> getBullets() {
+        List<BulletDTO> bulletDTOList = new ArrayList<BulletDTO>();
+        for (Bullet bullet : map.getBullets()) {
+            bulletDTOList.add(BulletDTO.fromBullet(bullet));
+        }
+        return bulletDTOList;
+    }
+
     public synchronized void tick() {
         long startTime = System.currentTimeMillis();
 
@@ -199,6 +213,8 @@ public class GameServiceImpl implements GameService {
         processUserClicks(map);
         processBuildingGoals(map);
         processUnitsGoals(map);
+        processUnitReloads(map);
+        processBullets(map);
         sendIncrementalUpdate();
         sendAvalaibleConstructionOptionsUpdate();
         sendUpdateMoney();
@@ -212,6 +228,33 @@ public class GameServiceImpl implements GameService {
 
         serverMonitor.reportTickTime(duration);
 
+    }
+
+    private void processBullets(Map map) {
+        List<Bullet> bulletsToRemove = new ArrayList<Bullet>();
+        for (Bullet bullet : map.getBullets()) {
+            if (bullet.getTicksToMove() > 0) {
+                bullet.setTicksToMove(bullet.getTicksToMove() - 1);
+            } else {
+                Building building = map.getBuildingAt(bullet.getGoalX(), bullet.getGoalY());
+                if (building != null) {
+                    building.setHp(building.getHp() - bullet.getDamageToDeal());
+                    if (building.getHp() <= 0) {
+                        map.removeBuilding(building);
+                    }
+                }
+                bulletsToRemove.add(bullet);
+            }
+        }
+        map.removeBullets(bulletsToRemove);
+    }
+
+    private void processUnitReloads(Map map) {
+        for (Unit unit : map.getUnits()) {
+            if (unit.getTicksReloading() > 0) {
+                unit.setTicksReloading(unit.getTicksReloading() - 1);
+            }
+        }
     }
 
     private void fillPlayerBuildingTypes() {
@@ -301,7 +344,7 @@ public class GameServiceImpl implements GameService {
                     } else {
                         updateConstructionOptions.setCurrentlyBuildingId(building.getBuildingTypeBuilt().getIdOnJS());
                         updateConstructionOptions.setCurrentlyBuildingOptionType(getConstructionOption(building.getType().getConstructionOptions(), building.getBuildingTypeBuilt()));
-                        updateConstructionOptions.setPercentsDone((byte)100);
+                        updateConstructionOptions.setPercentsDone((byte) 100);
                     }
                 }
                 updateConstructionOptions.setOptions(options.toArray(new OptionDTO[options.size()]));
@@ -378,6 +421,9 @@ public class GameServiceImpl implements GameService {
 
         List<TileWithCoordinatesDTO> tileDTOList = getChangedTiles();
         update.setChangedTiles(tileDTOList.toArray(new TileWithCoordinatesDTO[tileDTOList.size()]));
+
+        List<BulletDTO> bulletDTOList = getBullets();
+        update.setBullets(bulletDTOList.toArray(new BulletDTO[bulletDTOList.size()]));
 
         update.setTickCount(tickCount);
         sessionsService.sendUpdate(update);

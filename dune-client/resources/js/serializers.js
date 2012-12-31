@@ -32,7 +32,15 @@ Serializers[2] = function (payload) {
     }
     result["buildings"] = buildings;
 
-
+    var bullets = new Array();
+    var bulletsLength = getIntAt(payload, position);
+    position += 4;
+    for (i = 0; i < bulletsLength; i++) {
+        var bulletDTO = new Array();
+        position = readBulletDTO(bulletDTO, payload, position);
+        bullets.push(bulletDTO);
+    }
+    result["bullets"] = bullets;
 
     var changedTiles = new Array();
     var changedTilesLength = getIntAt(payload, position);
@@ -144,8 +152,18 @@ function readMapDTO(dto, payload, position) {
         position = readTileDTO(tileDTO, payload, position);
         tiles.push(tileDTO);
     }
-
     dto["tiles"] = tiles;
+
+    var bullets = new Array();
+    var bulletsLength = getIntAt(payload, position);
+    position += 4;
+    for (i = 0; i < bulletsLength; i++) {
+        var bulletDTO = new Array();
+        position = readBulletDTO(bulletDTO, payload, position);
+        bullets.push(bulletDTO);
+    }
+    dto["bullets"] = bullets;
+
 
     dto["width"] = getShortAt(payload, position);
     position += 2;
@@ -219,6 +237,24 @@ function readChangedTileDTO(dto, payload, position) {
     position+=2;
     dto["y"] = getShortAt(payload,position);
     position+=2;
+    return position;
+}
+
+
+function readBulletDTO(dto, payload, position) {
+    dto["x"] = getShortAt(payload,position);
+    position+=2;
+    dto["y"] = getShortAt(payload,position);
+    position+=2;
+    dto["goalX"] = getShortAt(payload,position);
+    position+=2;
+    dto["goalY"] = getShortAt(payload,position);
+    position+=2;
+    dto["progress"] = payload[position];
+    position++;
+    dto["type"] = payload[position];
+    position++;
+
     return position;
 }
 

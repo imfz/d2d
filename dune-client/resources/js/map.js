@@ -6,6 +6,7 @@ function GameMap() {
     this.tiles = new Array();
     this.units = new Array();
     this.buildings = new Array();
+    this.bullets = new Array();
     console.log("Map created");
     this.width = 0;
     this.height = 0;
@@ -51,6 +52,10 @@ GameMap.prototype.setBuildings = function (buildings) {
 
 GameMap.prototype.setUnits = function (units) {
     this.units = units;
+};
+
+GameMap.prototype.setBullets = function (bullets) {
+    this.bullets = bullets;
 };
 
 GameMap.prototype.getUnits = function (x, y, x2, y2) {
@@ -150,6 +155,11 @@ GameMap.prototype.isTileOkForBuilding = function (x, y, units, buildings) {
 GameMap.prototype.getBuildings = function (x, y, x2, y2) {
     //TODO: optimization
     return this.buildings;
+};
+
+GameMap.prototype.getBullets = function (x, y, x2, y2) {
+    //TODO: optimization
+    return this.bullets;
 };
 
 
