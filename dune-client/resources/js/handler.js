@@ -10,7 +10,7 @@ function Handler(map, gameLog, rightMenu, engine, moneyTab) {
 Handler.prototype.addMessageToChat = function (from, text) {
     var chat = $('#chat');
     chat.append('<span class="from">' + from + '</span>:&nbsp;');
-    chat.append('<span class="text">' + text);
+    chat.append('<span class="text">' + text + '</span>');
     chat.append('<br>');
     chat.scrollTop = chat.scrollHeight - chat.clientHeight;
 };
@@ -125,7 +125,7 @@ Handler.prototype.handleUpdateMapIncremental = function (data) {
     } else {
         console.log("Received map update to version " + data.tickCount + " but internal map was in version " + this.map.tickCount + " . Saved");
         this.storeUpdateForFutureUse(data);
-    }                                                      ed
+    }
 };
 
 Handler.prototype.handleJoined = function (data) {
