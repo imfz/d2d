@@ -125,11 +125,15 @@ Handler.prototype.handleUpdateMapIncremental = function (data) {
     } else {
         console.log("Received map update to version " + data.tickCount + " but internal map was in version " + this.map.tickCount + " . Saved");
         this.storeUpdateForFutureUse(data);
-    }
+    }                                                      ed
 };
 
 Handler.prototype.handleJoined = function (data) {
-    this.addMessageToChat("SYSTEM", data.nickname + " has joined the game");
+    this.addMessageToChat("SYSTEM", data.nickname + " has joined the game as id : " + data.id);
+};
+
+Handler.prototype.handleLost= function (data) {
+    this.addMessageToChat("SYSTEM", data.id + " has lost the game");
 };
 
 Handler.prototype.handleLeft = function (data) {

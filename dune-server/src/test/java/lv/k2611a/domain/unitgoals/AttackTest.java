@@ -16,7 +16,9 @@ import lv.k2611a.domain.UnitType;
 import lv.k2611a.service.game.GameServiceImpl;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:testContext.xml"})
@@ -49,6 +51,9 @@ public class AttackTest {
         map.addUnit(tank);
 
         gameService.setMap(map);
+        gameService.tick();
+
+        assertFalse(map.getPlayerById(1).hasLost());
 
         // should be enough ticks to destroy powerplant
         for (int i = 0; i < 5000; i++) {
@@ -57,5 +62,6 @@ public class AttackTest {
 
         assertNull(map.getBuilding(buildingId));
         assertEquals(0,map.getBullets().size());
+        assertTrue(map.getPlayerById(1).hasLost());
     }
 }

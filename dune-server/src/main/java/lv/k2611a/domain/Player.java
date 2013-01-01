@@ -4,8 +4,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Player {
+    private int id;
     private long money = 10000;
     private long electricity;
+    private boolean lost = false;
     private Set<BuildingType> buildingTypes = new HashSet<BuildingType>();
 
     public long getMoney() {
@@ -30,5 +32,21 @@ public class Player {
 
     public void setBuildingTypes(Set<BuildingType> buildingTypes) {
         this.buildingTypes = buildingTypes;
+    }
+
+    public boolean hasLost() {
+        return lost;
+    }
+
+    public void setLost(boolean lost) {
+        this.lost = lost;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

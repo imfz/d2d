@@ -55,6 +55,7 @@ public class Join implements Request {
 
         Joined joined = new Joined();
         joined.setNickname(nickname);
+        joined.setId(playerId);
 
         sessionsService.sendUpdate(joined);
 

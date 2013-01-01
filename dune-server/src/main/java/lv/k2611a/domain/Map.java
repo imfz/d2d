@@ -57,7 +57,9 @@ public class Map {
         bullets = new ArrayList<Bullet>();
         players = new Player[MAX_PLAYER_COUNT];
         for (int i = 0; i < MAX_PLAYER_COUNT; i++) {
-            players[i] = new Player();
+            Player player = new Player();
+            player.setId(i);
+            players[i] = player;
         }
     }
 

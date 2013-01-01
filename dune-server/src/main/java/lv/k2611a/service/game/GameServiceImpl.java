@@ -44,6 +44,7 @@ import lv.k2611a.network.TileDTO;
 import lv.k2611a.network.TileWithCoordinatesDTO;
 import lv.k2611a.network.UnitDTO;
 import lv.k2611a.network.req.GameStateChanger;
+import lv.k2611a.network.resp.Lost;
 import lv.k2611a.network.resp.UpdateConstructionOptions;
 import lv.k2611a.network.resp.UpdateMap;
 import lv.k2611a.network.resp.UpdateMapIncremental;
@@ -215,6 +216,8 @@ public class GameServiceImpl implements GameService {
         processUnitsGoals(map);
         processUnitReloads(map);
         processBullets(map);
+        processPlayerStatus(map);
+
         sendIncrementalUpdate();
         sendAvalaibleConstructionOptionsUpdate();
         sendUpdateMoney();
@@ -228,6 +231,19 @@ public class GameServiceImpl implements GameService {
 
         serverMonitor.reportTickTime(duration);
 
+    }
+
+    private void processPlayerStatus(Map map) {
+        for (Player player : map.getPlayers()) {
+            if (!player.hasLost()) {
+                if (map.getBuildingsByOwner(player.getId()).isEmpty()) {
+                    player.setLost(true);
+                    Lost lost = new Lost();
+                    lost.setId(player.getId());
+                    sessionsService.sendUpdate(lost);
+                }
+            }
+        }
     }
 
     private void processBullets(Map map) {
