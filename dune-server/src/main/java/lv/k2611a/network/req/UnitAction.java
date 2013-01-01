@@ -70,12 +70,21 @@ public class UnitAction extends AbstractGameStateChanger {
         if (unit.getUnitType() == UnitType.HARVESTER) {
             processHarvester(map, tile, unit);
         } else {
+            Unit target = map.getUnitAt(x, y);
+            if (target != null) {
+                if (target.getOwnerId() != unit.getOwnerId()) {
+                    unit.setGoal(new Attack(Entity.UNIT, target.getId()));
+                    return;
+                }
+            }
             Building building = map.getBuildingAt(x, y);
             if (building != null) {
-                unit.setGoal(new Attack(Entity.BUILDING,building.getId()));
-            } else {
-                unit.setGoal(new RepetetiveMove(x, y));
-            }
+                if (building.getOwnerId() != unit.getOwnerId()) {
+                    unit.setGoal(new Attack(Entity.BUILDING, building.getId()));
+                    return;
+                }
+            };
+            unit.setGoal(new RepetetiveMove(x, y));
         }
     }
 

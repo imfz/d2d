@@ -22,16 +22,18 @@ public class Move implements UnitGoal {
     private List<Node> path;
     private AStar aStarCache = new AStar();
     private int neededRange = 0;
+    private MoveExpired moveExpired;
 
     public Move(int goalX, int goalY) {
         this.goalX = goalX;
         this.goalY = goalY;
     }
 
-    public Move(int goalX, int goalY, int neededRange) {
+    public Move(int goalX, int goalY, int neededRange, MoveExpired moveExpired) {
         this.goalX = goalX;
         this.goalY = goalY;
         this.neededRange = neededRange;
+        this.moveExpired = moveExpired;
     }
 
     public Move(Point point) {
@@ -62,15 +64,21 @@ public class Move implements UnitGoal {
             unit.setTicksMovingToNextCell(0);
             return;
         }
-        if (path.size() < neededRange) {
-            unit.removeGoal(this);
-            unit.setTicksMovingToNextCell(0);
-            return;
-        }
+
         int ticksToNextCell = unit.getUnitType().getSpeed();
         if (unit.getTicksMovingToNextCell() >= ticksToNextCell - 1) {
             // moved to new cell
             moveUnit(unit);
+            if (path.size() < neededRange) {
+                unit.removeGoal(this);
+                return;
+            }
+            if (moveExpired != null) {
+                if (moveExpired.isExpired(this, map)) {
+                    unit.removeGoal(this);
+                    return;
+                }
+            }
             Node next;
             if (!(path.isEmpty())) {
                 next = path.get(0);
@@ -85,10 +93,10 @@ public class Move implements UnitGoal {
                 Node next = path.get(0);
                 if (map.isObstacle(next, unit.getId(), unit.getOwnerId(), unit.getUnitType() == UnitType.HARVESTER)) {
                     calcPath(unit, map);
-                    lookAtNextNode(unit);
                 } else {
                     unit.setTicksMovingToNextCell(unit.getTicksMovingToNextCell() + 1);
                 }
+                lookAtNextNode(unit);
             }
         }
         if (path.isEmpty()) {

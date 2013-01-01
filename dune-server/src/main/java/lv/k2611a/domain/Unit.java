@@ -129,4 +129,8 @@ public class Unit {
     public void setTicksReloading(int ticksReloading) {
         this.ticksReloading = ticksReloading;
     }
+
+    public void setHp(int hp) {
+        this.hp = hp;
+    }
 }

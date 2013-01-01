@@ -10,7 +10,7 @@ function Handler(map, gameLog, rightMenu, engine, moneyTab) {
 Handler.prototype.addMessageToChat = function (from, text) {
     var chat = $('#chat');
     chat.append('<span class="from">' + from + '</span>:&nbsp;');
-    chat.append('<span class="text">' + text + '</span>:&nbsp;');
+    chat.append('<span class="text">' + text);
     chat.append('<br>');
     chat.scrollTop = chat.scrollHeight - chat.clientHeight;
 };

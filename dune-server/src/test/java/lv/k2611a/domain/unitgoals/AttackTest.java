@@ -64,4 +64,39 @@ public class AttackTest {
         assertEquals(0,map.getBullets().size());
         assertTrue(map.getPlayerById(1).hasLost());
     }
+
+    @Test
+    public void unitsAttackEachOther() {
+        Map map = new Map(64,64);
+
+
+        Unit tank1 = new Unit();
+        tank1.setUnitType(UnitType.BATTLE_TANK);
+        tank1.setOwnerId(2);
+        tank1.setX(20);
+        tank1.setY(20);
+        int tank1Id = map.addUnit(tank1);
+
+        Unit tank2 = new Unit();
+        tank2.setUnitType(UnitType.BATTLE_TANK);
+        tank2.setOwnerId(2);
+        tank2.setX(20);
+        tank2.setY(20);
+        int tank2Id = map.addUnit(tank2);
+
+        tank2.setGoal(new Attack(Entity.UNIT, tank1Id));
+        tank1.setGoal(new Attack(Entity.UNIT, tank2Id));
+
+        gameService.setMap(map);
+        gameService.tick();
+
+        assertEquals(2,map.getUnits().size());
+
+        // should be enough ticks to destroy powerplant
+        for (int i = 0; i < 5000; i++) {
+            gameService.tick();
+        }
+
+        assertEquals(1,map.getUnits().size());
+    }
 }

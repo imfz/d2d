@@ -92,7 +92,13 @@ public class Map {
     }
 
     public List<Unit> getUnits() {
-        return Collections.unmodifiableList(units);
+        List<Unit> result = new ArrayList<Unit>();
+        for (Unit unit : units) {
+            if (unit != null) {
+                result.add(unit);
+            }
+        }
+        return result;
     }
 
     public List<Unit> getUnitsByIds(Set<Integer> ids) {
@@ -123,18 +129,20 @@ public class Map {
     public List<Unit> getUnitsByType(UnitType unitType) {
         List<Unit> result = new ArrayList<Unit>();
         for (Unit unit : units) {
-            if (unit.getUnitType() == UnitType.HARVESTER) {
-                result.add(unit);
+            if (unit != null) {
+                if (unit.getUnitType() == UnitType.HARVESTER) {
+                    result.add(unit);
+                }
             }
         }
         return result;
     }
 
     public List<Building> getBuildings() {
-        return Collections.unmodifiableList(filterNonNulls(buildings));
+        return filterNonNulls(buildings);
     }
 
-    private List<? extends Building> filterNonNulls(List<Building> buildings) {
+    private List<Building> filterNonNulls(List<Building> buildings) {
         List<Building> result = new ArrayList<Building>();
         for (Building building : buildings) {
             if (building != null) {
@@ -308,10 +316,21 @@ public class Map {
         return false;
     }
 
+    public Unit getUnitAt(int x, int y) {
+        for (Unit unit : units) {
+            if (unit != null) {
+                if ((unit.getX() == x) && (unit.getY() == y)) {
+                    return unit;
+                }
+            }
+        }
+        return null;
+    }
+
     public Building getBuildingAt(int x, int y) {
         for (Building building : filterNonNulls(buildings)) {
-            if (building.getX() <= x && building.getX() + building.getType().getWidth() - 1 >= x ) {
-                if (building.getY() <= y && building.getY() + building.getType().getHeight() - 1 >= y ) {
+            if (building.getX() <= x && building.getX() + building.getType().getWidth() - 1 >= x) {
+                if (building.getY() <= y && building.getY() + building.getType().getHeight() - 1 >= y) {
                     return building;
                 }
             }
@@ -385,7 +404,7 @@ public class Map {
         return isObstacle(neighbor.getX(), neighbor.getY(), unitId, ownerid, isHarvester);
     }
 
-     private boolean harvesterCheck(Point point, int unitId, int ownerid, boolean isHarvester) {
+    private boolean harvesterCheck(Point point, int unitId, int ownerid, boolean isHarvester) {
         if (isHarvester) {
             if (getTile(point).isUsedByUnit()) {
                 return false;
@@ -483,7 +502,7 @@ public class Map {
         while (iterationCount < 100) {
             int x = r.nextInt(width);
             int y = r.nextInt(height);
-            Point candidate = new Point(x,y);
+            Point candidate = new Point(x, y);
             double distanceBetween = Map.getDistanceBetween(near, candidate);
             if ((distanceBetween > distanceFrom) && (distanceBetween < distanceTo)) {
                 return candidate;

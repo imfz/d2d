@@ -186,7 +186,9 @@ public class GameServiceImpl implements GameService {
     private List<UnitDTO> getMapUnits() {
         List<UnitDTO> unitDTOList = new ArrayList<UnitDTO>();
         for (Unit unit : map.getUnits()) {
-            unitDTOList.add(UnitDTO.fromUnit(unit));
+            if (unit != null) {
+                unitDTOList.add(UnitDTO.fromUnit(unit));
+            }
         }
         return unitDTOList;
     }
@@ -252,11 +254,19 @@ public class GameServiceImpl implements GameService {
             if (bullet.getTicksToMove() > 0) {
                 bullet.setTicksToMove(bullet.getTicksToMove() - 1);
             } else {
-                Building building = map.getBuildingAt(bullet.getGoalX(), bullet.getGoalY());
-                if (building != null) {
-                    building.setHp(building.getHp() - bullet.getDamageToDeal());
-                    if (building.getHp() <= 0) {
-                        map.removeBuilding(building);
+                Unit unit = map.getUnitAt(bullet.getGoalX(), bullet.getGoalY());
+                if (unit != null) {
+                   unit.setHp(unit.getHp() - bullet.getDamageToDeal());
+                    if (unit.getHp() <= 0) {
+                        map.removeUnit(unit);
+                    }
+                } else {
+                    Building building = map.getBuildingAt(bullet.getGoalX(), bullet.getGoalY());
+                    if (building != null) {
+                        building.setHp(building.getHp() - bullet.getDamageToDeal());
+                        if (building.getHp() <= 0) {
+                            map.removeBuilding(building);
+                        }
                     }
                 }
                 bulletsToRemove.add(bullet);
