@@ -28,9 +28,9 @@ public class AStar {
         Node start = new Node(fromX, fromY);
         Node goal = new Node(toX, toY);
 
-        //if (map.isObstacle(goal, unitId, ownerId, isHarvester)) {
-        //    return new ArrayList<Node>();
-        //}
+        if (map.isObstacle(goal, unitId, ownerId, isHarvester)) {
+            return new ArrayList<Node>();
+        }
 
         closedSet = new HashSet<Node>();
         openSet = createSortedNodeSet();
@@ -130,12 +130,12 @@ public class AStar {
                     if (!openSet.contains(neighbor)) {
                         neighbor.setPreviousNode(current);
                         neighbor.setDistanceFromStart(neighborDistanceFromStart);
-                        neighbor.setHeuristicDistanceFromGoal(Map.getDistanceBetween(neighbor, goal));
+                        neighbor.setHeuristicDistanceFromGoal(2 * Map.getDistanceBetween(neighbor, goal));
                         openSet.add(neighbor);
                     } else if (neighborDistanceFromStart < current.getDistanceFromStart()) {
                         neighbor.setPreviousNode(current);
                         neighbor.setDistanceFromStart(neighborDistanceFromStart);
-                        neighbor.setHeuristicDistanceFromGoal(Map.getDistanceBetween(neighbor, goal));
+                        neighbor.setHeuristicDistanceFromGoal(2 * Map.getDistanceBetween(neighbor, goal));
                     }
                 }
 

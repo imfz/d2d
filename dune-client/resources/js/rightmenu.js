@@ -215,6 +215,8 @@ function getConstructionOptionName(option) {
         return "Silo";
     case BUY_OPTION_SIEGE_TANK:
         return "Siege tank";
+    case BUY_OPTION_TANK:
+        return "Tank";
     }
 
     return "";

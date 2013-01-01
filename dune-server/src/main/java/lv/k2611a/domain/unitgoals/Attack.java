@@ -83,8 +83,10 @@ public class Attack implements UnitGoal {
             bullet.setStartY(unit.getY());
             bullet.setGoalX(closestPoint.getX());
             bullet.setGoalY(closestPoint.getY());
-            bullet.setTicksToMove(unit.getUnitType().getBulletSpeed());
-            bullet.setTicksToMoveTotal(unit.getUnitType().getBulletSpeed());
+            int bulletTicksToMove = (int) Math.round(unit.getUnitType().getBulletSpeed() * Map.getDistanceBetween(unit.getPoint(), building.getPoint()));
+
+            bullet.setTicksToMove(bulletTicksToMove);
+            bullet.setTicksToMoveTotal(bulletTicksToMove);
             bullet.setBulletType(BulletType.TANK_SHOT);
             map.addBullet(bullet);
             unit.setTicksReloading(unit.getUnitType().getTicksToAttack());

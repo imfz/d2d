@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public enum UnitType implements EntityType {
-    BATTLE_TANK((byte)1, 30, 100, 10, 5, 20, 5, 5, 20, BulletType.TANK_SHOT),
+    BATTLE_TANK((byte)1, 30, 100, 10, 5, 20, 5, 5, 3, BulletType.TANK_SHOT),
     SIEGE_TANK((byte)2, 60, 120, 120, 5, 1, 5, 5, 3, BulletType.TANK_SHOT),
     LAUNCHER((byte)3, 30, 50, 100, 5, 1, 5, 5, 3, BulletType.TANK_SHOT),
     DEVASTATOR((byte)4, 100, 200, 200, 5, 1, 5, 5, 3, BulletType.TANK_SHOT),
@@ -43,7 +43,7 @@ public enum UnitType implements EntityType {
     private final int ticksToAttack;
     private final int attackRange;
     private final int attackDamage;
-    private final int bulletSpeed; // ticks for bullet to fly
+    private final int bulletSpeed; // ticks for bullet to fly per cell
     private final BulletType bulletType;
 
     private UnitType(byte idOnJS, int speed, int hp, int ticksToBuild, int costPerTick, int ticksToAttack, int attackRange, int attackDamage, int bulletSpeed, BulletType bulletType) {
