@@ -156,12 +156,12 @@ public class StartConstructionTest {
 
         // unit is not built
         assertEquals(0, map.getUnits().size());
-        assertEquals(100 + UnitType.BATTLE_TANK.getCostPerTick(), map.getPlayerById(1).getMoney());
+        assertEquals(100, map.getPlayerById(1).getMoney());
 
         // nothing happens even after another tick
         gameService.tick();
         assertEquals(0, map.getUnits().size());
-        assertEquals(100 + UnitType.BATTLE_TANK.getCostPerTick(), map.getPlayerById(1).getMoney());
+        assertEquals(100 , map.getPlayerById(1).getMoney());
 
         assertNotNull(map.getBuilding(factoryId).getCurrentGoal());
 

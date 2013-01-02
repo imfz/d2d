@@ -65,10 +65,6 @@ public class CreateUnit implements BuildingGoal {
         if (freeTile == null) {
             return false;
         }
-        log.warn("BUILDING: " + String.valueOf(building.getX()) + " " + String.valueOf(building.getY()));
-        log.warn("X: " + String.valueOf(minX) + " " + String.valueOf(maxX));
-        log.warn("Y: " + String.valueOf(minY) + " " + String.valueOf(maxY));
-        log.warn("U: " + String.valueOf(freeTile.getX()) + " " + String.valueOf(freeTile.getY()));
         Unit unit = new Unit();
         unit.setOwnerId(building.getOwnerId());
 
