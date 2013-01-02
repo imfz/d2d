@@ -34,19 +34,19 @@ public class CreateUnit implements BuildingGoal {
                 return;
             }
         }
-        if (player.getMoney() >= unitType.getCostPerTick()) {
-            player.setMoney(player.getMoney() - unitType.getCostPerTick());
-        } else {
+        if (!(player.getMoney() >= unitType.getCostPerTick())) {
             // no money, no honey
             return;
         }
         if (building.getTicksAccumulated() >= unitType.getTicksToBuild() - 1) {
-            building.setTicksAccumulated(0);
             if (placeUnit(map, building)) {
+                building.setTicksAccumulated(0);
                 building.removeGoal(this);
+                player.setMoney(player.getMoney() - unitType.getCostPerTick());
             }
         } else {
             building.setTicksAccumulated(building.getTicksAccumulated() + 1);
+            player.setMoney(player.getMoney() - unitType.getCostPerTick());
         }
     }
 

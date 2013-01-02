@@ -579,6 +579,10 @@ public class Map {
         this.buildings.set(building.getId(), null);
     }
 
+    public void removeBuilding(int id) {
+        this.buildings.set(id, null);
+    }
+
     public void removeBullet(Bullet bullet) {
         this.bullets.remove(bullet);
     }

@@ -16,8 +16,10 @@ import lv.k2611a.domain.Unit;
 import lv.k2611a.domain.UnitType;
 import lv.k2611a.service.game.GameServiceImpl;
 import lv.k2611a.service.game.UserActionService;
+import lv.k2611a.util.Point;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:testContext.xml"})
@@ -79,6 +81,7 @@ public class StartConstructionTest {
         factory.setY(1);
         int factoryId = map.addBuilding(factory);
 
+        // for electricity to be enough
         Building powerplant = new Building();
         powerplant.setOwnerId(1);
         powerplant.setType(BuildingType.POWERPLANT);
@@ -107,6 +110,70 @@ public class StartConstructionTest {
         // one last final tick
         assertEquals(1, map.getUnits().size());
         assertEquals(0, map.getPlayerById(1).getMoney());
+    }
+
+    @Test
+    public void unitConstructionWhenBlocked() {
+        Map map = new Map(64,64, TileType.ROCK);
+        gameService.setMap(map);
+
+        Building factory = new Building();
+        factory.setOwnerId(1);
+        factory.setType(BuildingType.FACTORY);
+        factory.setX(0);
+        factory.setY(0);
+        int factoryId = map.addBuilding(factory);
+
+        // turrets are blocking all possible exits from factory
+        placeTurret(3,0,map,1);
+        placeTurret(3,1,map,1);
+        placeTurret(0,2,map,1);
+        placeTurret(1,2,map,1);
+        placeTurret(2,2,map,1);
+        int lastTurretId = placeTurret(3,2,map,1);
+
+        // for electricity to be enough
+        Building powerplant = new Building();
+        powerplant.setOwnerId(1);
+        powerplant.setType(BuildingType.POWERPLANT);
+        powerplant.setX(5);
+        powerplant.setY(5);
+        map.addBuilding(powerplant);
+
+
+        StartConstruction startConstruction = new StartConstruction();
+        startConstruction.setBuilderId(factoryId);
+        startConstruction.setPlayerId(1);
+        startConstruction.setEntityToBuildId(ConstructionOption.TANK.getEntityToBuildIdOnJs());
+
+        map.getPlayerById(1).setMoney(UnitType.BATTLE_TANK.getTicksToBuild() * UnitType.BATTLE_TANK.getCostPerTick() + 100);
+
+        userActionService.registerAction(startConstruction);
+
+        for (int i = 0; i < UnitType.BATTLE_TANK.getTicksToBuild(); i++) {
+            gameService.tick();
+        }
+
+        // unit is not built
+        assertEquals(0, map.getUnits().size());
+        assertEquals(100 + UnitType.BATTLE_TANK.getCostPerTick(), map.getPlayerById(1).getMoney());
+
+        // nothing happens even after another tick
+        gameService.tick();
+        assertEquals(0, map.getUnits().size());
+        assertEquals(100 + UnitType.BATTLE_TANK.getCostPerTick(), map.getPlayerById(1).getMoney());
+
+        assertNotNull(map.getBuilding(factoryId).getCurrentGoal());
+
+        // remove blocking turret
+        Point lastTurrentPosition = map.getBuilding(lastTurretId).getPoint();
+        map.removeBuilding(lastTurretId);
+
+        // unit shoudl be built now, because turret is no longer blocking the exit
+        gameService.tick();
+        assertEquals(1, map.getUnits().size());
+        assertEquals(100, map.getPlayerById(1).getMoney());
+        assertEquals(map.getUnits().get(0).getPoint(), lastTurrentPosition);
     }
 
 
@@ -405,13 +472,13 @@ public class StartConstructionTest {
 
     }
 
-    private void placeTurret(int x, int y, Map map, int playerId) {
+    private int placeTurret(int x, int y, Map map, int playerId) {
         Building building = new Building();
         building.setOwnerId(playerId);
         building.setType(BuildingType.TURRET);
         building.setX(x);
         building.setY(y);
-        map.addBuilding(building);
+        return map.addBuilding(building);
     }
 
 
