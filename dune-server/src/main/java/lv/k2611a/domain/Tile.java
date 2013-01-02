@@ -8,7 +8,7 @@ public class Tile {
 
     private int x;
     private int y;
-    private long usedBy;
+    private int usedBy;
     private TileType tileType;
     private int spiceRemainingTicks = TICKS_IN_SPICE_TILE;
     private int passableSegmentNumber = 0;
@@ -52,11 +52,11 @@ public class Tile {
         return usedBy >= 0;
     }
 
-    public long getUsedBy() {
+    public int getUsedBy() {
         return usedBy;
     }
 
-    public void setUsed(long used) {
+    public void setUsed(int used) {
         this.usedBy = used;
     }
 

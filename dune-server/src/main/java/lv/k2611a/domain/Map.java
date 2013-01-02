@@ -117,6 +117,7 @@ public class Map {
     public int addUnit(Unit unit) {
         units.add(unit);
         unit.setId(units.size() - 1);
+        setUsed(unit.getX(),unit.getY(),unit.getId());
         return unit.getId();
     }
 
@@ -444,7 +445,7 @@ public class Map {
         return !getTile(x, y).isPassable(unitId);
     }
 
-    public void setUsed(int x, int y, long unitId) {
+    public void setUsed(int x, int y, int unitId) {
         getTile(x, y).setUsed(unitId);
     }
 

@@ -176,6 +176,75 @@ public class StartConstructionTest {
         assertEquals(map.getUnits().get(0).getPoint(), lastTurrentPosition);
     }
 
+    @Test
+    public void twoUnitsConstructedSimultaneouslyWithOneLocationForBoth() {
+        // second one of units should not be placed on the same location
+
+        Map map = new Map(64,64, TileType.ROCK);
+        gameService.setMap(map);
+
+        Building factory = new Building();
+        factory.setOwnerId(1);
+        factory.setType(BuildingType.FACTORY);
+        factory.setX(0);
+        factory.setY(0);
+        int factoryId = map.addBuilding(factory);
+
+        Building factory2 = new Building();
+        factory2.setOwnerId(1);
+        factory2.setType(BuildingType.FACTORY);
+        factory2.setX(3);
+        factory2.setY(0);
+        int factoryId2 = map.addBuilding(factory2);
+
+
+        // turrets are blocking all possible exits from factories, except one
+        placeTurret(6,0,map,1);
+        placeTurret(6,1,map,1);
+        placeTurret(6,2,map,1);
+
+        placeTurret(0,2,map,1);
+        placeTurret(1,2,map,1);
+        placeTurret(2,2,map,1);
+        placeTurret(4,2,map,1);
+        placeTurret(5,2,map,1);
+
+        // point 3,2 is shared between factories
+
+        // for electricity to be enough
+        Building powerplant = new Building();
+        powerplant.setOwnerId(1);
+        powerplant.setType(BuildingType.POWERPLANT);
+        powerplant.setX(5);
+        powerplant.setY(5);
+        map.addBuilding(powerplant);
+
+
+        StartConstruction startConstruction = new StartConstruction();
+        startConstruction.setBuilderId(factoryId);
+        startConstruction.setPlayerId(1);
+        startConstruction.setEntityToBuildId(ConstructionOption.TANK.getEntityToBuildIdOnJs());
+
+        StartConstruction startConstruction2 = new StartConstruction();
+        startConstruction2.setBuilderId(factoryId2);
+        startConstruction2.setPlayerId(1);
+        startConstruction2.setEntityToBuildId(ConstructionOption.TANK.getEntityToBuildIdOnJs());
+
+        userActionService.registerAction(startConstruction);
+        userActionService.registerAction(startConstruction2);
+
+        map.getPlayerById(1).setMoney(UnitType.BATTLE_TANK.getTicksToBuild() * UnitType.BATTLE_TANK.getCostPerTick() * 2);
+
+        for (int i = 0; i < UnitType.BATTLE_TANK.getTicksToBuild(); i++) {
+            gameService.tick();
+        }
+
+        // unit is not built
+        assertEquals(1, map.getUnits().size());
+
+
+    }
+
 
     @Test
     public void nonExistingConstructionYardDoesntCauseError() {
