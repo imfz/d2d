@@ -28,68 +28,55 @@ public class CreateUnit implements BuildingGoal {
     @Override
     public void process(Building building, Map map, long tickCount) {
         Player player = map.getPlayerById(building.getOwnerId());
-
-        if (player.getElectricity() < 0) {
-            // throttle 3/4 of ticks, if not enough electricity
-            if (tickCount % 4 != 3) {
+        if (building.getTicksAccumulated() >= unitType.getTicksToBuild()-1) {
+            if (placeUnit(map, building)) {
+                building.setTicksAccumulated(0);
+                building.removeGoal(this);
+            }
+        } else {
+            if (player.getElectricity() < 0) {
+                // throttle 3/4 of ticks, if not enough electricity
+                if (tickCount % 4 != 3) {
+                    return;
+                }
+            }
+            if (player.getMoney() >= unitType.getCostPerTick()) {
+                player.setMoney(player.getMoney() - unitType.getCostPerTick());
+            } else {
+                // no money, no honey
                 return;
             }
-        }
-
-        if (player.getMoney() >= unitType.getCostPerTick()) {
-            player.setMoney(player.getMoney() - unitType.getCostPerTick());
-        } else {
-            // no money, no honey
-            return;
-        }
-        if (building.getTicksAccumulated() >= unitType.getTicksToBuild()-1) {
-            building.setTicksAccumulated(0);
-            building.removeGoal(this);
-            placeUnit(map, building);
-        } else {
-            building.setTicksAccumulated(building.getTicksAccumulated() + 1);
+            if (building.getTicksAccumulated() >= unitType.getTicksToBuild()-1) {
+                building.setTicksAccumulated(0);
+                if (placeUnit(map, building)) {
+                    building.removeGoal(this);
+                }
+            } else {
+                building.setTicksAccumulated(building.getTicksAccumulated() + 1);
+            }
         }
     }
 
-    private void placeUnit(Map map, Building building) {
-        int newX = building.getX() + 1;
-        int newY = building.getY() +2;
+    private boolean placeUnit(Map map, Building building) {
+        int minX = building.getX()-1;
+        int maxX = building.getX() + building.getType().getWidth();
+        int minY = building.getY()-1;
+        int maxY = building.getY() + building.getType().getHeight();
 
-        boolean entranceBlocked = false;
-
-        if (newY >= map.getHeight()) {
-            entranceBlocked = true;
-        } else {
-            if (map.isObstacle(newX, newY)) {
-                newX--;
-                if (map.isObstacle(newX, newY)) {
-                    newX++;
-                    newX++;
-                    if (map.isObstacle(newX, newY)) {
-                        entranceBlocked = true;
-                    }
-                }
-            }
+        Tile freeTile = map.getNearestFreeTileForUnitPlacement(minX, maxX, minY, maxY);
+        if (freeTile == null) {
+            return false;
         }
-
-        if (entranceBlocked) {
-            Tile freeTile = map.getNearestFreeTile(newX,newY);
-            if (freeTile == null) {
-                log.warn("Cannot place unit, all tiles occupied");
-                return;
-            }
-            newX = freeTile.getX();
-            newY = freeTile.getY();
-        }
-
 
         Unit unit = new Unit();
         unit.setOwnerId(building.getOwnerId());
-        unit.setX(newX);
-        unit.setY(newY);
+
+        unit.setX(freeTile.getX());
+        unit.setY(freeTile.getY());
         unit.setUnitType(unitType);
         unit.setViewDirection(ViewDirection.BOTTOM);
         map.addUnit(unit);
 
+        return true;
     }
 }

@@ -493,8 +493,19 @@ public class Map {
             }
         }
         return null;
-
     }
+
+    public Tile getNearestFreeTileForUnitPlacement(int minX, int maxX, int minY, int maxY) {
+        for (int currentX = minX; currentX <= maxX; currentX++) {
+            for (int currentY = maxY; currentY >= minY; currentY--) {
+                if (!isObstacle(currentX, currentY)) {
+                    return getTile(currentX, currentY);
+                }
+            }
+        }
+        return null;
+    }
+
 
     public Point getRandomFreeTile(Point near, int distanceFrom, int distanceTo) {
         Random r = new Random();
