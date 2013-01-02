@@ -28,25 +28,30 @@ public class CreateUnit implements BuildingGoal {
     @Override
     public void process(Building building, Map map, long tickCount) {
         Player player = map.getPlayerById(building.getOwnerId());
-        if (player.getElectricity() < 0) {
-            // throttle 3/4 of ticks, if not enough electricity
-            if (tickCount % 4 != 3) {
-                return;
-            }
-        }
-        if (!(player.getMoney() >= unitType.getCostPerTick())) {
-            // no money, no honey
-            return;
-        }
-        if (building.getTicksAccumulated() >= unitType.getTicksToBuild() - 1) {
+
+        if (building.getTicksAccumulated() >= unitType.getTicksToBuild()) {
             if (placeUnit(map, building)) {
                 building.setTicksAccumulated(0);
                 building.removeGoal(this);
-                player.setMoney(player.getMoney() - unitType.getCostPerTick());
             }
         } else {
-            building.setTicksAccumulated(building.getTicksAccumulated() + 1);
-            player.setMoney(player.getMoney() - unitType.getCostPerTick());
+            if (player.getElectricity() < 0) {
+                // throttle 3/4 of ticks, if not enough electricity
+                if (tickCount % 4 != 3) {
+                    return;
+                }
+            }
+
+            if (player.getMoney() >= unitType.getCostPerTick()) {
+                player.setMoney(player.getMoney() - unitType.getCostPerTick());
+                building.setTicksAccumulated(building.getTicksAccumulated() + 1);
+                if (building.getTicksAccumulated() >= unitType.getTicksToBuild()) {
+                    if (placeUnit(map, building)) {
+                        building.setTicksAccumulated(0);
+                        building.removeGoal(this);
+                    }
+                }
+            }
         }
     }
 
@@ -60,7 +65,10 @@ public class CreateUnit implements BuildingGoal {
         if (freeTile == null) {
             return false;
         }
-
+        log.warn("BUILDING: " + String.valueOf(building.getX()) + " " + String.valueOf(building.getY()));
+        log.warn("X: " + String.valueOf(minX) + " " + String.valueOf(maxX));
+        log.warn("Y: " + String.valueOf(minY) + " " + String.valueOf(maxY));
+        log.warn("U: " + String.valueOf(freeTile.getX()) + " " + String.valueOf(freeTile.getY()));
         Unit unit = new Unit();
         unit.setOwnerId(building.getOwnerId());
 
