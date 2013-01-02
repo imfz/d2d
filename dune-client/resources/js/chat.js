@@ -15,8 +15,24 @@ Chat.prototype.sendMessage = function (message) {
     }
 };
 
+Chat.prototype.setEngine = function (engine) {
+    this.engine = engine;
+};
+
 Chat.prototype.init = function () {
     var that = this;
+
+    var disableHotkeys = function(e) {
+        that.engine.hotkeysEnabled = false;
+    };
+
+    var enableHotkeys = function(e) {
+        that.engine.hotkeysEnabled = true;
+    };
+
+    $('#username').focus(disableHotkeys).blur(enableHotkeys);
+    $('#phrase').focus(disableHotkeys).blur(enableHotkeys);
+
     $('#joinB').click(function (event) {
         var $username = $('#username');
         var name = $username.val();

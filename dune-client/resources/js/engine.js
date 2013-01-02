@@ -34,6 +34,7 @@ function GameEngine() {
     this.shownBuildings = new Array();
     this.selectedUnitId = new Array();
     this.groups = new Array();
+    this.hotkeysEnabled = true;
     console.log("Created game engine");
 }
 
@@ -58,9 +59,12 @@ GameEngine.prototype.setMap = function (map) {
 
 GameEngine.prototype.bindEvents = function () {
     var that = this;
-    $(window).keydown(function (e) {
+    var onKeyDown = function (e) {
+        if (!that.hotkeysEnabled) {
+            return true;
+        }
         var keyCode = e.keyCode || e.which,
-            arrow = {left: 37, up: 38, right: 39, down: 40 };
+                arrow = {left: 37, up: 38, right: 39, down: 40 };
         switch (keyCode) {
         case arrow.left:
             if (e.ctrlKey) {
@@ -143,7 +147,8 @@ GameEngine.prototype.bindEvents = function () {
         }
 
 
-    });
+    };
+    $(window).keydown(onKeyDown);
 
     $(this.canvas).dblclick(function (event) {
         var x = Math.floor((event.pageX - $(that.canvas).offset().left) * engine.scale);

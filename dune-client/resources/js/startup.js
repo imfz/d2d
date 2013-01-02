@@ -55,6 +55,7 @@ $(function () {
 
     networking.init();
 
+    chat.setEngine(engine);
     chat.init();
 
     engine.render();
