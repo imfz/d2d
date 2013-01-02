@@ -9,6 +9,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import lv.k2611a.domain.Building;
 import lv.k2611a.domain.BuildingType;
+import lv.k2611a.domain.ConstructionOption;
 import lv.k2611a.domain.Map;
 import lv.k2611a.domain.TileType;
 import lv.k2611a.domain.Unit;
@@ -39,7 +40,7 @@ public class StartConstructionTest {
     }
 
     @Test
-    public void testOnlyConstructionYardCanBuild() {
+    public void onlyConstructionYardCanBuild() {
         Map map = new Map(64,64, TileType.ROCK);
         gameService.setMap(map);
 
@@ -66,9 +67,51 @@ public class StartConstructionTest {
 
     }
 
+    @Test
+    public void unitConstructionWithMoneyScenario() {
+        Map map = new Map(64,64, TileType.ROCK);
+        gameService.setMap(map);
+
+        Building factory = new Building();
+        factory.setOwnerId(1);
+        factory.setType(BuildingType.FACTORY);
+        factory.setX(1);
+        factory.setY(1);
+        int factoryId = map.addBuilding(factory);
+
+        Building powerplant = new Building();
+        powerplant.setOwnerId(1);
+        powerplant.setType(BuildingType.POWERPLANT);
+        powerplant.setX(5);
+        powerplant.setY(5);
+        map.addBuilding(powerplant);
+
+
+        StartConstruction startConstruction = new StartConstruction();
+        startConstruction.setBuilderId(factoryId);
+        startConstruction.setPlayerId(1);
+        startConstruction.setEntityToBuildId(ConstructionOption.TANK.getEntityToBuildIdOnJs());
+
+        map.getPlayerById(1).setMoney(UnitType.BATTLE_TANK.getTicksToBuild() * UnitType.BATTLE_TANK.getCostPerTick());
+
+        userActionService.registerAction(startConstruction);
+
+        for (int i = 0; i < UnitType.BATTLE_TANK.getTicksToBuild()-1; i++) {
+            gameService.tick();
+        }
+
+        assertEquals(0, map.getUnits().size());
+
+        gameService.tick();
+
+        // one last final tick
+        assertEquals(1, map.getUnits().size());
+        assertEquals(0, map.getPlayerById(1).getMoney());
+    }
+
 
     @Test
-    public void testNonExistingConstructionYardDoesntCauseError() {
+    public void nonExistingConstructionYardDoesntCauseError() {
         Map map = new Map(64,64, TileType.ROCK);
         gameService.setMap(map);
 
@@ -82,7 +125,7 @@ public class StartConstructionTest {
     }
 
     @Test
-    public void testConstructionWithMoneyScenario() {
+    public void constructionWithMoneyScenario() {
         Map map = new Map(64,64, TileType.ROCK);
         gameService.setMap(map);
 
@@ -121,7 +164,7 @@ public class StartConstructionTest {
     }
 
     @Test
-    public void testConstructionCancelledOnLastTickMoneyReturnedScenario() {
+    public void constructionCancelledOnLastTickMoneyReturnedScenario() {
         Map map = new Map(64,64, TileType.ROCK);
         gameService.setMap(map);
 
@@ -171,7 +214,7 @@ public class StartConstructionTest {
     }
 
     @Test
-    public void testConstructionCancelledWhenBuildingReadyTickMoneyReturnedScenario() {
+    public void constructionCancelledWhenBuildingReadyTickMoneyReturnedScenario() {
         Map map = new Map(64,64, TileType.ROCK);
         gameService.setMap(map);
 
@@ -222,7 +265,7 @@ public class StartConstructionTest {
     }
 
     @Test
-    public void testConstructionScenario() {
+    public void constructionScenario() {
         Map map = new Map(64,64, TileType.ROCK);
         gameService.setMap(map);
 

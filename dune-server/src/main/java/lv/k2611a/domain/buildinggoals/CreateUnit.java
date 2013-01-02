@@ -28,39 +28,32 @@ public class CreateUnit implements BuildingGoal {
     @Override
     public void process(Building building, Map map, long tickCount) {
         Player player = map.getPlayerById(building.getOwnerId());
-        if (building.getTicksAccumulated() >= unitType.getTicksToBuild()-1) {
+        if (player.getElectricity() < 0) {
+            // throttle 3/4 of ticks, if not enough electricity
+            if (tickCount % 4 != 3) {
+                return;
+            }
+        }
+        if (player.getMoney() >= unitType.getCostPerTick()) {
+            player.setMoney(player.getMoney() - unitType.getCostPerTick());
+        } else {
+            // no money, no honey
+            return;
+        }
+        if (building.getTicksAccumulated() >= unitType.getTicksToBuild() - 1) {
+            building.setTicksAccumulated(0);
             if (placeUnit(map, building)) {
-                building.setTicksAccumulated(0);
                 building.removeGoal(this);
             }
         } else {
-            if (player.getElectricity() < 0) {
-                // throttle 3/4 of ticks, if not enough electricity
-                if (tickCount % 4 != 3) {
-                    return;
-                }
-            }
-            if (player.getMoney() >= unitType.getCostPerTick()) {
-                player.setMoney(player.getMoney() - unitType.getCostPerTick());
-            } else {
-                // no money, no honey
-                return;
-            }
-            if (building.getTicksAccumulated() >= unitType.getTicksToBuild()-1) {
-                building.setTicksAccumulated(0);
-                if (placeUnit(map, building)) {
-                    building.removeGoal(this);
-                }
-            } else {
-                building.setTicksAccumulated(building.getTicksAccumulated() + 1);
-            }
+            building.setTicksAccumulated(building.getTicksAccumulated() + 1);
         }
     }
 
     private boolean placeUnit(Map map, Building building) {
-        int minX = building.getX()-1;
+        int minX = building.getX() - 1;
         int maxX = building.getX() + building.getType().getWidth();
-        int minY = building.getY()-1;
+        int minY = building.getY() - 1;
         int maxY = building.getY() + building.getType().getHeight();
 
         Tile freeTile = map.getNearestFreeTileForUnitPlacement(minX, maxX, minY, maxY);
