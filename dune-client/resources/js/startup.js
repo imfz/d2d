@@ -50,6 +50,7 @@ $(function () {
 
     rightmenu.setMainSprite(Utils.getImageElement("images/buys.jpg"));
     rightmenu.bindEvents();
+    rightmenu.setEngine(engine);
 
     gameLog.redraw();
 

@@ -112,7 +112,7 @@ GameEngine.prototype.bindEvents = function () {
             return false;
         case 80:
             // handle P button
-            that.placementEnabled = true;
+            that.enablePlacement();
             return false;
         case 109:
         case 173:
@@ -329,14 +329,10 @@ GameEngine.prototype.bindEvents = function () {
             if ((x2 > shownBuildingInfo.x) && (x < shownBuildingInfo.width + shownBuildingInfo.x)) {
                 if ((y2 > shownBuildingInfo.y) && (y < shownBuildingInfo.height + shownBuildingInfo.y)) {
                     // ok text is blinking, go on with placement
-                    if (shownBuildingInfo.placementEnabled) {
-                        that.placementEnabled = true;
-                        that.builderId = shownBuildingInfo.id;
-                        var buildingConfig = that.getBuildingPlacementConfig(shownBuildingInfo.buildingTypeBuilt);
-                        that.placementWidth = buildingConfig.width;
-                        that.placementHeight = buildingConfig.height;
-                    }
                     that.selectedBuilding = shownBuildingInfo.id;
+                    if (shownBuildingInfo.placementEnabled) {
+                        that.enablePlacement();
+                    }
                     buildingFound = true;
                     connection.sendBuildingSelection(that.selectedBuilding);
                 }
@@ -344,6 +340,21 @@ GameEngine.prototype.bindEvents = function () {
         }
         return buildingFound;
     }
+};
+
+GameEngine.prototype.enablePlacement = function() {
+    var building = this.map.getBuildingById(this.selectedBuilding);
+    if (!building) {
+        return;
+    }
+    var buildingConfig = this.getBuildingPlacementConfig(building.entityBuiltId);
+    if (!buildingConfig) {
+        return;
+    }
+    this.placementEnabled = true;
+    this.builderId = building.id;
+    this.placementWidth = buildingConfig.width;
+    this.placementHeight = buildingConfig.height;
 };
 
 GameEngine.prototype.saveCurrentSelection = function (keyCode) {
@@ -678,7 +689,6 @@ GameEngine.prototype.renderBuildings = function (buildings) {
             shownBuildingInfo.width = buildingConfig.width;
             shownBuildingInfo.height = buildingConfig.height;
             shownBuildingInfo.placementEnabled = building.constructionComplete;
-            shownBuildingInfo.buildingTypeBuilt = building.entityBuiltId;
             this.shownBuildings.push(shownBuildingInfo);
         }
 

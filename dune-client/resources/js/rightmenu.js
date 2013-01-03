@@ -14,6 +14,10 @@ RightMenu.prototype.setMainSprite = function (mainSprite) {
     this.mainSprite = mainSprite;
 };
 
+RightMenu.prototype.setEngine = function (engine) {
+    this.engine = engine;
+};
+
 RightMenu.prototype.getBuyOptionConfig = function (type) {
     var x = 0;
     var y = 0;
@@ -144,6 +148,7 @@ RightMenu.prototype.setOptions = function (builderId, options, percentsDone, cur
 };
 
 RightMenu.prototype.redraw = function () {
+    var that = this;
     $("#rightmenulistul").empty();
     $("#rightmenuprogress").html("");
     $("#rightmenucancel").css("display", "none");
@@ -167,6 +172,8 @@ RightMenu.prototype.redraw = function () {
             var ctx = currentlyBuildingCanvasEl.getContext("2d");
             var buildingOptionConfig = this.getBuyOptionConfig(this.currentlyBuildingOptionType);
             ctx.drawImage(this.mainSprite, buildingOptionConfig.x, buildingOptionConfig.y, BUY_OPTION_WIDTH, BUY_OPTION_HEIGHT, 0, 0, BUY_OPTION_WIDTH, BUY_OPTION_HEIGHT);
+            $("#currentlyBuildingCanvas").click(function(){that.engine.enablePlacement();});
+
         }
     } else {
         for (var i = 0; i < this.options.length; i++) {

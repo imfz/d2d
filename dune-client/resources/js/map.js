@@ -157,6 +157,16 @@ GameMap.prototype.getBuildings = function (x, y, x2, y2) {
     return this.buildings;
 };
 
+GameMap.prototype.getBuildingById = function (id) {
+    for (var i = 0; i < this.buildings.length; i++) {
+        var building = this.buildings[i];
+        if (building.id == id) {
+            return building;
+        }
+    }
+    return null;
+};
+
 GameMap.prototype.getBullets = function (x, y, x2, y2) {
     //TODO: optimization
     return this.bullets;
