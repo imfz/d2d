@@ -115,10 +115,12 @@ public class Move implements UnitGoal {
     }
 
     private void calcPath(Unit unit, Map map) {
-        if (neededRange > 0) {
-            path = aStarCache.calcPathEvenIfBlocked(unit.getX(), unit.getY(), goalX, goalY, map, unit.getId(), unit.getUnitType() == UnitType.HARVESTER, unit.getOwnerId());
+        if (neededRange > 1) {
+            path = aStarCache.calcPathEvenIfBlocked(unit.getX(), unit.getY(), goalX, goalY, map, unit.getId(),
+                    unit.getUnitType() == UnitType.HARVESTER, unit.getOwnerId(), neededRange);
         } else {
-            path = aStarCache.calcShortestPath(unit.getX(), unit.getY(), goalX, goalY, map, unit.getId(), unit.getUnitType() == UnitType.HARVESTER, unit.getOwnerId());
+            path = aStarCache.calcShortestPath(unit.getX(), unit.getY(), goalX, goalY, map, unit.getId(),
+                    unit.getUnitType() == UnitType.HARVESTER, unit.getOwnerId());
         }
     }
 

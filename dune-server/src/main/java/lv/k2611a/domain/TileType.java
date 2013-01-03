@@ -4,18 +4,22 @@ import java.util.HashSet;
 import java.util.Set;
 
 public enum TileType {
-    SAND(1),ROCK(2),SPICE(3),RICH_SPICE(4);
+    SAND((byte)1, 10),
+    ROCK((byte)2, 10),
+    SPICE((byte)3, 10),
+    RICH_SPICE((byte)4, 10)
+    ;
 
     private static TileType[] indexByJsId;
 
     static {
         int maxJsId = 0;
-        Set<Integer> idsOnJs = new HashSet<Integer>();
+        Set<Byte> idOnJs = new HashSet<Byte>();
         for (TileType tileType : values()) {
             if (tileType.getIdOnJS() > maxJsId) {
                 maxJsId = tileType.getIdOnJS();
             }
-            if (!idsOnJs.add(tileType.getIdOnJS())) {
+            if (!idOnJs.add(tileType.getIdOnJS())) {
                 throw new AssertionError("Duplicate js id");
             }
         }
@@ -25,19 +29,25 @@ public enum TileType {
         }
     }
 
-    private int idOnJS;
+    private byte idOnJS;
+    private int movementCost;
     private boolean allowsBuildings = false;
 
-    private TileType(int idOnJS) {
+    private TileType(byte idOnJS, int movementCost) {
         this.idOnJS = idOnJS;
+        this.movementCost = movementCost;
     }
 
-    public int getIdOnJS() {
+    public byte getIdOnJS() {
         return idOnJS;
     }
 
     public boolean isAllowsBuildings() {
         return allowsBuildings;
+    }
+
+    public int getMovementCost() {
+        return movementCost;
     }
 
     public static TileType getByJsId(int idInIs) {

@@ -77,7 +77,7 @@ public class Attack implements UnitGoal {
         Point bestPoint = getClosestPoint(building, unit);
         final int buildingId = building.getId();
         final int unitOwnerId = unit.getOwnerId();
-        unit.insertGoalBeforeCurrent(new Move(bestPoint.getX(), bestPoint.getY(),unit.getUnitType().getAttackRange()-1, new MoveExpired() {
+        unit.insertGoalBeforeCurrent(new Move(bestPoint.getX(), bestPoint.getY(),unit.getUnitType().getAttackRange(), new MoveExpired() {
             @Override
             public boolean isExpired(Move move, Map map) {
                 Building building = map.getBuilding(buildingId);
@@ -97,7 +97,7 @@ public class Attack implements UnitGoal {
         final int unitId = target.getId();
         final int ownerId = target.getOwnerId();
         final Point unitPoint = target.getPoint();
-        unit.insertGoalBeforeCurrent(new Move(bestPoint.getX(), bestPoint.getY(),unit.getUnitType().getAttackRange()-1, new MoveExpired() {
+        unit.insertGoalBeforeCurrent(new Move(bestPoint.getX(), bestPoint.getY(),unit.getUnitType().getAttackRange(), new MoveExpired() {
             @Override
             public boolean isExpired(Move move, Map map) {
                 Unit unit = map.getUnit(unitId);

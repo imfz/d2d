@@ -82,7 +82,8 @@ public class AStar {
 
     }
 
-    public List<Node> calcPathEvenIfBlocked(int fromX, int fromY, int toX, int toY, Map map, int unitId, boolean isHarvester, int ownerId) {
+    public List<Node> calcPathEvenIfBlocked(int fromX, int fromY, int toX, int toY, Map map, int unitId,
+                                            boolean isHarvester, int ownerId, int goalRadius) {
 
         if ((fromX == toX) && (fromY == toY)) {
             return new ArrayList<Node>();
@@ -90,10 +91,6 @@ public class AStar {
 
         Node start = new Node(fromX, fromY);
         Node goal = new Node(toX, toY);
-
-        //if (map.isObstacle(goal, unitId, ownerId, isHarvester)) {
-        //    return new ArrayList<Node>();
-        //}
 
         closedSet = new HashSet<Node>();
         openSet = createSortedNodeSet();
@@ -106,7 +103,7 @@ public class AStar {
         while (!openSet.isEmpty()) {
             Node current = openSet.first();
 
-            if (current.equals(goal)) {
+            if (Map.getDistanceBetween(current, goal) <= goalRadius) {
                 return reconstructPath(current);
             }
 
