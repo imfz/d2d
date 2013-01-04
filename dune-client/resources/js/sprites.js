@@ -333,9 +333,9 @@ Sprites.prototype.getBuildingConfig = function (building) {
 
     result.sprite = sprite;
     result.x = x;
-    result.y = y * (63 * 2);
-    result.width = width * 63;
-    result.height = height * 63;
+    result.y = y * (TILE_HEIGHT * 2);
+    result.width = width * TILE_WIDTH;
+    result.height = height * TILE_HEIGHT;
     return result;
 
 };
@@ -410,10 +410,10 @@ Sprites.prototype.getUnitConfig = function (unit) {
 
     var result = new Object();
     result.sprite = sprite;
-    result.x = x * 63;
-    result.y = y * 63;
-    result.width = 63;
-    result.height = 63;
+    result.x = x * TILE_WIDTH;
+    result.y = y * TILE_HEIGHT;
+    result.width = TILE_WIDTH;
+    result.height = TILE_HEIGHT;
     result.xOffset = xOffset;
     result.yOffset = yOffset;
     return result;
