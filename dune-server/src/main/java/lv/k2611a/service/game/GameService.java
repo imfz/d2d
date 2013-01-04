@@ -1,5 +1,6 @@
 package lv.k2611a.service.game;
 
+import lv.k2611a.domain.Map;
 import lv.k2611a.network.resp.UpdateMap;
 import lv.k2611a.util.Point;
 
@@ -15,4 +16,10 @@ public interface GameService {
     boolean playerExist(int playerId);
 
     void registerChangedTile(Point point);
+
+    Integer getFreePlayer();
+
+    void freePlayer(Integer playerId);
+
+    void init(Map map);
 }

@@ -16,7 +16,11 @@ public class GameScope implements Scope  {
     @Override
     public synchronized Object get(String name, ObjectFactory<?> objectFactory) {
         Object result = null;
-        Map<String, Object> hBeans = contextService.getCurrentGameContext().getBeanMap();
+        GameContext currentGameContext = contextService.getCurrentGameContext();
+        if (currentGameContext == null) {
+            return null;
+        }
+        Map<String, Object> hBeans = currentGameContext.getBeanMap();
 
         if (!hBeans.containsKey(name)) {
             result = objectFactory.getObject();
@@ -31,7 +35,11 @@ public class GameScope implements Scope  {
     @Override
     public synchronized Object remove(String name) {
         Object result = null;
-        Map<String, Object> hBeans = contextService.getCurrentGameContext().getBeanMap();
+        GameContext currentGameContext = contextService.getCurrentGameContext();
+        if (currentGameContext == null) {
+            return null;
+        }
+        Map<String, Object> hBeans = currentGameContext.getBeanMap();
         if (hBeans.containsKey(name)) {
             result = hBeans.get(name);
             hBeans.remove(name);
@@ -42,7 +50,11 @@ public class GameScope implements Scope  {
 
     @Override
     public synchronized void registerDestructionCallback(String name, Runnable callback) {
-        contextService.getCurrentGameContext().registerRequestDestructionCallback(name, callback);
+        GameContext currentGameContext = contextService.getCurrentGameContext();
+        if (currentGameContext == null) {
+            return;
+        }
+        currentGameContext.registerRequestDestructionCallback(name, callback);
     }
 
     @Override

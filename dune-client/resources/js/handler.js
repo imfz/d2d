@@ -4,6 +4,7 @@ function Handler(map, gameLog, rightMenu, engine, moneyTab) {
     this.rightMenu = rightMenu;
     this.engine = engine;
     this.moneyTab = moneyTab;
+    this.lobby = lobby;
     this.centeredOnMain = false;
 }
 
@@ -26,6 +27,12 @@ Handler.prototype.handleIncomingChatMessage = function (data) {
     this.addMessageToChat(from, text);
 };
 
+
+Handler.prototype.handleUpdateGameList = function (data) {
+    this.lobby.updateGameList(data.games);
+};
+
+
 Handler.prototype.handleUpdateMap = function (data) {
 
     if (typeof data.map.units === "undefined") {
@@ -40,6 +47,18 @@ Handler.prototype.handleUpdateMap = function (data) {
     if (typeof data.map.bullets === "undefined") {
         data.map.bullets = new Array();
     }
+
+    $("#lobby").css({display: "none"});
+    $("#game").css({display: "block"});
+
+    console.log("Player id received " + data.playerId);
+    connection._playerId = data.playerId;
+
+    engine.bindEvents();
+    engine.render();
+
+    minimapEngine.renderBuffer();
+    minimapEngine.render();
 
     this.map.setHeight(data.map.height);
     this.map.setWidth(data.map.width);
@@ -142,6 +161,10 @@ Handler.prototype.handleLeft = function (data) {
 
 Handler.prototype.handleUpdateMoney = function (data) {
     this.moneyTab.setMoney(data.money, data.electricity);
+};
+
+Handler.prototype.handleGameFull = function (data) {
+    Utils.showError("Game full");
 };
 
 Handler.prototype.handleUpdateConstructionOptions = function (data) {

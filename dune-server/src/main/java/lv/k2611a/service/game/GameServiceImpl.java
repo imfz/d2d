@@ -9,7 +9,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.slf4j.Logger;
@@ -51,7 +50,6 @@ import lv.k2611a.network.resp.UpdateMapIncremental;
 import lv.k2611a.network.resp.UpdateMoney;
 import lv.k2611a.service.scope.ContextService;
 import lv.k2611a.service.scope.GameKey;
-import lv.k2611a.util.MapGenerator;
 import lv.k2611a.util.Point;
 
 @Service
@@ -91,10 +89,10 @@ public class GameServiceImpl implements GameService {
     private Set<Point> changedTiles;
 
 
-    @PostConstruct
-    public void init() {
+    @Override
+    public void init(Map map) {
         log.info("Initializing game");
-        map = MapGenerator.generateMap(64, 64, 8);
+        this.map = map;
         Runnable ticker = createTicker(contextService.getCurrentContextKey());
         if (!testMode) {
             exec.scheduleAtFixedRate(ticker, 0, TICK_LENGTH, TimeUnit.MILLISECONDS);
@@ -148,6 +146,7 @@ public class GameServiceImpl implements GameService {
         mapDTO.setUnits(unitDTOList.toArray(new UnitDTO[unitDTOList.size()]));
         mapDTO.setBullets(bulletDTOList.toArray(new BulletDTO[bulletDTOList.size()]));
         mapDTO.setBuildings(buildingDTOList.toArray(new BuildingDTO[buildingDTOList.size()]));
+
         UpdateMap updateMap = new UpdateMap();
         updateMap.setMap(mapDTO);
         updateMap.setTickCount(tickCount);
@@ -527,12 +526,28 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public long getTickCount() {
+    public synchronized long getTickCount() {
         return tickCount;
     }
 
     @Override
-    public void setTickCount(long tickCount) {
+    public synchronized void setTickCount(long tickCount) {
         this.tickCount = tickCount;
+    }
+
+    @Override
+    public synchronized Integer getFreePlayer() {
+        for (Player player : map.getPlayers()) {
+            if (!player.isUsed()) {
+                player.setUsed(true);
+                return player.getId();
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public synchronized void freePlayer(Integer playerId) {
+        map.getPlayerById(playerId).setUsed(false);
     }
 }

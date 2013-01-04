@@ -76,6 +76,9 @@ Serializers[3] = function (payload) {
     result["tickCount"] = getLongAt(payload,position);
     position+=8;
 
+    result["playerId"] = getIntAt(payload,position);
+    position+=4;
+
 
     if (position != payload.length) {
         console.log("Read " + position + " bytes from payloads " + payload.length);

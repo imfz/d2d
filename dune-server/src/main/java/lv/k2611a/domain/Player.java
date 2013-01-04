@@ -9,6 +9,7 @@ public class Player {
     private long electricity;
     private boolean lost = false;
     private Set<BuildingType> buildingTypes = new HashSet<BuildingType>();
+    private boolean used;
 
     public long getMoney() {
         return money;
@@ -48,5 +49,13 @@ public class Player {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public boolean isUsed() {
+        return used;
+    }
+
+    public void setUsed(boolean used) {
+        this.used = used;
     }
 }

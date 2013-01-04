@@ -19,6 +19,7 @@ import lv.k2611a.network.req.Request;
 import lv.k2611a.network.resp.CustomSerializationHeader;
 import lv.k2611a.network.resp.Left;
 import lv.k2611a.network.resp.Response;
+import lv.k2611a.service.game.GameService;
 import lv.k2611a.service.global.GlobalSessionService;
 import lv.k2611a.service.scope.ContextService;
 import lv.k2611a.service.scope.GameKey;
@@ -41,6 +42,9 @@ public class ClientConnection implements WebSocket.OnTextMessage, Runnable {
     }
 
     @Autowired
+    private GameService gameService;
+
+    @Autowired
     private GlobalSessionService globalSessionService;
 
     @Autowired
@@ -51,9 +55,9 @@ public class ClientConnection implements WebSocket.OnTextMessage, Runnable {
 
     private String username;
 
-    private int playerId;
+    private Integer playerId;
 
-    private final GameKey gameKey;
+    private GameKey gameKey;
 
     private Integer selectedBuildingId;
 
@@ -63,8 +67,7 @@ public class ClientConnection implements WebSocket.OnTextMessage, Runnable {
 
     private volatile boolean closed = false;
 
-    public ClientConnection(GameKey gameKey) {
-        this.gameKey = gameKey;
+    public ClientConnection() {
     }
 
     public void onOpen(Connection connection) {
@@ -102,6 +105,9 @@ public class ClientConnection implements WebSocket.OnTextMessage, Runnable {
         } else {
             return;
         }
+        if (playerId != null) {
+            gameService.freePlayer(playerId);
+        }
         exec.shutdown();
         globalSessionService.remove(this);
         Left left = new Left();
@@ -129,7 +135,7 @@ public class ClientConnection implements WebSocket.OnTextMessage, Runnable {
             autowireCapableBeanFactory.autowireBean(request);
             request.process();
         } catch (Exception e) {
-            log.error("Exception while processing message");
+            log.error("Exception while processing message",e);
         } finally {
             localConnection.remove();
         }
@@ -216,5 +222,9 @@ public class ClientConnection implements WebSocket.OnTextMessage, Runnable {
 
     public void setPlayerId(int playerId) {
         this.playerId = playerId;
+    }
+
+    public void setGameKey(GameKey gameKey) {
+        this.gameKey = gameKey;
     }
 }

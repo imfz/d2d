@@ -6,16 +6,17 @@ function NetworkConnection() {
 }
 
 
-NetworkConnection.prototype.start = function (name, playerId) {
+NetworkConnection.prototype.start = function (name) {
     this._username = name;
-    this._playerId = playerId;
     this._connEstablished = false;
-    var location = "ws://localhost:8080/chat?gameId=2";
+    var location = "ws://localhost:8080/chat";
     this._ws = new WebSocket(location, "chat");
     this._ws.binaryType = "arraybuffer";
     this._ws.onopen = this.onopen;
     this._ws.onmessage = this.onmessage;
     this._ws.onclose = this.onclose;
+    console.log("Username set to " + this._username);
+    console.log("connecting.. ");
 };
 
 NetworkConnection.prototype.onopen = function () {
@@ -23,13 +24,13 @@ NetworkConnection.prototype.onopen = function () {
     $("#joinform").hide();
     $("#joinedform").show();
     $("#phrase").focus();
-    connection.sendJoin(connection._username, connection._playerId);
+    console.log("connected");
+    connection.sendJoin(connection._username);
 };
 
-NetworkConnection.prototype.sendJoin = function (username, playerId) {
+NetworkConnection.prototype.sendJoin = function (username) {
     var joinRequest = new Object();
     joinRequest.nickname = username;
-    joinRequest.playerId = playerId;
     this.sendNetworkRequest("Join", joinRequest);
 };
 
@@ -51,6 +52,17 @@ NetworkConnection.prototype.sendUnitStop = function (ids) {
     var unitStop = new Object();
     unitStop.ids = ids;
     this.sendNetworkRequest("UnitStop", unitStop);
+};
+
+NetworkConnection.prototype.sendCreateGame = function () {
+    var createNewGame = new Object();
+    this.sendNetworkRequest("CreateNewGame", createNewGame);
+};
+
+NetworkConnection.prototype.sendJoinGame = function (id) {
+    var joinGame = new Object();
+    joinGame.id = id;
+    this.sendNetworkRequest("JoinGame", joinGame);
 };
 
 NetworkConnection.prototype.sendBuildingSelection = function (id) {
@@ -81,11 +93,18 @@ NetworkConnection.prototype.sendStartConstruction = function (builderId, entityT
 };
 
 NetworkConnection.prototype.sendNetworkRequest = function (messageName, messageObj) {
+    if (!connection._ws) {
+        console.log("Trying to send message, while disconnected");
+        Utils.showError("Disconnected");
+        return;
+    }
     var networkPacket = new Object();
     networkPacket.messageName = messageName;
     networkPacket.payload = $.toJSON(messageObj);
     if (this._ws) {
         this._ws.send($.toJSON(networkPacket));
+    } else {
+        console.log("Trying to send message, while ws = null");
     }
 };
 
@@ -109,6 +128,7 @@ NetworkConnection.prototype.onmessage = function (m) {
 
 NetworkConnection.prototype.onclose = function (m) {
     if (!connection._connEstablished) {
+        console.log("Cannot connect to socket");
         Utils.showError("Cannot connect to socket");
     }
     connection._ws = null;
@@ -116,6 +136,7 @@ NetworkConnection.prototype.onclose = function (m) {
     $("#joinedform").hide();
     $("#chat").html('');
     $("#username").focus();
+    console.log("connection closed");
 };
 
 NetworkConnection.prototype.init = function () {

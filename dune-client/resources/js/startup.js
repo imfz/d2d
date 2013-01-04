@@ -19,10 +19,11 @@ $(function () {
     minimapEngine = new MinimapGameEngine();
     map = new GameMap();
     networking = new NetworkConnection();
+    lobby = new Lobby();
     chat = new Chat();
     rightmenu = new RightMenu();
     moneyTab = new MoneyTab();
-    handler = new Handler(map, gameLog, rightmenu, engine, moneyTab);
+    handler = new Handler(map, gameLog, rightmenu, engine, moneyTab, lobby);
 
     sprites.setMainSprite(Utils.getImageElement("images/main_sprite.jpg"));
     sprites.setUnitSprite(Utils.getImageElement("images/units.png"));
@@ -39,7 +40,6 @@ $(function () {
     var canvas = $("#canvas").get(0);
     engine.setCanvas(canvas);
     engine.setMap(map);
-    engine.bindEvents();
 
     var minimapCanvas = $("#minimap").get(0);
     minimapEngine.setCanvas(minimapCanvas);
@@ -56,13 +56,11 @@ $(function () {
 
     networking.init();
 
+    lobby.setNetwork(connection);
+    lobby.init();
+
     chat.setEngine(engine);
     chat.init();
-
-    engine.render();
-
-    minimapEngine.renderBuffer();
-    minimapEngine.render();
 
     rightmenu.setOptions([
         {type: BUY_OPTION_SILO},
@@ -71,4 +69,6 @@ $(function () {
         {type: BUY_OPTION_AIRBASE},
         {type: BUY_OPTION_FACTORY}
     ]);
+
+    connection.start("uzerok");
 });

@@ -20,7 +20,7 @@ public class ContextServiceImpl implements ContextService {
     @Override
     public synchronized GameContext getCurrentGameContext() {
         if (currentSessionKey.get() == null) {
-            throw new AssertionError("Game expected, but not found");
+            return null;
         }
         GameContext gameContext = games.get(currentSessionKey.get());
         if (gameContext == null) {

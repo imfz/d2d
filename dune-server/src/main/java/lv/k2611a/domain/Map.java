@@ -18,7 +18,7 @@ import lv.k2611a.util.Point;
 public class Map {
 
     private static final Logger log = LoggerFactory.getLogger(Map.class);
-    private static final int MAX_PLAYER_COUNT = 16;
+    private static final int MAX_PLAYER_COUNT = 8;
 
     private Tile[][] tiles;
     private Player[] players;

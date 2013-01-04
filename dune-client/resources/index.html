@@ -15,6 +15,7 @@
     <script src="js/enums.js"></script>
     <script src="js/log.js"></script>
     <script src="js/sprites.js"></script>
+    <script src="js/lobby.js"></script>
     <script src="js/engine.js"></script>
     <script src="js/minimapengine.js"></script>
     <script src="js/map.js"></script>
@@ -32,65 +33,84 @@
     <div id="error_container"></div>
 </div>
 
-<div id="columns">
-    <div id="leftcol">
-        <canvas id="canvas" width="693" height="441">
-            This text is displayed if your browser does not support HTML5 canvas
-        </canvas>
+<div id="lobby">
+    <table id="gamelisttable" class="table table-striped">
+        <thead>
+        <tr>
+            <th></th>
+            <th>Id</th>
+        </tr>
+        </thead>
+        <tbody id="gamelist">
 
-        <div id="chat"></div>
+        </tbody>
+    </table>
+    <button id="creategamebutton" class="btn btn-primary">Create game</button>
+</div>
 
-        <div style="position: relative;width:100%;">
-            <div id="joinform">
-                <label for="username">Username:</label>
-                <input id="username" type="text" value=""/>
-                <label for="playerId">PlayerId:</label>
-                <select id="playerId" class="input">
-                    <option>1</option>
-                    <option>2</option>
-                    <option>3</option>
-                    <option>4</option>
-                    <option>5</option>
-                    <option>6</option>
-                    <option>7</option>
-                    <option>8</option>
-                </select>
-                <button id="joinB" class="btn" style="margin-bottom: 10px">Join</button>
-            </div>
-        </div>
+<div id="game" style="display: none">
+    <div id="columns">
+        <div id="leftcol">
+            <canvas id="canvas" width="693" height="441">
+                This text is displayed if your browser does not support HTML5 canvas
+            </canvas>
 
-        <div id="joinedform" style="display:none">
-            <label style="display:inline-block;margin-bottom: 10px;vertical-align: middle" for="phrase">Chat:</label>
-            <input id="phrase" style="width:40em;" type="text"/>
-            <button id="sendB" class="btn" style="margin-bottom: 10px">Send</button>
-        </div>
-    </div>
-    <div id="rightcol" style="text-align:center; ">
-        <div id="moneyTab"></div>
-        <canvas id="minimap" width="200" height="200">
-            This text is displayed if your browser does not support HTML5 canvas
-        </canvas>
-        <div style="height:1.5em">
-            <a href="javascript:void(0)" onclick="engine.setScale(2.0);">Scale &times;<b>2.0</b></a>&nbsp;
-            <a href="javascript:void(0)" onclick="engine.setScale(0.5);">Scale &times;<b>0.5</b></a>
-        </div>
+            <div id="chat"></div>
 
-        <div id="rightmenu">
-            <div class="rightmenulist">
-                <ul id="rightmenulistul" class="thumbnails">
-                </ul>
-            </div>
-            <div id="rightmenucurrent">
-                <div id="currentlyBuildingCanvas"></div>
-                <div id="rightmenuprogress">
-                </div>
-                <div id="rightmenucancel" style="display: none">
-                    <a href="#" id="rightmenucancelbutton" class="btn btn-danger"><i class="icon-white icon-remove"></i>Cancel</a>
+            <div style="position: relative;width:100%;">
+                <div id="joinform">
+                    <label for="username">Username:</label>
+                    <input id="username" type="text" value=""/>
+                    <label for="playerId">PlayerId:</label>
+                    <select id="playerId" class="input">
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                        <option>6</option>
+                        <option>7</option>
+                        <option>8</option>
+                    </select>
+                    <button id="joinB" class="btn" style="margin-bottom: 10px">Join</button>
                 </div>
             </div>
-        </div>
 
-        <div id="gameLog"></div>
+            <div id="joinedform" style="display:none">
+                <label style="display:inline-block;margin-bottom: 10px;vertical-align: middle"
+                       for="phrase">Chat:</label>
+                <input id="phrase" style="width:40em;" type="text"/>
+                <button id="sendB" class="btn" style="margin-bottom: 10px">Send</button>
+            </div>
+        </div>
+        <div id="rightcol" style="text-align:center; ">
+            <div id="moneyTab"></div>
+            <canvas id="minimap" width="200" height="200">
+                This text is displayed if your browser does not support HTML5 canvas
+            </canvas>
+            <div style="height:1.5em">
+                <a href="javascript:void(0)" onclick="engine.setScale(2.0);">Scale &times;<b>2.0</b></a>&nbsp;
+                <a href="javascript:void(0)" onclick="engine.setScale(0.5);">Scale &times;<b>0.5</b></a>
+            </div>
+
+            <div id="rightmenu">
+                <div class="rightmenulist">
+                    <ul id="rightmenulistul" class="thumbnails">
+                    </ul>
+                </div>
+                <div id="rightmenucurrent">
+                    <div id="currentlyBuildingCanvas"></div>
+                    <div id="rightmenuprogress">
+                    </div>
+                    <div id="rightmenucancel" style="display: none">
+                        <a href="#" id="rightmenucancelbutton" class="btn btn-danger"><i
+                                class="icon-white icon-remove"></i>Cancel</a>
+                    </div>
+                </div>
+            </div>
+
+            <div id="gameLog"></div>
+        </div>
     </div>
 </div>
 

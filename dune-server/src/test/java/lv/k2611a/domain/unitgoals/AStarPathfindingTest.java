@@ -1,8 +1,5 @@
 package lv.k2611a.domain.unitgoals;
 
-import lv.k2611a.domain.*;
-import lv.k2611a.service.game.GameServiceImpl;
-import lv.k2611a.util.Point;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,7 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.junit.Assert.*;
+import lv.k2611a.domain.Building;
+import lv.k2611a.domain.BuildingType;
+import lv.k2611a.domain.Map;
+import lv.k2611a.domain.Unit;
+import lv.k2611a.domain.UnitType;
+import lv.k2611a.service.game.GameServiceImpl;
+import lv.k2611a.util.Point;
+
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
