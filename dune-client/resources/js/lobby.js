@@ -8,14 +8,34 @@ Lobby.prototype.setNetwork = function (network) {
 
 Lobby.prototype.init = function () {
     var that = this;
+    $("#signinbutton").click(function () {
+        that.signIn();
+        return false;
+    });
     $("#creategamebutton").click(function () {
         that.createGame()
+    });
+    $("#logoutbutton").click(function () {
+        that.logout()
     });
     console.log("Lobby initialized");
 };
 
 Lobby.prototype.createGame = function () {
     this.network.sendCreateGame();
+};
+
+Lobby.prototype.logout = function () {
+    this.network.logout();
+};
+
+Lobby.prototype.signIn = function () {
+    var username = $("#username").val();
+    if (username.length == 0) {
+        Utils.showError("Username empty");
+    } else {
+        this.network.start(username);
+    }
 };
 
 Lobby.prototype.updateGameList = function (games) {

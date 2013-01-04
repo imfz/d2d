@@ -5,7 +5,6 @@ function NetworkConnection() {
     this.ws = null;
 }
 
-
 NetworkConnection.prototype.start = function (name) {
     this._username = name;
     this._connEstablished = false;
@@ -17,6 +16,10 @@ NetworkConnection.prototype.start = function (name) {
     this._ws.onclose = this.onclose;
     console.log("Username set to " + this._username);
     console.log("connecting.. ");
+};
+
+NetworkConnection.prototype.logout = function (name) {
+    this._ws.close();
 };
 
 NetworkConnection.prototype.onopen = function () {
@@ -129,10 +132,7 @@ NetworkConnection.prototype.onclose = function (m) {
         Utils.showError("Cannot connect to socket");
     }
     connection._ws = null;
-
-    $("#gamelisttable > tbody").empty();
-    $("#lobby").css({display: "block"});
-    $("#game").css({display: "none"});
+    windows.openLogin();
     console.log("connection closed");
 };
 

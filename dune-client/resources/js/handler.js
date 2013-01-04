@@ -48,8 +48,7 @@ Handler.prototype.handleUpdateMap = function (data) {
         data.map.bullets = new Array();
     }
 
-    $("#lobby").css({display: "none"});
-    $("#game").css({display: "block"});
+    windows.openGame();
 
     console.log("Player id received " + data.playerId);
     connection._playerId = data.playerId;
@@ -149,6 +148,14 @@ Handler.prototype.handleUpdateMapIncremental = function (data) {
 
 Handler.prototype.handleJoined = function (data) {
     this.addMessageToChat("SYSTEM", data.nickname + " has joined the game as id : " + data.id);
+};
+
+Handler.prototype.handleJoinOk = function(data) {
+    windows.openLobby();
+};
+
+Handler.prototype.handleUsernameAlreadyUsed = function(data) {
+    Utils.showError("Username already taken");
 };
 
 Handler.prototype.handleLost= function (data) {

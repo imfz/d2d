@@ -69,6 +69,4 @@ $(function () {
         {type: BUY_OPTION_AIRBASE},
         {type: BUY_OPTION_FACTORY}
     ]);
-
-    connection.start("uzerok");
 });
