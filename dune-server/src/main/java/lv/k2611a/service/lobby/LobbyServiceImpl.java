@@ -51,6 +51,7 @@ public class LobbyServiceImpl implements LobbyService {
         games.add(game);
         contextService.setSessionKey(new GameKey(id));
         gameService.init(MapGenerator.generateMap(64, 64, 8));
+        updateGameList();
     }
 
     @Scheduled(fixedRate = 1 * 1000)
@@ -99,6 +100,9 @@ public class LobbyServiceImpl implements LobbyService {
             games.remove(game);
             contextService.clearContext(new GameKey(game.getId()));
             log.info("Removed expired game " + game.getId());
+        }
+        if (!gamesToRemoveList.isEmpty()) {
+            updateGameList();
         }
     }
 }

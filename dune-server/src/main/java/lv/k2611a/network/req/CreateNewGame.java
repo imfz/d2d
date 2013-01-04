@@ -14,9 +14,31 @@ public class CreateNewGame implements Request {
     @Autowired
     private LobbyService lobbyService;
 
+    private int width;
+    private int height;
+
+    public int getWidth() {
+        return width;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
     @Override
     public void process() {
         log.info("Creating new game");
-        lobbyService.addGame(new Game());
+        Game game = new Game();
+        game.setHeight(height);
+        game.setWidth(width);
+        lobbyService.addGame(game);
     }
 }

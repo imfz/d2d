@@ -56,6 +56,8 @@ NetworkConnection.prototype.sendUnitStop = function (ids) {
 
 NetworkConnection.prototype.sendCreateGame = function () {
     var createNewGame = new Object();
+    createNewGame.height = 64;
+    createNewGame.width = 64;
     this.sendNetworkRequest("CreateNewGame", createNewGame);
 };
 

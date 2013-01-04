@@ -63,12 +63,16 @@ Lobby.prototype.showGameInfo = function (game) {
     var playersTd = $('<td></td>');
     playersTd.append(document.createTextNode(game.usedSlotCount + " / " + game.totalSlotCount));
 
+    var sizeTd = $('<td></td>');
+    sizeTd.append(document.createTextNode(game.width + " x "+ game.height));
+
 
 
     var gameHtml = $('<tr></tr>');
     gameHtml.append(joinGameButtonTd);
     gameHtml.append(gameIdTd);
     gameHtml.append(playersTd);
+    gameHtml.append(sizeTd);
 
     $("#gamelisttable > tbody:last").append(gameHtml);
 

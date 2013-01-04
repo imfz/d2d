@@ -7,6 +7,8 @@ public class GameDTO {
     private int id;
     private int totalSlotCount;
     private int usedSlotCount;
+    private int width;
+    private int height;
 
     public int getId() {
         return id;
@@ -32,9 +34,27 @@ public class GameDTO {
         this.usedSlotCount = usedSlotCount;
     }
 
+    public int getWidth() {
+        return width;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
     public static GameDTO fromGame(Game game) {
         GameDTO dto = new GameDTO();
         dto.setId(game.getId());
+        dto.setWidth(game.getWidth());
+        dto.setHeight(game.getHeight());
         return dto;
     }
 }
