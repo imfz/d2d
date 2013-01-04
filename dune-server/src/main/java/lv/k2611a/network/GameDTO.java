@@ -6,7 +6,7 @@ public class GameDTO {
 
     private int id;
     private int totalSlotCount;
-    private int freeSlotCount;
+    private int usedSlotCount;
 
     public int getId() {
         return id;
@@ -24,12 +24,12 @@ public class GameDTO {
         this.totalSlotCount = totalSlotCount;
     }
 
-    public int getFreeSlotCount() {
-        return freeSlotCount;
+    public int getUsedSlotCount() {
+        return usedSlotCount;
     }
 
-    public void setFreeSlotCount(int freeSlotCount) {
-        this.freeSlotCount = freeSlotCount;
+    public void setUsedSlotCount(int usedSlotCount) {
+        this.usedSlotCount = usedSlotCount;
     }
 
     public static GameDTO fromGame(Game game) {

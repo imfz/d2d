@@ -1,6 +1,7 @@
 package lv.k2611a.service.game;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
@@ -549,5 +550,10 @@ public class GameServiceImpl implements GameService {
     @Override
     public synchronized void freePlayer(Integer playerId) {
         map.getPlayerById(playerId).setUsed(false);
+    }
+
+    @Override
+    public synchronized List<Player> getPlayers() {
+        return Arrays.asList(map.getPlayers());
     }
 }

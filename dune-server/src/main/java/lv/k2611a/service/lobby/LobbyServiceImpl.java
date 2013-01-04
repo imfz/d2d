@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import lv.k2611a.domain.Player;
 import lv.k2611a.domain.lobby.Game;
 import lv.k2611a.network.GameDTO;
 import lv.k2611a.network.resp.UpdateGameList;
@@ -51,7 +52,21 @@ public class LobbyServiceImpl implements LobbyService {
     public void updateGameList() {
         List<GameDTO> gameDTOList = new ArrayList<GameDTO>();
         for (Game game : games) {
-            gameDTOList.add(GameDTO.fromGame(game));
+            contextService.setSessionKey(new GameKey(game.getId()));
+            GameDTO gameDTO = GameDTO.fromGame(game);
+
+            int totalPlayerCount = 0;
+            int usedPlayerCount = 0;
+            for (Player player : gameService.getPlayers()) {
+                totalPlayerCount++;
+                if (player.isUsed()) {
+                    usedPlayerCount++;
+                }
+            }
+            gameDTO.setUsedSlotCount(usedPlayerCount);
+            gameDTO.setTotalSlotCount(totalPlayerCount);
+            gameDTOList.add(gameDTO);
+
         }
         UpdateGameList updateGameList = new UpdateGameList();
         updateGameList.setGames(gameDTOList.toArray(new GameDTO[gameDTOList.size()]));

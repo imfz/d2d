@@ -39,6 +39,7 @@
         <tr>
             <th></th>
             <th>Id</th>
+            <th>Players</th>
         </tr>
         </thead>
         <tbody id="gamelist">
@@ -57,26 +58,7 @@
 
             <div id="chat"></div>
 
-            <div style="position: relative;width:100%;">
-                <div id="joinform">
-                    <label for="username">Username:</label>
-                    <input id="username" type="text" value=""/>
-                    <label for="playerId">PlayerId:</label>
-                    <select id="playerId" class="input">
-                        <option>1</option>
-                        <option>2</option>
-                        <option>3</option>
-                        <option>4</option>
-                        <option>5</option>
-                        <option>6</option>
-                        <option>7</option>
-                        <option>8</option>
-                    </select>
-                    <button id="joinB" class="btn" style="margin-bottom: 10px">Join</button>
-                </div>
-            </div>
-
-            <div id="joinedform" style="display:none">
+            <div id="joinedform">
                 <label style="display:inline-block;margin-bottom: 10px;vertical-align: middle"
                        for="phrase">Chat:</label>
                 <input id="phrase" style="width:40em;" type="text"/>

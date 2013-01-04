@@ -30,20 +30,7 @@ Chat.prototype.init = function () {
         that.engine.hotkeysEnabled = true;
     };
 
-    $('#username').focus(disableHotkeys).blur(enableHotkeys);
     $('#phrase').focus(disableHotkeys).blur(enableHotkeys);
-
-    $('#joinB').click(function (event) {
-        var $username = $('#username');
-        var name = $username.val();
-        if (name == '') {
-            Utils.showError("Type your name!");
-            $username.focus();
-            return false;
-        }
-        connection.start(name, $('#playerId').val());
-        return false;
-    });
 
     $('#phrase')
         .attr({autocomplete: 'off'})

@@ -21,9 +21,6 @@ NetworkConnection.prototype.start = function (name) {
 
 NetworkConnection.prototype.onopen = function () {
     connection._connEstablished = true;
-    $("#joinform").hide();
-    $("#joinedform").show();
-    $("#phrase").focus();
     console.log("connected");
     connection.sendJoin(connection._username);
 };
@@ -132,10 +129,10 @@ NetworkConnection.prototype.onclose = function (m) {
         Utils.showError("Cannot connect to socket");
     }
     connection._ws = null;
-    $("#joinform").show();
-    $("#joinedform").hide();
-    $("#chat").html('');
-    $("#username").focus();
+
+    $("#gamelisttable > tbody").empty();
+    $("#lobby").css({display: "block"});
+    $("#game").css({display: "none"});
     console.log("connection closed");
 };
 
