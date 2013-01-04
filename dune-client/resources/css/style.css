@@ -13,6 +13,15 @@ label {
     vertical-align: middle !important;
 }
 
+#login {
+    width:600px;
+    height:200px;
+    position:absolute;
+    left:50%;
+    top:50%;
+    margin:-100px 0 0 -300px;
+}
+
 #error_holder {
     position: absolute;
     width: 100%;
