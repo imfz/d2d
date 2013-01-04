@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,8 @@ import lv.k2611a.util.MapGenerator;
 @Service
 public class LobbyServiceImpl implements LobbyService {
 
+    private static final Logger log = LoggerFactory.getLogger(LobbyServiceImpl.class);
+
     @Autowired
     private GlobalSessionService globalSessionService;
 
@@ -33,6 +37,7 @@ public class LobbyServiceImpl implements LobbyService {
     private List<Game> games = new ArrayList<Game>();
 
     private int id;
+    private static final int TICKS_TO_KEEP_GAME = 100;
 
     @Override
     public synchronized List<Game> getGames() {
@@ -49,7 +54,7 @@ public class LobbyServiceImpl implements LobbyService {
     }
 
     @Scheduled(fixedRate = 1 * 1000)
-    public void updateGameList() {
+    public synchronized void updateGameList() {
         List<GameDTO> gameDTOList = new ArrayList<GameDTO>();
         for (Game game : games) {
             contextService.setSessionKey(new GameKey(game.getId()));
@@ -67,11 +72,33 @@ public class LobbyServiceImpl implements LobbyService {
             gameDTO.setTotalSlotCount(totalPlayerCount);
             gameDTOList.add(gameDTO);
 
+            if (usedPlayerCount == 0) {
+                game.setTicksWithoutPlayers(game.getTicksWithoutPlayers()+1);
+            } else {
+                game.setTicksWithoutPlayers(0);
+            }
+
         }
         UpdateGameList updateGameList = new UpdateGameList();
         updateGameList.setGames(gameDTOList.toArray(new GameDTO[gameDTOList.size()]));
 
         globalSessionService.sendUpdate(updateGameList);
 
+    }
+
+    @Scheduled(fixedRate = 10 * 1000)
+    public synchronized void clearOldGames() {
+        List<Game> gamesToRemoveList = new ArrayList<Game>();
+        for (Game game : games) {
+            if (game.getTicksWithoutPlayers() > TICKS_TO_KEEP_GAME) {
+                gamesToRemoveList.add(game);
+            }
+        }
+        for (Game game : gamesToRemoveList) {
+            log.info("Removing expired game " + game.getId());
+            games.remove(game);
+            contextService.clearContext(new GameKey(game.getId()));
+            log.info("Removed expired game " + game.getId());
+        }
     }
 }

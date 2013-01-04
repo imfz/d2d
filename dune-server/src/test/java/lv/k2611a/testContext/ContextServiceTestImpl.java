@@ -29,4 +29,9 @@ public class ContextServiceTestImpl implements ContextService {
     public GameKey getCurrentContextKey() {
         return gameKey;
     }
+
+    @Override
+    public void clearContext(GameKey key) {
+
+    }
 }

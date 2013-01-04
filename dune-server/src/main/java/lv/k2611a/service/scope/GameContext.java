@@ -34,7 +34,7 @@ public class GameContext {
     /**
      * Clears beans and processes all bean destruction callbacks.
      */
-    protected final void clear() {
+    public final void clear() {
         processDestructionCallbacks();
 
         hBeans.clear();

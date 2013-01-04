@@ -17,6 +17,7 @@ public class App {
     static {
         springContext = new ClassPathXmlApplicationContext("application-context.xml");
         autowireCapableBeanFactory = springContext.getAutowireCapableBeanFactory();
+        springContext.registerShutdownHook();
     }
 
     public static void main(String[] arg) throws Exception {

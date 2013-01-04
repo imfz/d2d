@@ -45,5 +45,13 @@ public class ContextServiceImpl implements ContextService {
         currentSessionKey.set(null);
     }
 
+    @Override
+    public void clearContext(GameKey key) {
+        GameContext gameContext = games.get(key);
+        if (gameContext != null) {
+            gameContext.clear();
+        }
+    }
+
 
 }

@@ -8,4 +8,6 @@ public interface ContextService {
     void clearCurrentSessionKey();
 
     GameKey getCurrentContextKey();
+
+    void clearContext(GameKey key);
 }
