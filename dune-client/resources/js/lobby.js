@@ -150,8 +150,10 @@ Lobby.prototype.showOrUpdateInGameLobby = function (data) {
 
 
         $("#playersInGameList > tbody").append(playerHtml);
-        $("#playersInGameList").find('caption').text("Players ( " + game.players.length  +" )");
+
     }
+
+    $("#playersInGameList").find('caption').text("Players ( " + game.players.length  +" )");
 
     for (var i = 0; i < game.observers.length; i++) {
         var observer = game.observers[i];
@@ -179,8 +181,10 @@ Lobby.prototype.showOrUpdateInGameLobby = function (data) {
 
 
         $("#observersInGameList > tbody").append(observerHtml);
-        $("#observersInGameList").find('caption').text("Observers ( " + game.observers.length  +" )");
+
     }
+
+    $("#observersInGameList").find('caption').text("Observers ( " + game.observers.length  +" )");
 
 };
 
