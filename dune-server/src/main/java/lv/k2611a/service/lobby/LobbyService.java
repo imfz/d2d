@@ -18,4 +18,5 @@ public interface LobbyService {
     void movePlayerToPlayers(String username);
 
 
+    void destroyIfOrphan(Game currentGame);
 }

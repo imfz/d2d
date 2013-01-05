@@ -39,6 +39,8 @@ public class LeaveGame implements Request {
         sessionsService.remove(ClientConnection.getCurrentConnection());
 
         lobbyService.removeUserFromCurrentGame(ClientConnection.getCurrentConnection().getUsername());
+        ClientConnection.getCurrentConnection().setGameKey(null);
+        ClientConnection.getCurrentConnection().sendMessage(new LeftOk());
 
         Game currentGame = lobbyService.getCurrentGame();
 
@@ -46,10 +48,8 @@ public class LeaveGame implements Request {
         update.setGameDTO(GameDTO.fromGame(currentGame));
         sessionsService.sendUpdate(update);
 
-        ClientConnection.getCurrentConnection().setGameKey(null);
-
         log.info("Player with username " + username + " has left the game " + currentGame.getId());
 
-        ClientConnection.getCurrentConnection().sendMessage(new LeftOk());
+        lobbyService.destroyIfOrphan(currentGame);
     }
 }

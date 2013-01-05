@@ -120,7 +120,6 @@ public class LobbyServiceImpl implements LobbyService {
             log.info("Removing expired game " + game.getId());
             games.remove(game);
             contextService.clearContext(new GameKey(game.getId()));
-            log.info("Removed expired game " + game.getId());
         }
         if (!gamesToRemoveList.isEmpty()) {
             updateGameList();
@@ -135,5 +134,16 @@ public class LobbyServiceImpl implements LobbyService {
     @Override
     public synchronized void setCurrentGameStarted() {
         getCurrentGame().setStarted(true);
+    }
+
+    @Override
+    public void destroyIfOrphan(Game currentGame) {
+        if (currentGame.getPlayers().contains(currentGame.getCreator())) {
+            return;
+        }
+        log.info("Removing orhpan game " + currentGame.getId());
+        games.remove(currentGame);
+        contextService.clearContext(new GameKey(currentGame.getId()));
+
     }
 }
