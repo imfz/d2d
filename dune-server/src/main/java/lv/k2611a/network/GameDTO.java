@@ -11,6 +11,7 @@ public class GameDTO {
     private int observersCount;
     private int width;
     private int height;
+    private boolean started;
     private String creator;
 
     private String[] players;
@@ -82,6 +83,14 @@ public class GameDTO {
         this.observers = observers;
     }
 
+    public boolean isStarted() {
+        return started;
+    }
+
+    public void setStarted(boolean started) {
+        this.started = started;
+    }
+
     public static GameDTO fromGame(Game game) {
         GameDTO dto = new GameDTO();
         dto.setId(game.getId());
@@ -94,6 +103,7 @@ public class GameDTO {
         dto.setPlayers(players.toArray(new String[players.size()]));
         dto.setObservers(observers.toArray(new String[observers.size()]));
         dto.setObserversCount(observers.size());
+        dto.setStarted(game.isStarted());
         return dto;
     }
 }

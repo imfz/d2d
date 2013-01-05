@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import lv.k2611a.ClientConnection;
 import lv.k2611a.domain.lobby.Game;
 import lv.k2611a.network.GameDTO;
+import lv.k2611a.network.resp.AlreadyStarted;
 import lv.k2611a.network.resp.GameLobbyUpdate;
 import lv.k2611a.service.game.GameService;
 import lv.k2611a.service.game.GameSessionsService;
@@ -42,16 +43,20 @@ public class JoinGame implements Request {
 
     @Override
     public void process() {
-
         GameKey gameKey = new GameKey(id);
         ClientConnection.getCurrentConnection().setGameKey(gameKey);
         contextService.setSessionKey(gameKey);
 
-        // add user to current game
-        sessionsService.add(ClientConnection.getCurrentConnection());
+        if (lobbyService.isCurrentGameStarted()) {
+            ClientConnection.getCurrentConnection().sendMessage(new AlreadyStarted());
+            return;
+        }
 
         Game currentGame = lobbyService.getCurrentGame();
         lobbyService.addUserToCurrentGame(ClientConnection.getCurrentConnection().getUsername());
+
+        // add user to current game
+        sessionsService.add(ClientConnection.getCurrentConnection());
 
         GameLobbyUpdate update = new GameLobbyUpdate();
         update.setGameDTO(GameDTO.fromGame(currentGame));

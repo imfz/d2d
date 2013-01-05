@@ -9,6 +9,9 @@ public interface LobbyService {
     void addGame(Game game);
     Game getCurrentGame();
 
+    boolean isCurrentGameStarted();
+    void setCurrentGameStarted();
+
     void addUserToCurrentGame(String username);
     void removeUserFromCurrentGame(String username);
     void movePlayerToObservers(String username);

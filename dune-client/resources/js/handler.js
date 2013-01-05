@@ -138,6 +138,10 @@ Handler.prototype.storeUpdateForFutureUse = function (data) {
     this.updates.push(data);
 };
 
+Handler.prototype.handleAlreadyStarted = function(data) {
+    Utils.showError("Game already started");
+};
+
 Handler.prototype.handleUpdateMapIncremental = function (data) {
     if (data.tickCount == this.map.tickCount + 1) {
         this.processUpdate(data);

@@ -9,6 +9,7 @@ public class Game {
     private int width;
     private int height;
     private String creator;
+    private boolean started;
 
     private List<String> players = new ArrayList<String>();
     private List<String> observers = new ArrayList<String>();
@@ -59,5 +60,13 @@ public class Game {
 
     public List<String> getObservers() {
         return observers;
+    }
+
+    public boolean isStarted() {
+        return started;
+    }
+
+    public void setStarted(boolean started) {
+        this.started = started;
     }
 }

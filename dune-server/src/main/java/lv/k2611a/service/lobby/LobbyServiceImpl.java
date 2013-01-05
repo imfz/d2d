@@ -126,4 +126,14 @@ public class LobbyServiceImpl implements LobbyService {
             updateGameList();
         }
     }
+
+    @Override
+    public synchronized boolean isCurrentGameStarted() {
+        return getCurrentGame().isStarted();
+    }
+
+    @Override
+    public synchronized void setCurrentGameStarted() {
+        getCurrentGame().setStarted(true);
+    }
 }

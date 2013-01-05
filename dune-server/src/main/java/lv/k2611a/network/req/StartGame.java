@@ -28,6 +28,7 @@ public class StartGame implements Request {
 
     @Override
     public void process() {
+        lobbyService.setCurrentGameStarted();
         Game currentGame = lobbyService.getCurrentGame();
         gameService.start(MapGenerator.generateMap(currentGame.getWidth(), currentGame.getHeight(), currentGame.getPlayers().size()));
 

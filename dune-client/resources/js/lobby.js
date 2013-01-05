@@ -87,6 +87,14 @@ Lobby.prototype.showGameInfo = function (game) {
     var observersTd = $('<td></td>');
     observersTd.append(document.createTextNode(game.observersCount));
 
+    var startedTd = $('<td></td>');
+    if (game.started) {
+        startedTd.append(document.createTextNode("Yes"));
+    } else {
+        startedTd.append(document.createTextNode("No"));
+    }
+
+
 
     var gameHtml = $('<tr></tr>');
     gameHtml.append(joinGameButtonTd);
@@ -95,6 +103,7 @@ Lobby.prototype.showGameInfo = function (game) {
     gameHtml.append(observersTd);
     gameHtml.append(sizeTd);
     gameHtml.append(creatorTd);
+    gameHtml.append(startedTd);
 
     $("#gamelisttable > tbody:last").append(gameHtml);
 
