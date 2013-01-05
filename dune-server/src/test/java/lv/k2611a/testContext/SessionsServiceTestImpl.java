@@ -29,4 +29,9 @@ public class SessionsServiceTestImpl implements GameSessionsService {
     @Override
     public void sendUpdate(Response response) {
     }
+
+    @Override
+    public void clear() {
+
+    }
 }

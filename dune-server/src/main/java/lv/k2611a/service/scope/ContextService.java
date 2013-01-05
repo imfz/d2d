@@ -1,5 +1,7 @@
 package lv.k2611a.service.scope;
 
+import java.util.Collection;
+
 public interface ContextService {
     GameContext getCurrentGameContext();
 
@@ -10,4 +12,6 @@ public interface ContextService {
     GameKey getCurrentContextKey();
 
     void clearContext(GameKey key);
+
+    Collection<GameKey> getGameKeys();
 }

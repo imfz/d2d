@@ -1,5 +1,8 @@
 package lv.k2611a.testContext;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import org.springframework.stereotype.Service;
 
 import lv.k2611a.service.scope.ContextService;
@@ -33,5 +36,10 @@ public class ContextServiceTestImpl implements ContextService {
     @Override
     public void clearContext(GameKey key) {
 
+    }
+
+    @Override
+    public Collection<GameKey> getGameKeys() {
+        return new ArrayList<GameKey>();
     }
 }

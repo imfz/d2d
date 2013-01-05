@@ -126,6 +126,22 @@ public class LobbyServiceImpl implements LobbyService {
         }
     }
 
+    @Scheduled(fixedRate = 10 * 1000)
+    public synchronized void clearOldContexts() {
+        for (GameKey gameKey : contextService.getGameKeys()) {
+            boolean found = false;
+            for (Game game : games) {
+                if (game.getId() == gameKey.getId()) {
+                    found = true;
+                }
+            }
+            if (!found) {
+                log.info("Removing orhpan game context " + gameKey.getId());
+                contextService.clearContext(gameKey);
+            }
+        }
+    }
+
     @Override
     public synchronized boolean isCurrentGameStarted() {
         return getCurrentGame().isStarted();
@@ -137,13 +153,8 @@ public class LobbyServiceImpl implements LobbyService {
     }
 
     @Override
-    public void destroyIfOrphan(Game currentGame) {
-        if (currentGame.getPlayers().contains(currentGame.getCreator())) {
-            return;
-        }
-        log.info("Removing orhpan game " + currentGame.getId());
+    public void destroy(Game currentGame) {
         games.remove(currentGame);
         contextService.clearContext(new GameKey(currentGame.getId()));
-
     }
 }

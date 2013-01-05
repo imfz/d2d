@@ -13,4 +13,6 @@ public interface GameSessionsService {
     Set<ClientConnection> getMembers();
 
     void sendUpdate(Response response);
+
+    void clear();
 }

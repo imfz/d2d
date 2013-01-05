@@ -1,5 +1,7 @@
 package lv.k2611a.service.scope;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
@@ -31,6 +33,11 @@ public class ContextServiceImpl implements ContextService {
     }
 
     @Override
+    public Collection<GameKey> getGameKeys() {
+        return games.keySet();
+    }
+
+    @Override
     public void setSessionKey(GameKey value) {
         currentSessionKey.set(value);
     }
@@ -46,11 +53,12 @@ public class ContextServiceImpl implements ContextService {
     }
 
     @Override
-    public void clearContext(GameKey key) {
+    public synchronized void clearContext(GameKey key) {
         GameContext gameContext = games.get(key);
         if (gameContext != null) {
             gameContext.clear();
         }
+        games.remove(key);
     }
 
 

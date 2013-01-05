@@ -31,6 +31,11 @@ public class GameSessionServiceImpl implements GameSessionsService {
     }
 
     @Override
+    public void clear() {
+        members.clear();
+    }
+
+    @Override
     public void sendUpdate(Response response) {
         for (ClientConnection member : members) {
             member.sendMessage(response);

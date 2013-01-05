@@ -185,7 +185,11 @@ Handler.prototype.handleGameFull = function (data) {
 
 Handler.prototype.handleGameLobbyUpdate = function(data) {
     this.lobby.showOrUpdateInGameLobby(data);
-}
+};
+
+Handler.prototype.handleGameClosed = function(data) {
+    windows.openLobby();
+};
 
 Handler.prototype.handleUpdateConstructionOptions = function (data) {
 
