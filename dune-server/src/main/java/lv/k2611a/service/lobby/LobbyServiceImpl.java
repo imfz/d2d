@@ -153,8 +153,16 @@ public class LobbyServiceImpl implements LobbyService {
     }
 
     @Override
-    public void destroy(Game currentGame) {
+    public synchronized void destroy(Game currentGame) {
         games.remove(currentGame);
         contextService.clearContext(new GameKey(currentGame.getId()));
+    }
+
+    @Override
+    public synchronized void removeUserFromAllGames(String username) {
+        for (Game game : games) {
+            game.getObservers().remove(username);
+            game.getPlayers().remove(username);
+        }
     }
 }

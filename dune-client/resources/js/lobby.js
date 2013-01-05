@@ -139,6 +139,16 @@ Lobby.prototype.showOrUpdateInGameLobby = function (data) {
         playerHtml.append(nicknameTd);
         playerHtml.append(moveBtn);
 
+        if (player == this.network._username) {
+            playerHtml.addClass("info");
+        } else {
+            if (player == game.creator) {
+                playerHtml.addClass("success");
+            }
+        }
+
+
+
         $("#playersInGameList > tbody").append(playerHtml);
         $("#playersInGameList").find('caption').text("Players ( " + game.players.length  +" )");
     }
@@ -158,6 +168,15 @@ Lobby.prototype.showOrUpdateInGameLobby = function (data) {
         var observerHtml = $('<tr></tr>');
         observerHtml.append(nicknameTd);
         observerHtml.append(moveBtn);
+
+        if (observer == this.network._username) {
+            observerHtml.addClass("info");
+        } else {
+            if (observer == game.creator) {
+                observerHtml.addClass("success");
+            }
+        }
+
 
         $("#observersInGameList > tbody").append(observerHtml);
         $("#observersInGameList").find('caption').text("Observers ( " + game.observers.length  +" )");

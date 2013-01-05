@@ -1,6 +1,7 @@
 package lv.k2611a.domain.lobby;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Game {
@@ -11,8 +12,8 @@ public class Game {
     private String creator;
     private boolean started;
 
-    private List<String> players = new ArrayList<String>();
-    private List<String> observers = new ArrayList<String>();
+    private List<String> players = Collections.synchronizedList(new ArrayList<String>());
+    private List<String> observers = Collections.synchronizedList(new ArrayList<String>());
 
     public int getId() {
         return id;

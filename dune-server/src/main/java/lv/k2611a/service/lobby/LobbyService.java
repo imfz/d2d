@@ -19,4 +19,6 @@ public interface LobbyService {
 
 
     void destroy(Game currentGame);
+
+    void removeUserFromAllGames(String username);
 }

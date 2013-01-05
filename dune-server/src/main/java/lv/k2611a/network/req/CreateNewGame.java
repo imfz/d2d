@@ -55,6 +55,7 @@ public class CreateNewGame implements Request {
         String username = ClientConnection.getCurrentConnection().getUsername();
         game.setCreator(username);
         game.getObservers().add(username);
+        GameDTO gameDTO = GameDTO.fromGame(game);
         lobbyService.addGame(game);
 
 
@@ -66,7 +67,8 @@ public class CreateNewGame implements Request {
         gameSessionsService.add(ClientConnection.getCurrentConnection());
 
         GameLobbyUpdate update = new GameLobbyUpdate();
-        update.setGameDTO(GameDTO.fromGame(game));
+
+        update.setGameDTO(gameDTO);
         gameSessionsService.sendUpdate(update);
 
         log.info("Player with username " + username + " has created the game " + id);
