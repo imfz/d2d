@@ -61,10 +61,32 @@ NetworkConnection.prototype.sendCreateGame = function () {
     this.sendNetworkRequest("CreateNewGame", createNewGame);
 };
 
+NetworkConnection.prototype.sendStartGame = function () {
+    var startGame = new Object();
+    this.sendNetworkRequest("StartGame", startGame);
+};
+
 NetworkConnection.prototype.sendJoinGame = function (id) {
     var joinGame = new Object();
     joinGame.id = id;
     this.sendNetworkRequest("JoinGame", joinGame);
+};
+
+NetworkConnection.prototype.sendLeaveGame = function () {
+    var leaveGame = new Object();
+    this.sendNetworkRequest("LeaveGame", leaveGame);
+};
+
+NetworkConnection.prototype.moveToPlayers = function (username) {
+    var moveToPlayers = new Object();
+    moveToPlayers.username = username;
+    this.sendNetworkRequest("MoveToPlayers", moveToPlayers);
+};
+
+NetworkConnection.prototype.moveToObservers = function (username) {
+    var moveToObservers = new Object();
+    moveToObservers.username = username;
+    this.sendNetworkRequest("MoveToObservers", moveToObservers);
 };
 
 NetworkConnection.prototype.sendBuildingSelection = function (id) {

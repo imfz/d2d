@@ -1,11 +1,17 @@
 package lv.k2611a.domain.lobby;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Game {
     private int id;
     private int ticksWithoutPlayers;
     private int width;
     private int height;
     private String creator;
+
+    private List<String> players = new ArrayList<String>();
+    private List<String> observers = new ArrayList<String>();
 
     public int getId() {
         return id;
@@ -45,5 +51,13 @@ public class Game {
 
     public void setCreator(String creator) {
         this.creator = creator;
+    }
+
+    public List<String> getPlayers() {
+        return players;
+    }
+
+    public List<String> getObservers() {
+        return observers;
     }
 }

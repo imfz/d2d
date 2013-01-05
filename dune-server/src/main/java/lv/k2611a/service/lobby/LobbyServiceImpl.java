@@ -10,15 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import lv.k2611a.domain.Player;
 import lv.k2611a.domain.lobby.Game;
 import lv.k2611a.network.GameDTO;
 import lv.k2611a.network.resp.UpdateGameList;
-import lv.k2611a.service.game.GameService;
 import lv.k2611a.service.global.GlobalSessionService;
 import lv.k2611a.service.scope.ContextService;
 import lv.k2611a.service.scope.GameKey;
-import lv.k2611a.util.MapGenerator;
 
 @Service
 public class LobbyServiceImpl implements LobbyService {
@@ -31,8 +28,6 @@ public class LobbyServiceImpl implements LobbyService {
     @Autowired
     private ContextService contextService;
 
-    @Autowired
-    private GameService gameService;
 
     private List<Game> games = new ArrayList<Game>();
 
@@ -49,31 +44,57 @@ public class LobbyServiceImpl implements LobbyService {
         id++;
         game.setId(id);
         games.add(game);
-        contextService.setSessionKey(new GameKey(id));
-        gameService.init(MapGenerator.generateMap(64, 64, 8));
         updateGameList();
+    }
+
+    @Override
+    public synchronized Game getCurrentGame() {
+        int id = contextService.getCurrentContextKey().getId();
+        for (Game game : games) {
+            if (game.getId() == id) {
+                return game;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public void movePlayerToObservers(String username) {
+        Game currentGame = getCurrentGame();
+
+        if (currentGame.getPlayers().remove(username)) {
+            currentGame.getObservers().add(username);
+        }
+    }
+
+    @Override
+    public void movePlayerToPlayers(String username) {
+        Game currentGame = getCurrentGame();
+
+        if (currentGame.getObservers().remove(username)) {
+            currentGame.getPlayers().add(username);
+        }
+    }
+
+    @Override
+    public synchronized void addUserToCurrentGame(String username) {
+        getCurrentGame().getObservers().add(username);
+    }
+
+    @Override
+    public synchronized void removeUserFromCurrentGame(String username) {
+        getCurrentGame().getObservers().remove(username);
+        getCurrentGame().getPlayers().remove(username);
     }
 
     @Scheduled(fixedRate = 1 * 1000)
     public synchronized void updateGameList() {
         List<GameDTO> gameDTOList = new ArrayList<GameDTO>();
         for (Game game : games) {
-            contextService.setSessionKey(new GameKey(game.getId()));
             GameDTO gameDTO = GameDTO.fromGame(game);
-
-            int totalPlayerCount = 0;
-            int usedPlayerCount = 0;
-            for (Player player : gameService.getPlayers()) {
-                totalPlayerCount++;
-                if (player.isUsed()) {
-                    usedPlayerCount++;
-                }
-            }
-            gameDTO.setUsedSlotCount(usedPlayerCount);
-            gameDTO.setTotalSlotCount(totalPlayerCount);
             gameDTOList.add(gameDTO);
 
-            if (usedPlayerCount == 0) {
+            if (game.getPlayers().isEmpty()) {
                 game.setTicksWithoutPlayers(game.getTicksWithoutPlayers()+1);
             } else {
                 game.setTicksWithoutPlayers(0);

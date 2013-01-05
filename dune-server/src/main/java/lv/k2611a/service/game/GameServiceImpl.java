@@ -35,6 +35,7 @@ import lv.k2611a.domain.Unit;
 import lv.k2611a.domain.UnitType;
 import lv.k2611a.domain.buildinggoals.CreateBuilding;
 import lv.k2611a.domain.buildinggoals.CreateUnit;
+import lv.k2611a.domain.lobby.Game;
 import lv.k2611a.jmx.ServerMonitor;
 import lv.k2611a.network.BuildingDTO;
 import lv.k2611a.network.BulletDTO;
@@ -51,6 +52,7 @@ import lv.k2611a.network.resp.UpdateMapIncremental;
 import lv.k2611a.network.resp.UpdateMoney;
 import lv.k2611a.service.scope.ContextService;
 import lv.k2611a.service.scope.GameKey;
+import lv.k2611a.util.MapGenerator;
 import lv.k2611a.util.Point;
 
 @Service
@@ -85,13 +87,21 @@ public class GameServiceImpl implements GameService {
     private ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
 
     private volatile Map map;
+    private volatile Game game;
     private volatile long tickCount = 0;
 
     private Set<Point> changedTiles;
+    private volatile boolean started = false;
 
+    public synchronized void start(Game game) {
+        this.start(MapGenerator.generateMap(game.getWidth(), game.getHeight(), game.getPlayers().size()));
+    }
 
     @Override
-    public void init(Map map) {
+    public synchronized void start(Map map) {
+        if (started) {
+            return;
+        }
         log.info("Initializing game");
         this.map = map;
         Runnable ticker = createTicker(contextService.getCurrentContextKey());
@@ -99,6 +109,7 @@ public class GameServiceImpl implements GameService {
             exec.scheduleAtFixedRate(ticker, 0, TICK_LENGTH, TimeUnit.MILLISECONDS);
             log.info("Scheduler started");
         }
+        started = true;
     }
 
     private Runnable createTicker(final GameKey currentContextKey) {
@@ -241,11 +252,20 @@ public class GameServiceImpl implements GameService {
                 if (map.getBuildingsByOwner(player.getId()).isEmpty()) {
                     player.setLost(true);
                     Lost lost = new Lost();
-                    lost.setId(player.getId());
+                    lost.setUsername(getUsernameById(player.getId()));
                     sessionsService.sendUpdate(lost);
                 }
             }
         }
+    }
+
+    private String getUsernameById(int id) {
+        for (ClientConnection clientConnection : sessionsService.getMembers()) {
+            if (clientConnection.getPlayerId() == id) {
+                return clientConnection.getUsername();
+            }
+        }
+        return null;
     }
 
     private void processBullets(Map map) {
@@ -256,7 +276,7 @@ public class GameServiceImpl implements GameService {
             } else {
                 Unit unit = map.getUnitAt(bullet.getGoalX(), bullet.getGoalY());
                 if (unit != null) {
-                   unit.setHp(unit.getHp() - bullet.getDamageToDeal());
+                    unit.setHp(unit.getHp() - bullet.getDamageToDeal());
                     if (unit.getHp() <= 0) {
                         map.removeUnit(unit);
                     }
@@ -302,12 +322,14 @@ public class GameServiceImpl implements GameService {
 
     private void sendUpdateMoney() {
         for (ClientConnection clientConnection : sessionsService.getMembers()) {
-            int playerId = clientConnection.getPlayerId();
-            Player player = map.getPlayerById(playerId);
-            UpdateMoney updateMoney = new UpdateMoney();
-            updateMoney.setMoney((int) player.getMoney());
-            updateMoney.setElectricity((int) player.getElectricity());
-            clientConnection.sendMessage(updateMoney);
+            Integer playerId = clientConnection.getPlayerId();
+            if (playerId != null) {
+                Player player = map.getPlayerById(playerId);
+                UpdateMoney updateMoney = new UpdateMoney();
+                updateMoney.setMoney((int) player.getMoney());
+                updateMoney.setElectricity((int) player.getElectricity());
+                clientConnection.sendMessage(updateMoney);
+            }
         }
     }
 

@@ -7,4 +7,12 @@ import lv.k2611a.domain.lobby.Game;
 public interface LobbyService {
     List<Game> getGames();
     void addGame(Game game);
+    Game getCurrentGame();
+
+    void addUserToCurrentGame(String username);
+    void removeUserFromCurrentGame(String username);
+    void movePlayerToObservers(String username);
+    void movePlayerToPlayers(String username);
+
+
 }

@@ -59,6 +59,7 @@ public class ClientConnection implements WebSocket.OnTextMessage, Runnable {
 
     private String username;
 
+    // null if observer
     private Integer playerId;
 
     private GameKey gameKey;
@@ -224,11 +225,11 @@ public class ClientConnection implements WebSocket.OnTextMessage, Runnable {
         this.selectedBuildingId = selectedBuildingId;
     }
 
-    public int getPlayerId() {
+    public Integer getPlayerId() {
         return playerId;
     }
 
-    public void setPlayerId(int playerId) {
+    public void setPlayerId(Integer playerId) {
         this.playerId = playerId;
     }
 

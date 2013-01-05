@@ -57,6 +57,7 @@
             <th></th>
             <th>Id</th>
             <th>Players</th>
+            <th>Observers</th>
             <th>Size</th>
             <th>Creator</th>
         </tr>
@@ -67,6 +68,35 @@
     </table>
     <button id="creategamebutton" class="btn btn-primary">Create game</button>
     <button id="logoutbutton" class="btn btn-inverse">Log out</button>
+</div>
+
+<div id="ingamelobby" style="display: none">
+
+    <table id="playersInGameList" class="table table-striped">
+        <caption>Players</caption>
+        <thead>
+        <tr>
+            <th>Nickname</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+    <table id="observersInGameList" class="table table-striped">
+        <caption>Observers</caption>
+        <thead>
+            <tr>
+                <th>Nickname</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+    <button id="startgamebutton" class="btn btn-primary">Start game</button>
+    <button id="leavegamebutton" class="btn">Leave game</button>
 </div>
 
 <div id="game" style="display: none">

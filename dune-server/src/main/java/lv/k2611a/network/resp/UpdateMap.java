@@ -6,7 +6,6 @@ import lv.k2611a.util.ByteUtils;
 public class UpdateMap implements Response, CustomSerializationHeader {
     private MapDTO map;
     private long tickCount;
-    private int playerId;
 
     public MapDTO getMap() {
         return map;
@@ -22,14 +21,6 @@ public class UpdateMap implements Response, CustomSerializationHeader {
 
     public void setTickCount(long tickCount) {
         this.tickCount = tickCount;
-    }
-
-    public int getPlayerId() {
-        return playerId;
-    }
-
-    public void setPlayerId(int playerId) {
-        this.playerId = playerId;
     }
 
     @Override
@@ -58,14 +49,6 @@ public class UpdateMap implements Response, CustomSerializationHeader {
 
         position+=8;
 
-        byte[] playerIdBytes = ByteUtils.intToBytes(playerId);
-        payload[position] = playerIdBytes[0];
-        payload[position + 1] = playerIdBytes[1];
-        payload[position + 2] = playerIdBytes[2];
-        payload[position + 3] = playerIdBytes[3];
-
-        position+=4;
-
 
         return payload;
     }
@@ -73,6 +56,6 @@ public class UpdateMap implements Response, CustomSerializationHeader {
 
     @Override
     public int getSize() {
-        return map.getSize() + 12;
+        return map.getSize() + 8;
     }
 }

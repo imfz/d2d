@@ -24,7 +24,7 @@ public interface GameService {
 
     void freePlayer(Integer playerId);
 
-    void init(Map map);
+    void start(Map map);
 
     List<Player> getPlayers();
 }

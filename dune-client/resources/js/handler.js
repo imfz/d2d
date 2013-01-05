@@ -32,6 +32,10 @@ Handler.prototype.handleUpdateGameList = function (data) {
     this.lobby.updateGameList(data.games);
 };
 
+Handler.prototype.handleUpdatePlayerId =function(data) {
+    console.log("Player id received " + data.playerId);
+    connection._playerId = data.playerId;
+};
 
 Handler.prototype.handleUpdateMap = function (data) {
 
@@ -49,9 +53,6 @@ Handler.prototype.handleUpdateMap = function (data) {
     }
 
     windows.openGame();
-
-    console.log("Player id received " + data.playerId);
-    connection._playerId = data.playerId;
 
     engine.bindEvents();
     engine.render();
@@ -154,12 +155,16 @@ Handler.prototype.handleJoinOk = function(data) {
     windows.openLobby();
 };
 
+Handler.prototype.handleLeftOk = function(data) {
+    windows.openLobby();
+};
+
 Handler.prototype.handleUsernameAlreadyUsed = function(data) {
     Utils.showError("Username already taken");
 };
 
 Handler.prototype.handleLost= function (data) {
-    this.addMessageToChat("SYSTEM", data.id + " has lost the game");
+    this.addMessageToChat("SYSTEM", data.username + " has lost the game");
 };
 
 Handler.prototype.handleLeft = function (data) {
@@ -173,6 +178,10 @@ Handler.prototype.handleUpdateMoney = function (data) {
 Handler.prototype.handleGameFull = function (data) {
     Utils.showError("Game full");
 };
+
+Handler.prototype.handleGameLobbyUpdate = function(data) {
+    this.lobby.showOrUpdateInGameLobby(data);
+}
 
 Handler.prototype.handleUpdateConstructionOptions = function (data) {
 

@@ -5,11 +5,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import lv.k2611a.ClientConnection;
-import lv.k2611a.network.resp.GameFull;
-import lv.k2611a.network.resp.Joined;
-import lv.k2611a.network.resp.UpdateMap;
+import lv.k2611a.domain.lobby.Game;
+import lv.k2611a.network.GameDTO;
+import lv.k2611a.network.resp.GameLobbyUpdate;
 import lv.k2611a.service.game.GameService;
 import lv.k2611a.service.game.GameSessionsService;
+import lv.k2611a.service.lobby.LobbyService;
 import lv.k2611a.service.scope.ContextService;
 import lv.k2611a.service.scope.GameKey;
 
@@ -36,6 +37,9 @@ public class JoinGame implements Request {
     @Autowired
     private ContextService contextService;
 
+    @Autowired
+    private LobbyService lobbyService;
+
     @Override
     public void process() {
 
@@ -43,32 +47,16 @@ public class JoinGame implements Request {
         ClientConnection.getCurrentConnection().setGameKey(gameKey);
         contextService.setSessionKey(gameKey);
 
-        Integer playerId = mapService.getFreePlayer();
-        if (playerId == null) {
-            // no free slots left
-            ClientConnection.getCurrentConnection().setGameKey(null);
-            GameFull gameFull = new GameFull();
-            ClientConnection.getCurrentConnection().sendMessage(gameFull);
-            return;
-        }
-
-
-        ClientConnection.getCurrentConnection().setPlayerId(playerId);
-
-        Joined joined = new Joined();
-        String username = ClientConnection.getCurrentConnection().getUsername();
-        joined.setNickname(username);
-
-        sessionsService.sendUpdate(joined);
-
         // add user to current game
         sessionsService.add(ClientConnection.getCurrentConnection());
 
-        // receive full map sync
-        UpdateMap updateMap = mapService.getFullMapUpdate();
-        updateMap.setPlayerId(playerId);
-        ClientConnection.getCurrentConnection().sendMessage(updateMap);
+        Game currentGame = lobbyService.getCurrentGame();
+        lobbyService.addUserToCurrentGame(ClientConnection.getCurrentConnection().getUsername());
 
-        log.info("Player with username " + username + " has joined the game " + id);
+        GameLobbyUpdate update = new GameLobbyUpdate();
+        update.setGameDTO(GameDTO.fromGame(currentGame));
+        sessionsService.sendUpdate(update);
+
+        log.info("Player with username " + ClientConnection.getCurrentConnection().getUsername() + " has joined the game " + id);
     }
 }

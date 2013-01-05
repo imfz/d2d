@@ -18,7 +18,6 @@ import lv.k2611a.util.Point;
 public class Map {
 
     private static final Logger log = LoggerFactory.getLogger(Map.class);
-    private static final int MAX_PLAYER_COUNT = 8;
 
     private Tile[][] tiles;
     private Player[] players;
@@ -40,6 +39,12 @@ public class Map {
 
 
     public Map(int width, int height, TileType tileType) {
+        this(width,height,tileType,8);
+    }
+
+
+
+    public Map(int width, int height, TileType tileType, int playerCount) {
         this.width = width;
         this.height = height;
         tiles = new Tile[height][];
@@ -55,8 +60,8 @@ public class Map {
         units = new ArrayList<Unit>();
         buildings = new ArrayList<Building>();
         bullets = new ArrayList<Bullet>();
-        players = new Player[MAX_PLAYER_COUNT];
-        for (int i = 0; i < MAX_PLAYER_COUNT; i++) {
+        players = new Player[playerCount];
+        for (int i = 0; i < playerCount; i++) {
             Player player = new Player();
             player.setId(i);
             players[i] = player;

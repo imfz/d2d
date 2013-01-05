@@ -26,7 +26,7 @@ public class MapGenerator {
 
     public static Map generateMap(int width, int height, int baseCount) {
         log.info("Generating map");
-        Map map = new Map(width, height);
+        Map map = new Map(width, height, TileType.SAND, baseCount);
         Random random = new Random();
         log.info("Placing bases");
         for (int i = 0; i < baseCount; i++) {
