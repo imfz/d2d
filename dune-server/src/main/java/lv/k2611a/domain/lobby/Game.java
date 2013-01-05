@@ -5,6 +5,7 @@ public class Game {
     private int ticksWithoutPlayers;
     private int width;
     private int height;
+    private String creator;
 
     public int getId() {
         return id;
@@ -36,5 +37,13 @@ public class Game {
 
     public void setTicksWithoutPlayers(int ticksWithoutPlayers) {
         this.ticksWithoutPlayers = ticksWithoutPlayers;
+    }
+
+    public String getCreator() {
+        return creator;
+    }
+
+    public void setCreator(String creator) {
+        this.creator = creator;
     }
 }

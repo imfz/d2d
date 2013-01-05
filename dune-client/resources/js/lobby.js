@@ -66,6 +66,9 @@ Lobby.prototype.showGameInfo = function (game) {
     var sizeTd = $('<td></td>');
     sizeTd.append(document.createTextNode(game.width + " x "+ game.height));
 
+    var creatorTd = $('<td></td>');
+    creatorTd.append(document.createTextNode(game.creator));
+
 
 
     var gameHtml = $('<tr></tr>');
@@ -73,6 +76,7 @@ Lobby.prototype.showGameInfo = function (game) {
     gameHtml.append(gameIdTd);
     gameHtml.append(playersTd);
     gameHtml.append(sizeTd);
+    gameHtml.append(creatorTd);
 
     $("#gamelisttable > tbody:last").append(gameHtml);
 

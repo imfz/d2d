@@ -9,6 +9,7 @@ public class GameDTO {
     private int usedSlotCount;
     private int width;
     private int height;
+    private String creator;
 
     public int getId() {
         return id;
@@ -50,11 +51,20 @@ public class GameDTO {
         this.height = height;
     }
 
+    public String getCreator() {
+        return creator;
+    }
+
+    public void setCreator(String creator) {
+        this.creator = creator;
+    }
+
     public static GameDTO fromGame(Game game) {
         GameDTO dto = new GameDTO();
         dto.setId(game.getId());
         dto.setWidth(game.getWidth());
         dto.setHeight(game.getHeight());
+        dto.setCreator(game.getCreator());
         return dto;
     }
 }
