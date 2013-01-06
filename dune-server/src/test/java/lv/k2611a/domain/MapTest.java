@@ -10,7 +10,7 @@ import static junit.framework.Assert.assertSame;
 
 public class MapTest {
     @Test
-    public void testNeigbourHoods() {
+    public void testNeighbourHoods() {
         Map map = new Map(10,10);
         assertEquals(4, map.getTileDirectNeighbours(2,2).size());
         assertEquals(2, map.getTileDirectNeighbours(0,0).size());

@@ -1,13 +1,13 @@
 package lv.k2611a.network.resp;
 
-import lv.k2611a.domain.AbstractSeriaizationTest;
+import lv.k2611a.domain.AbstractSerializationTest;
 import lv.k2611a.domain.EntityFactory;
 import lv.k2611a.network.BuildingDTO;
 import lv.k2611a.network.BulletDTO;
 import lv.k2611a.network.TileWithCoordinatesDTO;
 import lv.k2611a.network.UnitDTO;
 
-public class UpdateMapIncrementalTest extends AbstractSeriaizationTest<UpdateMapIncremental> {
+public class UpdateMapIncrementalTest extends AbstractSerializationTest<UpdateMapIncremental> {
     @EntityFactory
     public UpdateMapIncremental create() {
         UpdateMapIncremental updateMapIncremental = new UpdateMapIncremental();

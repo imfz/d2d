@@ -24,7 +24,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
 @Ignore
-public abstract class AbstractSeriaizationTest<E extends CustomSerialization> {
+public abstract class AbstractSerializationTest<E extends CustomSerialization> {
 
     @SuppressWarnings("unchecked")
     @Test

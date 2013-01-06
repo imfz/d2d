@@ -134,7 +134,7 @@ public class LobbyServiceImpl implements LobbyService {
                 }
             }
             if (!found) {
-                log.info("Removing orhpan game context " + gameKey.getId());
+                log.info("Removing orphan game context " + gameKey.getId());
                 contextService.clearGameKey(gameKey);
             }
         }

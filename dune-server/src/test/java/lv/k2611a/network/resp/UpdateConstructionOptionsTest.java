@@ -1,10 +1,10 @@
 package lv.k2611a.network.resp;
 
-import lv.k2611a.domain.AbstractSeriaizationTest;
+import lv.k2611a.domain.AbstractSerializationTest;
 import lv.k2611a.domain.EntityFactory;
 import lv.k2611a.network.OptionDTO;
 
-public class UpdateConstructionOptionsTest extends AbstractSeriaizationTest<UpdateConstructionOptions> {
+public class UpdateConstructionOptionsTest extends AbstractSerializationTest<UpdateConstructionOptions> {
     @EntityFactory
     public UpdateConstructionOptions create() {
         UpdateConstructionOptions updateConstructionOptions = new UpdateConstructionOptions();

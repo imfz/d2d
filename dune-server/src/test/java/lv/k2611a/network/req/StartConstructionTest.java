@@ -166,14 +166,14 @@ public class StartConstructionTest {
         assertNotNull(map.getBuilding(factoryId).getCurrentGoal());
 
         // remove blocking turret
-        Point lastTurrentPosition = map.getBuilding(lastTurretId).getPoint();
+        Point lastTurretPosition = map.getBuilding(lastTurretId).getPoint();
         map.removeBuilding(lastTurretId);
 
-        // unit shoudl be built now, because turret is no longer blocking the exit
+        // unit should be built now, because turret is no longer blocking the exit
         gameService.tick();
         assertEquals(1, map.getUnits().size());
         assertEquals(100, map.getPlayerById(1).getMoney());
-        assertEquals(map.getUnits().get(0).getPoint(), lastTurrentPosition);
+        assertEquals(map.getUnits().get(0).getPoint(), lastTurretPosition);
     }
 
     @Test

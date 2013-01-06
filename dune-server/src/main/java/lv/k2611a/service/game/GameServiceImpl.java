@@ -229,7 +229,7 @@ public class GameServiceImpl implements GameService {
         processPlayerStatus(map);
 
         sendIncrementalUpdate();
-        sendAvalaibleConstructionOptionsUpdate();
+        sendAvailaibleConstructionOptionsUpdate();
         sendUpdateMoney();
 
         long endTime = System.currentTimeMillis();
@@ -304,7 +304,7 @@ public class GameServiceImpl implements GameService {
 
     private void updatePlayerElectricity() {
         for (int playerId = 0; playerId < this.map.getPlayers().length; playerId++) {
-            this.map.getPlayers()[playerId].setElectricity(getPlayerEletricity(map, playerId));
+            this.map.getPlayers()[playerId].setElectricity(getPlayerElectricity(map, playerId));
         }
     }
 
@@ -327,7 +327,7 @@ public class GameServiceImpl implements GameService {
         }
     }
 
-    private long getPlayerEletricity(Map map, int playerId) {
+    private long getPlayerElectricity(Map map, int playerId) {
         long delta = 0;
         for (Building building : map.getBuildingsByOwner(playerId)) {
             delta += building.getType().getElectricityDelta();
@@ -335,7 +335,7 @@ public class GameServiceImpl implements GameService {
         return delta;
     }
 
-    private void sendAvalaibleConstructionOptionsUpdate() {
+    private void sendAvailaibleConstructionOptionsUpdate() {
         for (ClientConnection clientConnection : gameSessionsService.getCurrentGameConnections()) {
             updateConstructionOptions(clientConnection);
         }
@@ -363,7 +363,7 @@ public class GameServiceImpl implements GameService {
             EnumSet<ConstructionOption> constructionOptions = EnumSet.noneOf(ConstructionOption.class);
             if (!(building.isAwaitingClick() || building.getCurrentGoal() != null)) {
                 constructionOptions = building.getType().getConstructionOptions();
-                constructionOptions = filterAvalaibleConstructionOptions(constructionOptions, playerId);
+                constructionOptions = filterAvailaibleConstructionOptions(constructionOptions, playerId);
             }
 
             List<OptionDTO> options = new ArrayList<OptionDTO>();
@@ -412,7 +412,7 @@ public class GameServiceImpl implements GameService {
         }
     }
 
-    private EnumSet<ConstructionOption> filterAvalaibleConstructionOptions(EnumSet<ConstructionOption> constructionOptions, int playerId) {
+    private EnumSet<ConstructionOption> filterAvailaibleConstructionOptions(EnumSet<ConstructionOption> constructionOptions, int playerId) {
         Player player = map.getPlayerById(playerId);
         EnumSet<ConstructionOption> filtered = EnumSet.noneOf(ConstructionOption.class);
         for (ConstructionOption constructionOption : constructionOptions) {
@@ -446,7 +446,7 @@ public class GameServiceImpl implements GameService {
                     building.getCurrentGoal().process(building, map, this.tickCount);
                 }
             } catch (RuntimeException e) {
-                log.error("Exception while proccessing building goal", e);
+                log.error("Exception while processing building goal", e);
             }
         }
     }

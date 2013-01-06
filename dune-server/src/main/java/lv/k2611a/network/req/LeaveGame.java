@@ -61,7 +61,7 @@ public class LeaveGame implements Request {
             return;
         }
         sessionsService.sendUpdate(new GameClosed());
-        log.info("Removing orhpan game " + currentGame.getId());
+        log.info("Removing orphan game " + currentGame.getId());
         for (ClientConnection clientConnection : sessionsService.getCurrentGameConnections()) {
             clientConnection.processInConnectionsContext(new Runnable() {
                 @Override
