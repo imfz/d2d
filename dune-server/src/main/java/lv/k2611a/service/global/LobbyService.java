@@ -1,4 +1,4 @@
-package lv.k2611a.service.lobby;
+package lv.k2611a.service.global;
 
 import java.util.List;
 

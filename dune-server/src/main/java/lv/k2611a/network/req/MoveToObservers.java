@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import lv.k2611a.network.GameDTO;
 import lv.k2611a.network.resp.GameLobbyUpdate;
 import lv.k2611a.service.game.GameSessionsService;
-import lv.k2611a.service.lobby.LobbyService;
+import lv.k2611a.service.global.LobbyService;
 
 public class MoveToObservers implements Request {
 

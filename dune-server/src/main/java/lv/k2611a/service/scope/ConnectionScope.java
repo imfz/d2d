@@ -7,9 +7,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.config.Scope;
 
-public class GameScope implements Scope {
+public class ConnectionScope implements Scope {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GameScope.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ConnectionScope.class);
 
     private ContextService contextService;
 
@@ -20,12 +20,12 @@ public class GameScope implements Scope {
     @Override
     public synchronized Object get(String name, ObjectFactory<?> objectFactory) {
         Object result = null;
-        Context currentGameContext = contextService.getCurrentGameContext();
-        if (currentGameContext == null) {
-            LOG.warn("No game scope");
+        Context currentConnectionContext = contextService.getCurrentConnectionContext();
+        if (currentConnectionContext == null) {
+            LOG.warn("No connection scope");
             return null;
         }
-        Map<String, Object> hBeans = currentGameContext.getBeanMap();
+        Map<String, Object> hBeans = currentConnectionContext.getBeanMap();
 
         if (!hBeans.containsKey(name)) {
             result = objectFactory.getObject();
@@ -40,11 +40,11 @@ public class GameScope implements Scope {
     @Override
     public synchronized Object remove(String name) {
         Object result = null;
-        Context currentGameContext = contextService.getCurrentGameContext();
-        if (currentGameContext == null) {
+        Context currentConnectionContext = contextService.getCurrentConnectionContext();
+        if (currentConnectionContext == null) {
             return null;
         }
-        Map<String, Object> hBeans = currentGameContext.getBeanMap();
+        Map<String, Object> hBeans = currentConnectionContext.getBeanMap();
         if (hBeans.containsKey(name)) {
             result = hBeans.get(name);
             hBeans.remove(name);
@@ -55,11 +55,11 @@ public class GameScope implements Scope {
 
     @Override
     public synchronized void registerDestructionCallback(String name, Runnable callback) {
-        Context currentGameContext = contextService.getCurrentGameContext();
-        if (currentGameContext == null) {
+        Context currentConnectionContext = contextService.getCurrentConnectionContext();
+        if (currentConnectionContext == null) {
             return;
         }
-        currentGameContext.registerRequestDestructionCallback(name, callback);
+        currentConnectionContext.registerRequestDestructionCallback(name, callback);
     }
 
     @Override

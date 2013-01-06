@@ -6,13 +6,8 @@ import lv.k2611a.ClientConnection;
 import lv.k2611a.network.resp.Response;
 
 public interface GameSessionsService {
-    boolean add(ClientConnection clientConnection);
-
-    boolean remove(Object o);
-
-    Set<ClientConnection> getMembers();
-
+    // returns connections from current game
+    Set<ClientConnection> getCurrentGameConnections();
+    // sends update to all current game`s connections
     void sendUpdate(Response response);
-
-    void clear();
 }

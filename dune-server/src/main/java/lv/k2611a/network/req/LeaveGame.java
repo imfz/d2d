@@ -11,8 +11,9 @@ import lv.k2611a.network.resp.GameClosed;
 import lv.k2611a.network.resp.GameLobbyUpdate;
 import lv.k2611a.network.resp.Left;
 import lv.k2611a.network.resp.LeftOk;
+import lv.k2611a.service.connection.ConnectionState;
 import lv.k2611a.service.game.GameSessionsService;
-import lv.k2611a.service.lobby.LobbyService;
+import lv.k2611a.service.global.LobbyService;
 import lv.k2611a.service.scope.ContextService;
 
 public class LeaveGame implements Request {
@@ -28,6 +29,9 @@ public class LeaveGame implements Request {
     @Autowired
     private ContextService contextService;
 
+    @Autowired
+    private ConnectionState connectionState;
+
     @Override
     public void process() {
 
@@ -36,16 +40,14 @@ public class LeaveGame implements Request {
         }
 
         Left left = new Left();
-        String username = ClientConnection.getCurrentConnection().getUsername();
+        String username = connectionState.getUsername();
         left.setNickname(username);
 
         sessionsService.sendUpdate(left);
 
-        sessionsService.remove(ClientConnection.getCurrentConnection());
-
-        lobbyService.removeUserFromCurrentGame(ClientConnection.getCurrentConnection().getUsername());
-        ClientConnection.getCurrentConnection().setGameKey(null);
-        ClientConnection.getCurrentConnection().sendMessage(new LeftOk());
+        lobbyService.removeUserFromCurrentGame(connectionState.getUsername());
+        connectionState.setGameKey(null);
+        connectionState.getConnection().sendMessage(new LeftOk());
 
         Game currentGame = lobbyService.getCurrentGame();
 
@@ -60,10 +62,14 @@ public class LeaveGame implements Request {
         }
         sessionsService.sendUpdate(new GameClosed());
         log.info("Removing orhpan game " + currentGame.getId());
-        for (ClientConnection clientConnection : sessionsService.getMembers()) {
-            clientConnection.setGameKey(null);
+        for (ClientConnection clientConnection : sessionsService.getCurrentGameConnections()) {
+            clientConnection.processInConnectionsContext(new Runnable() {
+                @Override
+                public void run() {
+                    connectionState.setGameKey(null);
+                }
+            });
         }
-        sessionsService.clear();
         lobbyService.destroy(currentGame);
     }
 }

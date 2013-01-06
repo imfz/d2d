@@ -4,12 +4,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import lv.k2611a.ClientConnection;
 import lv.k2611a.domain.lobby.Game;
 import lv.k2611a.network.GameDTO;
 import lv.k2611a.network.resp.GameLobbyUpdate;
+import lv.k2611a.service.connection.ConnectionState;
 import lv.k2611a.service.game.GameSessionsService;
-import lv.k2611a.service.lobby.LobbyService;
+import lv.k2611a.service.global.LobbyService;
 import lv.k2611a.service.scope.ContextService;
 import lv.k2611a.service.scope.GameKey;
 
@@ -25,6 +25,9 @@ public class CreateNewGame implements Request {
 
     @Autowired
     private GameSessionsService gameSessionsService;
+
+    @Autowired
+    private ConnectionState connectionState;
 
     private int width;
     private int height;
@@ -52,7 +55,7 @@ public class CreateNewGame implements Request {
         Game game = new Game();
         game.setHeight(height);
         game.setWidth(width);
-        String username = ClientConnection.getCurrentConnection().getUsername();
+        String username = connectionState.getUsername();
         game.setCreator(username);
         game.getObservers().add(username);
         GameDTO gameDTO = GameDTO.fromGame(game);
@@ -61,13 +64,10 @@ public class CreateNewGame implements Request {
 
         int id = game.getId();
         GameKey gameKey = new GameKey(id);
-        ClientConnection.getCurrentConnection().setGameKey(gameKey);
-        contextService.setSessionKey(gameKey);
-
-        gameSessionsService.add(ClientConnection.getCurrentConnection());
+        connectionState.setGameKey(gameKey);
+        contextService.setGameKey(gameKey);
 
         GameLobbyUpdate update = new GameLobbyUpdate();
-
         update.setGameDTO(gameDTO);
         gameSessionsService.sendUpdate(update);
 

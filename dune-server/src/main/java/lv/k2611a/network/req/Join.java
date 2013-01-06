@@ -4,9 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import lv.k2611a.ClientConnection;
 import lv.k2611a.network.resp.JoinOk;
 import lv.k2611a.network.resp.UsernameAlreadyUsed;
+import lv.k2611a.service.connection.ConnectionState;
 import lv.k2611a.service.global.GlobalSessionService;
 import lv.k2611a.service.global.GlobalUsernameService;
 
@@ -19,6 +19,9 @@ public class Join implements Request {
 
     @Autowired
     private GlobalUsernameService globalUsernameService;
+
+    @Autowired
+    private ConnectionState connectionState;
 
     private String nickname;
 
@@ -36,13 +39,13 @@ public class Join implements Request {
             throw new IllegalArgumentException("Nickname cannot be null");
         }
         if (globalUsernameService.loginAsUser(nickname)) {
-            ClientConnection.getCurrentConnection().sendMessage(new JoinOk());
-            ClientConnection.getCurrentConnection().setUsername(nickname);
-            ClientConnection.getCurrentConnection().setGameKey(null);
+            connectionState.getConnection().sendMessage(new JoinOk());
+            connectionState.setUsername(nickname);
+            connectionState.setGameKey(null);
 
             log.info("Joined player with nickname " + nickname);
         } else {
-            ClientConnection.getCurrentConnection().sendMessage(new UsernameAlreadyUsed());
+            connectionState.getConnection().sendMessage(new UsernameAlreadyUsed());
         }
 
     }

@@ -24,6 +24,9 @@
                 <entry key="game">
                     <bean id="gameScope" class="lv.k2611a.service.scope.GameScope" p:contextService-ref="contextService" />
                 </entry>
+                <entry key="connection">
+                    <bean id="connectionScope" class="lv.k2611a.service.scope.ConnectionScope" p:contextService-ref="contextService" />
+                </entry>
             </map>
         </property>
     </bean>

@@ -22,5 +22,9 @@
           class="lv.k2611a.service.game.UserActionServiceImpl">
     </bean>
 
+    <bean id="connectionState"
+          class="lv.k2611a.service.connection.ConnectionStateImpl">
+    </bean>
+
 
 </beans>

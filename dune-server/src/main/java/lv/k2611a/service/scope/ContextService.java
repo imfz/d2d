@@ -3,15 +3,27 @@ package lv.k2611a.service.scope;
 import java.util.Collection;
 
 public interface ContextService {
-    GameContext getCurrentGameContext();
+    Context getCurrentGameContext();
 
-    void setSessionKey(GameKey value);
+    void setGameKey(GameKey value);
 
-    void clearCurrentSessionKey();
+    void clearCurrentGameKey();
 
-    GameKey getCurrentContextKey();
+    GameKey getCurrentGameKey();
 
-    void clearContext(GameKey key);
+    void clearGameKey(GameKey key);
 
     Collection<GameKey> getGameKeys();
+
+    void setConnectionKey(ConnectionKey value);
+
+    ConnectionKey getCurrentConnectionKey();
+
+    void clearCurrentConnectionKey();
+
+    void clearConnectionKey(ConnectionKey key);
+
+    Context getCurrentConnectionContext();
+
+    Collection<Context> getConnectionContexts();
 }

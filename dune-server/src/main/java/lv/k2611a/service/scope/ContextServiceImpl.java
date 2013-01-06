@@ -1,7 +1,6 @@
 package lv.k2611a.service.scope;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
@@ -15,50 +14,95 @@ public class ContextServiceImpl implements ContextService {
 
     private static final Logger LOG = LoggerFactory.getLogger(ContextServiceImpl.class);
 
-    private ThreadLocal<GameKey> currentSessionKey = new ThreadLocal<GameKey>();
+    private ThreadLocal<GameKey> currentGameKey = new ThreadLocal<GameKey>();
+    private ThreadLocal<ConnectionKey> currentConnectionKey = new ThreadLocal<ConnectionKey>();
 
-    private ConcurrentHashMap<GameKey, GameContext> games = new ConcurrentHashMap<GameKey, GameContext>();
+    private ConcurrentHashMap<GameKey, Context> gameContexts = new ConcurrentHashMap<GameKey, Context>();
+    private ConcurrentHashMap<ConnectionKey, Context> connectionContexts = new ConcurrentHashMap<ConnectionKey, Context>();
 
     @Override
-    public synchronized GameContext getCurrentGameContext() {
-        if (currentSessionKey.get() == null) {
+    public synchronized Context getCurrentGameContext() {
+        if (currentGameKey.get() == null) {
             return null;
         }
-        GameContext gameContext = games.get(currentSessionKey.get());
+        Context gameContext = gameContexts.get(currentGameKey.get());
         if (gameContext == null) {
-            gameContext = new GameContext();
-            games.put(currentSessionKey.get(), gameContext);
+            gameContext = new Context();
+            gameContexts.put(currentGameKey.get(), gameContext);
         }
         return gameContext;
     }
 
     @Override
+    public synchronized Context getCurrentConnectionContext() {
+        if (currentConnectionKey.get() == null) {
+            return null;
+        }
+        Context connectionContext = connectionContexts.get(currentConnectionKey.get());
+        if (connectionContext == null) {
+            connectionContext = new Context();
+            connectionContexts.put(currentConnectionKey.get(), connectionContext);
+        }
+        return connectionContext;
+    }
+
+    @Override
     public Collection<GameKey> getGameKeys() {
-        return games.keySet();
+        return gameContexts.keySet();
     }
 
     @Override
-    public void setSessionKey(GameKey value) {
-        currentSessionKey.set(value);
+    public Collection<Context> getConnectionContexts() {
+        return connectionContexts.values();
     }
 
     @Override
-    public GameKey getCurrentContextKey() {
-        return currentSessionKey.get();
+    public void setGameKey(GameKey value) {
+        currentGameKey.set(value);
     }
 
     @Override
-    public void clearCurrentSessionKey() {
-        currentSessionKey.set(null);
+    public GameKey getCurrentGameKey() {
+        return currentGameKey.get();
     }
 
     @Override
-    public synchronized void clearContext(GameKey key) {
-        GameContext gameContext = games.get(key);
+    public void clearCurrentGameKey() {
+        currentGameKey.set(null);
+    }
+
+    @Override
+    public synchronized void clearGameKey(GameKey key) {
+        Context gameContext = gameContexts.get(key);
         if (gameContext != null) {
             gameContext.clear();
         }
-        games.remove(key);
+        gameContexts.remove(key);
+    }
+
+
+    @Override
+    public void setConnectionKey(ConnectionKey value) {
+        currentConnectionKey.set(value);
+    }
+
+    @Override
+    public ConnectionKey getCurrentConnectionKey() {
+        return currentConnectionKey.get();
+    }
+
+    @Override
+    public void clearCurrentConnectionKey() {
+        currentConnectionKey.set(null);
+    }
+
+    @Override
+    public synchronized void clearConnectionKey(ConnectionKey key) {
+        Context connectionContext = connectionContexts.get(key);
+        if (connectionContext != null) {
+            connectionContext.clear();
+        }
+        connectionContexts.remove(key);
     }
 
 

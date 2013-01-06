@@ -12,17 +12,7 @@ import lv.k2611a.service.game.GameSessionsService;
 @Service
 public class SessionsServiceTestImpl implements GameSessionsService {
     @Override
-    public boolean add(ClientConnection clientConnection) {
-        return true;
-    }
-
-    @Override
-    public boolean remove(Object o) {
-        return true;
-    }
-
-    @Override
-    public Set<ClientConnection> getMembers() {
+    public Set<ClientConnection> getCurrentGameConnections() {
         return new HashSet<ClientConnection>();
     }
 
@@ -30,8 +20,4 @@ public class SessionsServiceTestImpl implements GameSessionsService {
     public void sendUpdate(Response response) {
     }
 
-    @Override
-    public void clear() {
-
-    }
 }

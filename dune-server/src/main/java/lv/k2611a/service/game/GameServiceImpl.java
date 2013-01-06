@@ -50,6 +50,7 @@ import lv.k2611a.network.resp.UpdateConstructionOptions;
 import lv.k2611a.network.resp.UpdateMap;
 import lv.k2611a.network.resp.UpdateMapIncremental;
 import lv.k2611a.network.resp.UpdateMoney;
+import lv.k2611a.service.connection.ConnectionState;
 import lv.k2611a.service.scope.ContextService;
 import lv.k2611a.service.scope.GameKey;
 import lv.k2611a.util.MapGenerator;
@@ -67,7 +68,7 @@ public class GameServiceImpl implements GameService {
     private AutowireCapableBeanFactory autowireCapableBeanFactory;
 
     @Autowired
-    private GameSessionsService sessionsService;
+    private GameSessionsService gameSessionsService;
 
     @Autowired
     private UserActionService userActionService;
@@ -77,6 +78,9 @@ public class GameServiceImpl implements GameService {
 
     @Autowired
     private ContextService contextService;
+
+    @Autowired
+    private ConnectionState connectionState;
 
     private boolean testMode = false;
 
@@ -104,7 +108,7 @@ public class GameServiceImpl implements GameService {
         }
         log.info("Initializing game");
         this.map = map;
-        Runnable ticker = createTicker(contextService.getCurrentContextKey());
+        Runnable ticker = createTicker(contextService.getCurrentGameKey());
         if (!testMode) {
             exec.scheduleAtFixedRate(ticker, 0, TICK_LENGTH, TimeUnit.MILLISECONDS);
             log.info("Scheduler started");
@@ -118,12 +122,12 @@ public class GameServiceImpl implements GameService {
             public void run() {
                 ContextService contextService = App.autowireCapableBeanFactory.getBean(ContextService.class);
                 try {
-                    contextService.setSessionKey(currentContextKey);
+                    contextService.setGameKey(currentContextKey);
                     tick();
                 } catch (Exception e) {
                     log.error("Exception while processing tick", e);
                 } finally {
-                    contextService.clearCurrentSessionKey();
+                    contextService.clearCurrentGameKey();
                 }
             }
         };
@@ -252,20 +256,11 @@ public class GameServiceImpl implements GameService {
                 if (map.getBuildingsByOwner(player.getId()).isEmpty()) {
                     player.setLost(true);
                     Lost lost = new Lost();
-                    lost.setUsername(getUsernameById(player.getId()));
-                    sessionsService.sendUpdate(lost);
+                    lost.setUsername("player : " + player.getId());
+                    gameSessionsService.sendUpdate(lost);
                 }
             }
         }
-    }
-
-    private String getUsernameById(int id) {
-        for (ClientConnection clientConnection : sessionsService.getMembers()) {
-            if (clientConnection.getPlayerId() == id) {
-                return clientConnection.getUsername();
-            }
-        }
-        return null;
     }
 
     private void processBullets(Map map) {
@@ -321,15 +316,21 @@ public class GameServiceImpl implements GameService {
     }
 
     private void sendUpdateMoney() {
-        for (ClientConnection clientConnection : sessionsService.getMembers()) {
-            Integer playerId = clientConnection.getPlayerId();
-            if (playerId != null) {
-                Player player = map.getPlayerById(playerId);
-                UpdateMoney updateMoney = new UpdateMoney();
-                updateMoney.setMoney((int) player.getMoney());
-                updateMoney.setElectricity((int) player.getElectricity());
-                clientConnection.sendMessage(updateMoney);
-            }
+        for (final ClientConnection clientConnection : gameSessionsService.getCurrentGameConnections()) {
+            clientConnection.processInConnectionsContext(new Runnable() {
+                @Override
+                public void run() {
+                    Integer playerId = connectionState.getPlayerId();
+                    if (playerId != null) {
+                        Player player = map.getPlayerById(playerId);
+                        UpdateMoney updateMoney = new UpdateMoney();
+                        updateMoney.setMoney((int) player.getMoney());
+                        updateMoney.setElectricity((int) player.getElectricity());
+                        clientConnection.sendMessage(updateMoney);
+                    }
+                }
+            });
+
         }
     }
 
@@ -342,64 +343,79 @@ public class GameServiceImpl implements GameService {
     }
 
     private void sendAvalaibleConstructionOptionsUpdate() {
-        for (ClientConnection clientConnection : sessionsService.getMembers()) {
-            Integer selectedBuildingId = clientConnection.getSelectedBuildingId();
-            if (selectedBuildingId != null) {
-                Building building = map.getBuilding(selectedBuildingId);
-                if (building == null) {
-                    clientConnection.sendMessage(new UpdateConstructionOptions());
-                    continue;
-                }
-                EnumSet<ConstructionOption> constructionOptions = EnumSet.noneOf(ConstructionOption.class);
-                if (!(building.isAwaitingClick() || building.getCurrentGoal() != null)) {
-                    constructionOptions = building.getType().getConstructionOptions();
-                    constructionOptions = filterAvalaibleConstructionOptions(constructionOptions, clientConnection.getPlayerId());
-                }
+        for (ClientConnection clientConnection : gameSessionsService.getCurrentGameConnections()) {
+            updateConstructionOptions(clientConnection);
+        }
+    }
 
-                List<OptionDTO> options = new ArrayList<OptionDTO>();
-                for (ConstructionOption constructionOption : constructionOptions) {
-                    OptionDTO option = OptionDTO.fromConstructionOption(constructionOption);
-                    options.add(option);
-                }
-                UpdateConstructionOptions updateConstructionOptions = new UpdateConstructionOptions();
-                updateConstructionOptions.setBuilderId(clientConnection.getSelectedBuildingId());
-                if (building.getCurrentGoal() != null) {
-                    if (building.getCurrentGoal() instanceof CreateBuilding) {
-                        CreateBuilding createBuilding = (CreateBuilding) building.getCurrentGoal();
-                        BuildingType buildingTypeBuilt = createBuilding.getBuildingType();
-                        if (buildingTypeBuilt != null) {
-                            updateConstructionOptions.setCurrentlyBuildingId(buildingTypeBuilt.getIdOnJS());
-                            updateConstructionOptions.setCurrentlyBuildingOptionType(getConstructionOption(building.getType().getConstructionOptions(), buildingTypeBuilt));
-                            double done = (double) building.getTicksAccumulated() / buildingTypeBuilt.getTicksToBuild();
-                            byte percentsDone = (byte) Math.round(done * 100);
-                            updateConstructionOptions.setPercentsDone(percentsDone);
-                        }
-                    }
-                    if (building.getCurrentGoal() instanceof CreateUnit) {
-                        CreateUnit createUnit = (CreateUnit) building.getCurrentGoal();
-                        UnitType unitType = createUnit.getUnitType();
-                        if (unitType != null) {
-                            updateConstructionOptions.setCurrentlyBuildingId(unitType.getIdOnJS());
-                            updateConstructionOptions.setCurrentlyBuildingOptionType(getConstructionOption(building.getType().getConstructionOptions(), unitType));
-                            double done = (double) building.getTicksAccumulated() / unitType.getTicksToBuild();
-                            byte percentsDone = (byte) Math.round(done * 100);
-                            updateConstructionOptions.setPercentsDone(percentsDone);
-                        }
-                    }
-                } else {
-                    if (!(building.isAwaitingClick())) {
-                        updateConstructionOptions.setReadyToBuild(true);
-                    } else {
-                        updateConstructionOptions.setCurrentlyBuildingId(building.getBuildingTypeBuilt().getIdOnJS());
-                        updateConstructionOptions.setCurrentlyBuildingOptionType(getConstructionOption(building.getType().getConstructionOptions(), building.getBuildingTypeBuilt()));
-                        updateConstructionOptions.setPercentsDone((byte) 100);
-                    }
-                }
-                updateConstructionOptions.setOptions(options.toArray(new OptionDTO[options.size()]));
-                clientConnection.sendMessage(updateConstructionOptions);
-            } else {
-                clientConnection.sendMessage(new UpdateConstructionOptions());
+    private void updateConstructionOptions(final ClientConnection clientConnection) {
+        clientConnection.processInConnectionsContext(new Runnable() {
+            @Override
+            public void run() {
+                Integer selectedBuildingId = connectionState.getSelectedBuildingId();
+                Integer playerId = connectionState.getPlayerId();
+                updateConstructionOptions(clientConnection, selectedBuildingId, playerId);
             }
+        });
+
+    }
+
+    private void updateConstructionOptions(ClientConnection clientConnection, Integer selectedBuildingId, Integer playerId) {
+        if (selectedBuildingId != null) {
+            Building building = map.getBuilding(selectedBuildingId);
+            if (building == null) {
+                clientConnection.sendMessage(new UpdateConstructionOptions());
+                return;
+            }
+            EnumSet<ConstructionOption> constructionOptions = EnumSet.noneOf(ConstructionOption.class);
+            if (!(building.isAwaitingClick() || building.getCurrentGoal() != null)) {
+                constructionOptions = building.getType().getConstructionOptions();
+                constructionOptions = filterAvalaibleConstructionOptions(constructionOptions, playerId);
+            }
+
+            List<OptionDTO> options = new ArrayList<OptionDTO>();
+            for (ConstructionOption constructionOption : constructionOptions) {
+                OptionDTO option = OptionDTO.fromConstructionOption(constructionOption);
+                options.add(option);
+            }
+            UpdateConstructionOptions updateConstructionOptions = new UpdateConstructionOptions();
+            updateConstructionOptions.setBuilderId(selectedBuildingId);
+            if (building.getCurrentGoal() != null) {
+                if (building.getCurrentGoal() instanceof CreateBuilding) {
+                    CreateBuilding createBuilding = (CreateBuilding) building.getCurrentGoal();
+                    BuildingType buildingTypeBuilt = createBuilding.getBuildingType();
+                    if (buildingTypeBuilt != null) {
+                        updateConstructionOptions.setCurrentlyBuildingId(buildingTypeBuilt.getIdOnJS());
+                        updateConstructionOptions.setCurrentlyBuildingOptionType(getConstructionOption(building.getType().getConstructionOptions(), buildingTypeBuilt));
+                        double done = (double) building.getTicksAccumulated() / buildingTypeBuilt.getTicksToBuild();
+                        byte percentsDone = (byte) Math.round(done * 100);
+                        updateConstructionOptions.setPercentsDone(percentsDone);
+                    }
+                }
+                if (building.getCurrentGoal() instanceof CreateUnit) {
+                    CreateUnit createUnit = (CreateUnit) building.getCurrentGoal();
+                    UnitType unitType = createUnit.getUnitType();
+                    if (unitType != null) {
+                        updateConstructionOptions.setCurrentlyBuildingId(unitType.getIdOnJS());
+                        updateConstructionOptions.setCurrentlyBuildingOptionType(getConstructionOption(building.getType().getConstructionOptions(), unitType));
+                        double done = (double) building.getTicksAccumulated() / unitType.getTicksToBuild();
+                        byte percentsDone = (byte) Math.round(done * 100);
+                        updateConstructionOptions.setPercentsDone(percentsDone);
+                    }
+                }
+            } else {
+                if (!(building.isAwaitingClick())) {
+                    updateConstructionOptions.setReadyToBuild(true);
+                } else {
+                    updateConstructionOptions.setCurrentlyBuildingId(building.getBuildingTypeBuilt().getIdOnJS());
+                    updateConstructionOptions.setCurrentlyBuildingOptionType(getConstructionOption(building.getType().getConstructionOptions(), building.getBuildingTypeBuilt()));
+                    updateConstructionOptions.setPercentsDone((byte) 100);
+                }
+            }
+            updateConstructionOptions.setOptions(options.toArray(new OptionDTO[options.size()]));
+            clientConnection.sendMessage(updateConstructionOptions);
+        } else {
+            clientConnection.sendMessage(new UpdateConstructionOptions());
         }
     }
 
@@ -474,7 +490,7 @@ public class GameServiceImpl implements GameService {
         update.setBullets(bulletDTOList.toArray(new BulletDTO[bulletDTOList.size()]));
 
         update.setTickCount(tickCount);
-        sessionsService.sendUpdate(update);
+        gameSessionsService.sendUpdate(update);
 
     }
 

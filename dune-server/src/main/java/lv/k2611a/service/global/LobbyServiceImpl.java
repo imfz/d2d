@@ -1,4 +1,4 @@
-package lv.k2611a.service.lobby;
+package lv.k2611a.service.global;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import lv.k2611a.domain.lobby.Game;
 import lv.k2611a.network.GameDTO;
 import lv.k2611a.network.resp.UpdateGameList;
-import lv.k2611a.service.global.GlobalSessionService;
 import lv.k2611a.service.scope.ContextService;
 import lv.k2611a.service.scope.GameKey;
 
@@ -49,7 +48,7 @@ public class LobbyServiceImpl implements LobbyService {
 
     @Override
     public synchronized Game getCurrentGame() {
-        int id = contextService.getCurrentContextKey().getId();
+        int id = contextService.getCurrentGameKey().getId();
         for (Game game : games) {
             if (game.getId() == id) {
                 return game;
@@ -59,7 +58,7 @@ public class LobbyServiceImpl implements LobbyService {
     }
 
     @Override
-    public void movePlayerToObservers(String username) {
+    public synchronized void movePlayerToObservers(String username) {
         Game currentGame = getCurrentGame();
 
         if (currentGame.getPlayers().remove(username)) {
@@ -68,7 +67,7 @@ public class LobbyServiceImpl implements LobbyService {
     }
 
     @Override
-    public void movePlayerToPlayers(String username) {
+    public synchronized void movePlayerToPlayers(String username) {
         Game currentGame = getCurrentGame();
 
         if (currentGame.getObservers().remove(username)) {
@@ -119,7 +118,7 @@ public class LobbyServiceImpl implements LobbyService {
         for (Game game : gamesToRemoveList) {
             log.info("Removing expired game " + game.getId());
             games.remove(game);
-            contextService.clearContext(new GameKey(game.getId()));
+            contextService.clearGameKey(new GameKey(game.getId()));
         }
         if (!gamesToRemoveList.isEmpty()) {
             updateGameList();
@@ -137,7 +136,7 @@ public class LobbyServiceImpl implements LobbyService {
             }
             if (!found) {
                 log.info("Removing orhpan game context " + gameKey.getId());
-                contextService.clearContext(gameKey);
+                contextService.clearGameKey(gameKey);
             }
         }
     }
@@ -155,7 +154,7 @@ public class LobbyServiceImpl implements LobbyService {
     @Override
     public synchronized void destroy(Game currentGame) {
         games.remove(currentGame);
-        contextService.clearContext(new GameKey(currentGame.getId()));
+        contextService.clearGameKey(new GameKey(currentGame.getId()));
     }
 
     @Override

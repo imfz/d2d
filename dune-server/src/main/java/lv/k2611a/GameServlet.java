@@ -2,6 +2,7 @@ package lv.k2611a;
 
 
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -17,7 +18,7 @@ public class GameServlet extends HttpServlet {
     private WebSocketFactory _wsFactory;
 
     private static final Logger log = LoggerFactory.getLogger(GameServlet.class);
-
+    private AtomicLong connectionId = new AtomicLong(0);
 
     @Override
     public void init() throws ServletException {
@@ -30,7 +31,8 @@ public class GameServlet extends HttpServlet {
                 if ("chat".equals(protocol)) {
                     log.info("Connection established");
                     try {
-                        ClientConnection clientConnection = new ClientConnection();
+                        long id = connectionId.incrementAndGet();
+                        ClientConnection clientConnection = new ClientConnection(id);
                         App.autowireCapableBeanFactory.autowireBean(clientConnection);
                         return clientConnection;
                     } finally {

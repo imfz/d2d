@@ -19,10 +19,12 @@ import lv.k2611a.network.req.Request;
 import lv.k2611a.network.resp.CustomSerializationHeader;
 import lv.k2611a.network.resp.Left;
 import lv.k2611a.network.resp.Response;
+import lv.k2611a.service.connection.ConnectionState;
 import lv.k2611a.service.game.GameService;
 import lv.k2611a.service.global.GlobalSessionService;
 import lv.k2611a.service.global.GlobalUsernameService;
-import lv.k2611a.service.lobby.LobbyService;
+import lv.k2611a.service.global.LobbyService;
+import lv.k2611a.service.scope.ConnectionKey;
 import lv.k2611a.service.scope.ContextService;
 import lv.k2611a.service.scope.GameKey;
 
@@ -31,17 +33,6 @@ public class ClientConnection implements WebSocket.OnTextMessage, Runnable {
     private static final Logger log = LoggerFactory.getLogger(ClientConnection.class);
 
     private volatile Connection _connection;
-
-    private static final ThreadLocal<ClientConnection> localConnection = new ThreadLocal<ClientConnection>();
-
-    public static ClientConnection getCurrentConnection() {
-        ClientConnection clientConnection = localConnection.get();
-        return clientConnection;
-    }
-
-    public static void setCurrentConnection(ClientConnection clientConnection) {
-        localConnection.set(clientConnection);
-    }
 
     @Autowired
     private GameService gameService;
@@ -61,14 +52,8 @@ public class ClientConnection implements WebSocket.OnTextMessage, Runnable {
     @Autowired
     private LobbyService lobbyService;
 
-    private String username;
-
-    // null if observer
-    private Integer playerId;
-
-    private GameKey gameKey;
-
-    private Integer selectedBuildingId;
+    @Autowired
+    private ConnectionState connectionState;
 
     private BlockingQueue<Response> queue = new LinkedBlockingQueue<Response>();
 
@@ -76,23 +61,25 @@ public class ClientConnection implements WebSocket.OnTextMessage, Runnable {
 
     private volatile boolean closed = false;
 
-    public ClientConnection() {
+    private final ConnectionKey connectionKey;
+
+    public ClientConnection(long id) {
+        this.connectionKey = new ConnectionKey(id);
     }
 
     public void onOpen(Connection connection) {
-        try {
-            contextService.setSessionKey(gameKey);
-            processOnOpen(connection);
-        } finally {
-            contextService.clearCurrentSessionKey();
-        }
+        contextService.setConnectionKey(connectionKey);
+        processOnOpen(connection);
+        contextService.clearCurrentConnectionKey();
     }
 
     private void processOnOpen(Connection connection) {
         _connection = connection;
+        connectionState.setConnection(this);
         exec.execute(this);
         globalSessionService.add(this);
         log.info("Connection opened");
+
     }
 
     public void onClose(int closeCode, String message) {
@@ -101,11 +88,15 @@ public class ClientConnection implements WebSocket.OnTextMessage, Runnable {
 
     private void closeInContext() {
         try {
-            contextService.setSessionKey(gameKey);
+            contextService.setConnectionKey(connectionKey);
+            contextService.setGameKey(connectionState.getGameKey());
             processOnClose();
         } finally {
-            contextService.clearCurrentSessionKey();
+            contextService.clearConnectionKey(connectionKey);
+            contextService.clearCurrentGameKey();
+            contextService.clearCurrentConnectionKey();
         }
+
     }
 
     private void processOnClose() {
@@ -114,44 +105,61 @@ public class ClientConnection implements WebSocket.OnTextMessage, Runnable {
         } else {
             return;
         }
-        if (playerId != null) {
-            gameService.freePlayer(playerId);
+
+        try {
+            Integer playerId = connectionState.getPlayerId();
+            if (playerId != null) {
+                gameService.freePlayer(playerId);
+            }
+        } catch (Throwable e) {
+            log.error("Exception while freeing player", e);
         }
-        exec.shutdown();
+
+        try {
+            exec.shutdown();
+        } catch (Throwable e) {
+            log.error("Exception while stopping the executor thread");
+        }
+
         globalSessionService.remove(this);
+
+        String username = connectionState.getUsername();
         if (username != null) {
             globalUsernameService.freeUsername(username);
+            lobbyService.removeUserFromAllGames(username);
             Left left = new Left();
             left.setNickname(username);
             globalSessionService.sendUpdate(left);
-            lobbyService.removeUserFromAllGames(username);
         }
 
-        log.info("Connection closed");
+        log.info("Connection closed. Id : " + connectionKey);
     }
 
     public void onMessage(String data) {
+        processMessageInContext(data);
+
+    }
+
+    private void processMessageInContext(String data) {
         try {
-            contextService.setSessionKey(gameKey);
+            contextService.setConnectionKey(connectionKey);
+            contextService.setGameKey(connectionState.getGameKey());
             processMessage(data);
         } finally {
-            contextService.clearCurrentSessionKey();
+            contextService.clearCurrentGameKey();
+            contextService.clearCurrentConnectionKey();
         }
-
     }
 
     private void processMessage(String data) {
         NetworkPacket networkPacket = JSON.parseObject(data, NetworkPacket.class);
         Request request = null;
         try {
-            localConnection.set(this);
             request = (Request) JSON.parseObject(networkPacket.getPayload(), Class.forName("lv.k2611a.network.req." + networkPacket.getMessageName()));
             autowireCapableBeanFactory.autowireBean(request);
             request.process();
         } catch (Exception e) {
-            log.error("Exception while processing message",e);
-        } finally {
-            localConnection.remove();
+            log.error("Exception while processing message", e);
         }
     }
 
@@ -169,20 +177,9 @@ public class ClientConnection implements WebSocket.OnTextMessage, Runnable {
                     continue;
                 }
                 if (response instanceof CustomSerializationHeader) {
-                    CustomSerializationHeader responseCasted = (CustomSerializationHeader) response;
-                    byte[] data = responseCasted.toBytes();
-                    byte[] payload = new byte[data.length + 1];
-                    payload[0] = responseCasted.serializerId();
-                    System.arraycopy(data,0,payload,1,data.length);
-                    _connection.sendMessage(payload, 0, payload.length);
-                    byteCount += data.length;
+                    byteCount = serializeAndSendCustomSerialization(byteCount, (CustomSerializationHeader) response);
                 } else {
-                    NetworkPacket networkPacket = new NetworkPacket();
-                    networkPacket.setMessageName(response.getClass().getSimpleName());
-                    networkPacket.setPayload(JSON.toJSONString(response));
-                    String toSend = JSON.toJSONString(networkPacket);
-                    byteCount += toSend.length() * 2;
-                    _connection.sendMessage(toSend);
+                    byteCount = serializeAndSendJson(byteCount, response);
                 }
             } catch (IOException e) {
                 log.error("Exception happened while working with websocket", e);
@@ -207,38 +204,46 @@ public class ClientConnection implements WebSocket.OnTextMessage, Runnable {
         closeInContext();
     }
 
+    private long serializeAndSendJson(long byteCount, Response response) throws IOException {
+        NetworkPacket networkPacket = new NetworkPacket();
+        networkPacket.setMessageName(response.getClass().getSimpleName());
+        networkPacket.setPayload(JSON.toJSONString(response));
+        String toSend = JSON.toJSONString(networkPacket);
+        byteCount += toSend.length() * 2;
+        _connection.sendMessage(toSend);
+        return byteCount;
+    }
+
+    private long serializeAndSendCustomSerialization(long byteCount, CustomSerializationHeader response)
+            throws IOException {
+        CustomSerializationHeader responseCasted = response;
+        byte[] data = responseCasted.toBytes();
+        byte[] payload = new byte[data.length + 1];
+        payload[0] = responseCasted.serializerId();
+        System.arraycopy(data, 0, payload, 1, data.length);
+        _connection.sendMessage(payload, 0, payload.length);
+        byteCount += data.length;
+        return byteCount;
+    }
+
     public void sendMessage(Response response) {
         queue.add(response);
     }
 
-    public String getUsername() {
-        if (username == null) {
-            throw new AssertionError("Empty username");
+    public void processInConnectionsContext(Runnable runnable) {
+        ConnectionKey connectionKeyWas = contextService.getCurrentConnectionKey();
+        GameKey gameKeyWas = contextService.getCurrentGameKey();
+        try {
+
+            contextService.setConnectionKey(connectionKey);
+            contextService.setGameKey(connectionState.getGameKey());
+
+            runnable.run();
+
+        } finally {
+
+            contextService.setGameKey(gameKeyWas);
+            contextService.setConnectionKey(connectionKeyWas);
         }
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public Integer getSelectedBuildingId() {
-        return selectedBuildingId;
-    }
-
-    public void setSelectedBuildingId(Integer selectedBuildingId) {
-        this.selectedBuildingId = selectedBuildingId;
-    }
-
-    public Integer getPlayerId() {
-        return playerId;
-    }
-
-    public void setPlayerId(Integer playerId) {
-        this.playerId = playerId;
-    }
-
-    public void setGameKey(GameKey gameKey) {
-        this.gameKey = gameKey;
     }
 }

@@ -2,13 +2,16 @@ package lv.k2611a.network.req;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import lv.k2611a.ClientConnection;
+import lv.k2611a.service.connection.ConnectionState;
 import lv.k2611a.service.game.GameService;
 
 public class SelectBuilding implements Request {
 
     @Autowired
     private GameService gameService;
+
+    @Autowired
+    private ConnectionState connectionState;
 
     private int selectedId;
 
@@ -22,13 +25,13 @@ public class SelectBuilding implements Request {
 
     @Override
     public void process() {
-        Integer playerId = ClientConnection.getCurrentConnection().getPlayerId();
+        Integer playerId = connectionState.getPlayerId();
         if (playerId == null) {
             return;
         }
         if (selectedId == -1) {
             // unselect building
-            ClientConnection.getCurrentConnection().setSelectedBuildingId(null);
+            connectionState.setSelectedBuildingId(null);
             return;
         }
         if (!gameService.isOwner(selectedId, playerId)) {
@@ -36,6 +39,6 @@ public class SelectBuilding implements Request {
             return;
         }
 
-        ClientConnection.getCurrentConnection().setSelectedBuildingId(selectedId);
+        connectionState.setSelectedBuildingId(selectedId);
     }
 }
