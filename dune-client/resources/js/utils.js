@@ -29,16 +29,19 @@ Utils.getImageElement = function (imgName) {
     globalImageCounter++;
     var image = new Image();
     image.src = imgName;
-    image.onload = function(){
+    image.onload = function () {
         globalImageCounter--;
         if (globalImageCounter <= 0) {
             imageLoadedCallback();
         }
     };
+    image.onerror = function (error) {
+        Utils.showError('<b>' + error.target.attributes.src.nodeValue + '</b> not found');
+    };
     return image;
 };
 
-Utils.afterImagesLoaded = function(callback) {
+Utils.afterImagesLoaded = function (callback) {
     imageLoadedCallback = callback;
     allImagesLoaded = true;
 };

@@ -43,6 +43,7 @@ public abstract class AbstractSeriaizationTest<E extends CustomSerialization> {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private E createEntity(Method method) throws IllegalAccessException, InvocationTargetException {
         return ((E) method.invoke(this));
     }
