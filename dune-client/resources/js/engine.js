@@ -688,7 +688,7 @@ GameEngine.prototype.renderBuildings = function (buildings) {
             shownBuildingInfo.y = yToDrawTo;
             shownBuildingInfo.width = buildingConfig.width;
             shownBuildingInfo.height = buildingConfig.height;
-            shownBuildingInfo.placementEnabled = building.constructionComplete;
+            shownBuildingInfo.placementEnabled = (building.constructionComplete) && (building.type == BUILDING_TYPE_CONSTRUCTION_YARD);
             this.shownBuildings.push(shownBuildingInfo);
         }
 

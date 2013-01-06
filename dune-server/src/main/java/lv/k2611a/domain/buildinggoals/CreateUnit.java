@@ -16,6 +16,7 @@ public class CreateUnit implements BuildingGoal {
     private static final Logger log = LoggerFactory.getLogger(CreateUnit.class);
 
     private UnitType unitType;
+    private boolean blocked = false;
 
     public UnitType getUnitType() {
         return unitType;
@@ -27,12 +28,15 @@ public class CreateUnit implements BuildingGoal {
 
     @Override
     public void process(Building building, Map map, long tickCount) {
+        blocked = false;
         Player player = map.getPlayerById(building.getOwnerId());
 
         if (building.getTicksAccumulated() >= unitType.getTicksToBuild()) {
             if (placeUnit(map, building)) {
                 building.setTicksAccumulated(0);
                 building.removeGoal(this);
+            } else {
+                blocked = true;
             }
         } else {
             if (player.getElectricity() < 0) {
@@ -75,5 +79,9 @@ public class CreateUnit implements BuildingGoal {
         map.addUnit(unit);
 
         return true;
+    }
+
+    public boolean isBlocked() {
+        return blocked;
     }
 }

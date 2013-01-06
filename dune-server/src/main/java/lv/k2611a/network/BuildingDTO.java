@@ -1,6 +1,8 @@
 package lv.k2611a.network;
 
 import lv.k2611a.domain.Building;
+import lv.k2611a.domain.buildinggoals.BuildingGoal;
+import lv.k2611a.domain.buildinggoals.CreateUnit;
 import lv.k2611a.network.resp.CustomSerialization;
 import lv.k2611a.util.ByteUtils;
 
@@ -162,6 +164,13 @@ public class BuildingDTO implements CustomSerialization {
         dto.setWidth((byte) building.getType().getWidth());
         dto.setHeight((byte) building.getType().getHeight());
         dto.setConstructionComplete(building.isAwaitingClick());
+        BuildingGoal goal = building.getCurrentGoal();
+        if (goal instanceof CreateUnit) {
+            CreateUnit castedGoal = (CreateUnit) goal;
+            if (castedGoal.isBlocked()) {
+                dto.setConstructionComplete(true);
+            }
+        }
         if (building.getBuildingTypeBuilt() != null) {
             dto.setEntityBuiltId((byte) building.getBuildingTypeBuilt().getIdOnJS());
         }
