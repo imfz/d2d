@@ -25,6 +25,20 @@ $(function () {
     moneyTab = new MoneyTab();
     handler = new Handler(map, gameLog, rightmenu, engine, moneyTab, lobby);
 
+    var canvas = $("#canvas").get(0);
+    engine.setCanvas(canvas);
+    engine.setMap(map);
+
+    var minimapCanvas = $("#minimap").get(0);
+    minimapEngine.setCanvas(minimapCanvas);
+    minimapEngine.setBufferCanvas($("#minimap_buffer").get(0));
+    minimapEngine.setMap(map);
+    minimapEngine.setEngine(engine);
+
+    rightmenu.setEngine(engine);
+
+    rightmenu.setMainSprite(Utils.getImageElement("images/buys.jpg"));
+
     sprites.setMainSprite(Utils.getImageElement("images/main_sprite.jpg"));
     sprites.setUnitSprite(Utils.getImageElement("images/units.png"));
     sprites.setBulletSprite(Utils.getImageElement("images/bullet.png"));
@@ -37,36 +51,22 @@ $(function () {
     sprites.setBuildBgRed(Utils.getImageElement("images/build_bg_red.png"));
     sprites.setBuildBgYellow(Utils.getImageElement("images/build_bg_yellow.png"));
 
-    var canvas = $("#canvas").get(0);
-    engine.setCanvas(canvas);
-    engine.setMap(map);
+    Utils.afterImagesLoaded(function() {
+        minimapEngine.bindEvents();
 
-    var minimapCanvas = $("#minimap").get(0);
-    minimapEngine.setCanvas(minimapCanvas);
-    minimapEngine.setBufferCanvas($("#minimap_buffer").get(0));
-    minimapEngine.setMap(map);
-    minimapEngine.setEngine(engine);
-    minimapEngine.bindEvents();
+        rightmenu.bindEvents();
 
-    rightmenu.setMainSprite(Utils.getImageElement("images/buys.jpg"));
-    rightmenu.bindEvents();
-    rightmenu.setEngine(engine);
+        gameLog.redraw();
 
-    gameLog.redraw();
+        networking.init();
 
-    networking.init();
+        lobby.setNetwork(connection);
+        lobby.init();
 
-    lobby.setNetwork(connection);
-    lobby.init();
+        chat.setEngine(engine);
+        chat.init();
 
-    chat.setEngine(engine);
-    chat.init();
+        rightmenu.setOptions([]);
+    });
 
-    rightmenu.setOptions([
-        {type: BUY_OPTION_SILO},
-        {type: BUY_OPTION_REFINERY},
-        {type: BUY_OPTION_REPAIR_DEPO},
-        {type: BUY_OPTION_AIRBASE},
-        {type: BUY_OPTION_FACTORY}
-    ]);
 });

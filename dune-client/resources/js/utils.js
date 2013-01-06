@@ -1,4 +1,10 @@
-function Utils() {}
+function Utils() {
+
+}
+
+var globalImageCounter = 0;
+var imageLoadedCallback;
+var allImagesLoaded = false;
 
 Utils.showError = function (msg) {
     $('#error_container').append('' +
@@ -16,7 +22,24 @@ Utils.showError = function (msg) {
 };
 
 Utils.getImageElement = function (imgName) {
+    if (allImagesLoaded) {
+        console.log("Loading the images after preloader has done his job is a bad idea");
+        return;
+    }
+    globalImageCounter++;
     var image = new Image();
     image.src = imgName;
+    image.onload = function(){
+        globalImageCounter--;
+        if (globalImageCounter <= 0) {
+            imageLoadedCallback();
+        }
+    };
     return image;
 };
+
+Utils.afterImagesLoaded = function(callback) {
+    imageLoadedCallback = callback;
+    allImagesLoaded = true;
+};
+
