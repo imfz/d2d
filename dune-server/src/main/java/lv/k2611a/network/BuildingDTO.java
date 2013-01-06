@@ -155,7 +155,7 @@ public class BuildingDTO implements CustomSerialization {
 
     public static BuildingDTO fromBuilding(Building building) {
         BuildingDTO dto = new BuildingDTO();
-        dto.setType((byte) building.getType().getIdOnJS());
+        dto.setType(building.getType().getIdOnJS());
         dto.setHp((short) building.getHp());
         dto.setMaxHp((short) building.getType().getHp());
         dto.setId(building.getId());
@@ -172,7 +172,7 @@ public class BuildingDTO implements CustomSerialization {
             }
         }
         if (building.getBuildingTypeBuilt() != null) {
-            dto.setEntityBuiltId((byte) building.getBuildingTypeBuilt().getIdOnJS());
+            dto.setEntityBuiltId(building.getBuildingTypeBuilt().getIdOnJS());
         }
         dto.setOwnerId((byte) building.getOwnerId());
         return dto;

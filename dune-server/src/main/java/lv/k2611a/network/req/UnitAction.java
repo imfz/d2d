@@ -83,7 +83,7 @@ public class UnitAction extends AbstractGameStateChanger {
                     unit.setGoal(new Attack(Entity.BUILDING, building.getId()));
                     return;
                 }
-            };
+            }
             unit.setGoal(new RepetetiveMove(x, y));
         }
     }

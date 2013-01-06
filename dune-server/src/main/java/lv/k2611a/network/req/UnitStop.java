@@ -7,23 +7,23 @@ import lv.k2611a.domain.Map;
 import lv.k2611a.domain.Unit;
 
 public class UnitStop extends AbstractGameStateChanger {
-    private long[] ids;
+    private int[] ids;
 
-    public long[] getIds() {
+    public int[] getIds() {
         return ids;
     }
 
-    public void setIds(long[] ids) {
+    public void setIds(int[] ids) {
         this.ids = ids;
     }
 
     @Override
     public void changeGameState(Map map) {
         if (ids == null) {
-            ids = new long[0];
+            ids = new int[0];
         }
-        Set<Long> unitIds = new HashSet<Long>();
-        for (long id : ids) {
+        Set<Integer> unitIds = new HashSet<Integer>();
+        for (int id : ids) {
             unitIds.add(id);
         }
         for (Unit unit : map.getUnits()) {

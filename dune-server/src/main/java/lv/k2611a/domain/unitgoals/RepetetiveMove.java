@@ -30,13 +30,10 @@ public class RepetetiveMove implements UnitGoal {
                 // we tried and failed, lets wait some ticks
                 ticksToWait = new Random().nextInt(10);
                 weTried = false;
-                return;
             } else {
                 unit.insertGoalBeforeCurrent(new Move(goalX, goalY));
                 weTried = true;
-                return;
             }
         }
-        return;
     }
 }

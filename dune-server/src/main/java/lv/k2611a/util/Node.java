@@ -3,11 +3,11 @@ package lv.k2611a.util;
 import lv.k2611a.domain.Tile;
 
 public class Node {
-    int x;
-    int y;
-    double distanceFromStart = Double.MAX_VALUE;
-    Node previousNode;
-    double heuristicDistanceFromGoal;
+    private final int x;
+    private final int y;
+    private double distanceFromStart = Double.MAX_VALUE;
+    private Node previousNode;
+    private double heuristicDistanceFromGoal;
 
 
     public Node(int x, int y) {
@@ -19,16 +19,8 @@ public class Node {
         return x;
     }
 
-    public void setX(int x) {
-        this.x = x;
-    }
-
     public int getY() {
         return y;
-    }
-
-    public void setY(int y) {
-        this.y = y;
     }
 
     public double getDistanceFromStart() {

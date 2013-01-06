@@ -151,7 +151,7 @@ public class UnitDTO implements CustomSerialization {
 
     public static UnitDTO fromUnit(Unit unit) {
         UnitDTO dto = new UnitDTO();
-        dto.setUnitType((byte) unit.getUnitType().getIdOnJS());
+        dto.setUnitType(unit.getUnitType().getIdOnJS());
         dto.setX((short) unit.getX());
         dto.setY((short) unit.getY());
         dto.setHp((short) unit.getHp());

@@ -31,7 +31,6 @@ public enum TileType {
 
     private byte idOnJS;
     private int movementCost;
-    private boolean allowsBuildings = false;
 
     private TileType(byte idOnJS, int movementCost) {
         this.idOnJS = idOnJS;
@@ -40,10 +39,6 @@ public enum TileType {
 
     public byte getIdOnJS() {
         return idOnJS;
-    }
-
-    public boolean isAllowsBuildings() {
-        return allowsBuildings;
     }
 
     public int getMovementCost() {

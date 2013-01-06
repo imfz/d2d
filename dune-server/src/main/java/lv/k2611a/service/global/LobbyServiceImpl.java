@@ -117,8 +117,7 @@ public class LobbyServiceImpl implements LobbyService {
         }
         for (Game game : gamesToRemoveList) {
             log.info("Removing expired game " + game.getId());
-            games.remove(game);
-            contextService.clearGameKey(new GameKey(game.getId()));
+            destroy(game);
         }
         if (!gamesToRemoveList.isEmpty()) {
             updateGameList();
@@ -152,9 +151,9 @@ public class LobbyServiceImpl implements LobbyService {
     }
 
     @Override
-    public synchronized void destroy(Game currentGame) {
-        games.remove(currentGame);
-        contextService.clearGameKey(new GameKey(currentGame.getId()));
+    public synchronized void destroy(Game game) {
+        games.remove(game);
+        contextService.clearGameKey(new GameKey(game.getId()));
     }
 
     @Override

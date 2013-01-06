@@ -52,11 +52,6 @@ public class ContextServiceImpl implements ContextService {
     }
 
     @Override
-    public Collection<Context> getConnectionContexts() {
-        return connectionContexts.values();
-    }
-
-    @Override
     public void setGameKey(GameKey value) {
         currentGameKey.set(value);
     }

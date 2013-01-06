@@ -7,15 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import lv.k2611a.network.resp.JoinOk;
 import lv.k2611a.network.resp.UsernameAlreadyUsed;
 import lv.k2611a.service.connection.ConnectionState;
-import lv.k2611a.service.global.GlobalSessionService;
 import lv.k2611a.service.global.GlobalUsernameService;
 
 public class Join implements Request {
 
     private static final Logger log = LoggerFactory.getLogger(Join.class);
 
-    @Autowired
-    private GlobalSessionService globalSessionService;
 
     @Autowired
     private GlobalUsernameService globalUsernameService;

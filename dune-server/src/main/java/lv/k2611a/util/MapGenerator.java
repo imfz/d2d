@@ -140,22 +140,27 @@ public class MapGenerator {
                 int xDelta = Math.abs(x - currentX);
                 int yDelta = Math.abs(y - currentY);
                 double distance = Math.sqrt(xDelta * xDelta + yDelta * yDelta);
-                double chance = 1;
-                if (distance < maxDistance / 5) {
-                    chance = 1;
-                } else if (distance < maxDistance / 5 * 2) {
-                    chance = 0.9;
-                } else if (distance < maxDistance / 5 * 3) {
-                    chance = 0.7;
-                } else if (distance < maxDistance / 5 * 4) {
-                    chance = 0.4;
-                } else {
-                    chance = 0.3;
-                }
+                double chance = getChance(maxDistance, distance);
                 if (r.nextDouble() < chance) {
                     map.getTile(currentX, currentY).setTileType(tileType);
                 }
             }
         }
+    }
+
+    private static double getChance(double maxDistance, double distance) {
+        double chance = 1;
+        if (distance < maxDistance / 5) {
+            chance = 1;
+        } else if (distance < maxDistance / 5 * 2) {
+            chance = 0.9;
+        } else if (distance < maxDistance / 5 * 3) {
+            chance = 0.7;
+        } else if (distance < maxDistance / 5 * 4) {
+            chance = 0.4;
+        } else {
+            chance = 0.3;
+        }
+        return chance;
     }
 }

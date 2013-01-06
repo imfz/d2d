@@ -11,10 +11,10 @@ import org.springframework.util.Assert;
 public class Context {
     final Logger logger = LoggerFactory.getLogger(Context.class);
 
-    protected final Map<String, Object> hBeans = new HashMap<String, Object>();
-    protected final Map<String, Runnable> hRequestDestructionCallbacks = new LinkedHashMap<String, Runnable>();
+    private final Map<String, Object> hBeans = new HashMap<String, Object>();
+    private final Map<String, Runnable> hRequestDestructionCallbacks = new LinkedHashMap<String, Runnable>();
 
-    protected final Map<String, Object> getBeanMap() {
+    final Map<String, Object> getBeanMap() {
         return hBeans;
     }
 
@@ -24,7 +24,7 @@ public class Context {
      * @param name     The name of the bean.
      * @param callback The callback of the bean to be executed for destruction.
      */
-    protected synchronized final void registerRequestDestructionCallback(String name, Runnable callback) {
+    synchronized final void registerRequestDestructionCallback(String name, Runnable callback) {
         Assert.notNull(name, "Name must not be null");
         Assert.notNull(callback, "Callback must not be null");
 
@@ -34,7 +34,7 @@ public class Context {
     /**
      * Clears beans and processes all bean destruction callbacks.
      */
-    public synchronized final void clear() {
+    synchronized final void clear() {
         processDestructionCallbacks();
 
         hBeans.clear();
@@ -43,7 +43,7 @@ public class Context {
     /**
      * Processes all bean destruction callbacks.
      */
-    private synchronized final void processDestructionCallbacks() {
+    private synchronized void processDestructionCallbacks() {
         for (String name : hRequestDestructionCallbacks.keySet()) {
             Runnable callback = hRequestDestructionCallbacks.get(name);
 

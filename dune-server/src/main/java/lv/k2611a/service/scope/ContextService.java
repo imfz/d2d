@@ -24,6 +24,4 @@ public interface ContextService {
     void clearConnectionKey(ConnectionKey key);
 
     Context getCurrentConnectionContext();
-
-    Collection<Context> getConnectionContexts();
 }

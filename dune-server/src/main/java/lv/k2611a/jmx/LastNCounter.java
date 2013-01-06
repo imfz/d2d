@@ -1,12 +1,10 @@
 package lv.k2611a.jmx;
 
 public class LastNCounter {
-    private final int tickCountToSave;
     private final long[] lastTicks;
     private int tickToWriteInto;
 
     public LastNCounter(int tickCountToSave) {
-        this.tickCountToSave = tickCountToSave;
         lastTicks = new long[tickCountToSave];
         for (int i = 0; i < lastTicks.length; i++) {
             lastTicks[i] = -1;

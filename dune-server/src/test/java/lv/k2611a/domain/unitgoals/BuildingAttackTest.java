@@ -46,7 +46,7 @@ public class BuildingAttackTest {
         tank.setOwnerId(1);
         tank.setX(1);
         tank.setY(1);
-        int tankVictim = map.addUnit(tank);
+        map.addUnit(tank);
 
         gameService.setMap(map);
         gameService.tick();

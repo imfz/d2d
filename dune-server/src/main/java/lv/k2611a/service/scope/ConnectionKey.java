@@ -1,7 +1,7 @@
 package lv.k2611a.service.scope;
 
 public class ConnectionKey {
-    private long id;
+    private final long id;
 
     public ConnectionKey(long id) {
         this.id = id;

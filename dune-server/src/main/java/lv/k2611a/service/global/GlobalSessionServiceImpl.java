@@ -21,7 +21,7 @@ public class GlobalSessionServiceImpl implements GlobalSessionService {
     }
 
     @Override
-    public boolean remove(Object o) {
+    public boolean remove(ClientConnection o) {
         return members.remove(o);
     }
 

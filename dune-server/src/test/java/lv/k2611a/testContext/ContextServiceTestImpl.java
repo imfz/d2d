@@ -69,8 +69,4 @@ public class ContextServiceTestImpl implements ContextService {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    @Override
-    public Collection<Context> getConnectionContexts() {
-        return new ArrayList<Context>();
-    }
 }

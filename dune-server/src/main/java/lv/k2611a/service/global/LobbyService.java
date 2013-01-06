@@ -18,7 +18,7 @@ public interface LobbyService {
     void movePlayerToPlayers(String username);
 
 
-    void destroy(Game currentGame);
+    void destroy(Game game);
 
     void removeUserFromAllGames(String username);
 }

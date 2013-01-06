@@ -52,7 +52,7 @@ public class OptionDTO implements CustomSerialization {
 
     public static OptionDTO fromConstructionOption(ConstructionOption constructionOption) {
         OptionDTO dto = new OptionDTO();
-        dto.setType((byte) constructionOption.getIdOnJS());
+        dto.setType(constructionOption.getIdOnJS());
         dto.setEntityToBuildType((byte) constructionOption.getEntityToBuildIdOnJs());
         dto.setCost((short) constructionOption.getCost());
         return dto;

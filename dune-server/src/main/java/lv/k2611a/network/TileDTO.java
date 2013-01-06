@@ -16,7 +16,7 @@ public class TileDTO implements CustomSerialization {
 
     public static TileDTO fromTile(Tile tile) {
         TileDTO tileDTO = new TileDTO();
-        tileDTO.setTileType((byte) tile.getTileType().getIdOnJS());
+        tileDTO.setTileType(tile.getTileType().getIdOnJS());
         return tileDTO;
     }
 

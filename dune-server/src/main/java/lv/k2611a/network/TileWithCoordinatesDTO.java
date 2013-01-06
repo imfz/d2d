@@ -35,7 +35,7 @@ public class TileWithCoordinatesDTO implements CustomSerialization {
 
     public static TileWithCoordinatesDTO fromTile(Tile tile) {
         TileWithCoordinatesDTO tileDTO = new TileWithCoordinatesDTO();
-        tileDTO.setTileType((byte) tile.getTileType().getIdOnJS());
+        tileDTO.setTileType(tile.getTileType().getIdOnJS());
         tileDTO.setX((short) tile.getX());
         tileDTO.setY((short) tile.getY());
         return tileDTO;

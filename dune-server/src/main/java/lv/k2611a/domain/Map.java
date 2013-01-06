@@ -242,14 +242,15 @@ public class Map {
         if (y > 0) {
             nodeList.add(new Node(x, y - 1));
         }
-        if ((x > 0) && (y > 0)) {
-            nodeList.add(new Node(x - 1, y - 1));
-        }
         if (x < width - 1) {
             nodeList.add(new Node(x + 1, y));
         }
         if (y < height - 1) {
             nodeList.add(new Node(x, y + 1));
+        }
+
+        if ((x > 0) && (y > 0)) {
+            nodeList.add(new Node(x - 1, y - 1));
         }
         if ((x < width - 1) && (y < height - 1)) {
             nodeList.add(new Node(x + 1, y + 1));

@@ -35,7 +35,6 @@ import lv.k2611a.domain.Unit;
 import lv.k2611a.domain.UnitType;
 import lv.k2611a.domain.buildinggoals.CreateBuilding;
 import lv.k2611a.domain.buildinggoals.CreateUnit;
-import lv.k2611a.domain.lobby.Game;
 import lv.k2611a.jmx.ServerMonitor;
 import lv.k2611a.network.BuildingDTO;
 import lv.k2611a.network.BulletDTO;
@@ -53,7 +52,6 @@ import lv.k2611a.network.resp.UpdateMoney;
 import lv.k2611a.service.connection.ConnectionState;
 import lv.k2611a.service.scope.ContextService;
 import lv.k2611a.service.scope.GameKey;
-import lv.k2611a.util.MapGenerator;
 import lv.k2611a.util.Point;
 
 @Service
@@ -91,15 +89,10 @@ public class GameServiceImpl implements GameService {
     private ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
 
     private volatile Map map;
-    private volatile Game game;
     private volatile long tickCount = 0;
 
     private Set<Point> changedTiles;
     private volatile boolean started = false;
-
-    public synchronized void start(Game game) {
-        this.start(MapGenerator.generateMap(game.getWidth(), game.getHeight(), game.getPlayers().size()));
-    }
 
     @Override
     public synchronized void start(Map map) {
@@ -556,7 +549,7 @@ public class GameServiceImpl implements GameService {
         //map.buildPassableSegmentCache();
     }
 
-    public List<BuildingDTO> getBuildings() {
+    private List<BuildingDTO> getBuildings() {
         List<BuildingDTO> buildingDTOList = new ArrayList<BuildingDTO>();
         for (Building building : map.getBuildings()) {
             buildingDTOList.add(BuildingDTO.fromBuilding(building));

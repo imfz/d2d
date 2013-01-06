@@ -71,10 +71,6 @@ public abstract class AbstractSeriaizationTest<E extends CustomSerialization> {
 
     }
 
-    private void restoreOriginalValue(Field field, E originalEntity, E entityToMutate) throws IllegalAccessException {
-        field.set(entityToMutate, deepCopy(field.get(originalEntity)));
-    }
-
     private void mutateObjectAndCompare(List<byte[]> alreadySerializedEntities, Object entityToMutate, E serializableEntity)
             throws InvocationTargetException, IllegalAccessException {
         for (Field field : entityToMutate.getClass().getDeclaredFields()) {
