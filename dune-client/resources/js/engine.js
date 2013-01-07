@@ -347,6 +347,9 @@ GameEngine.prototype.enablePlacement = function() {
     if (!building) {
         return;
     }
+	if (building.type != BUILDING_TYPE_CONSTRUCTION_YARD) {
+		return;
+	}
     var buildingConfig = this.getBuildingPlacementConfig(building.entityBuiltId);
     if (!buildingConfig) {
         return;
