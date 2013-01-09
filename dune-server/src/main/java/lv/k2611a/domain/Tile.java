@@ -34,18 +34,25 @@ public class Tile {
         return y;
     }
 
-    public boolean isPassable() {
+    public boolean isUnoccupied() {
         if (usedBy == -1) {
             return true;
         }
         return false;
     }
 
-    public boolean isPassable(long myId) {
+    public boolean isUnoccupied(long myId) {
         if (usedBy == -1) {
             return true;
         }
         return myId == usedBy;
+    }
+
+    public boolean isPassable() {
+        if (usedBy == -2) {
+            return false;
+        }
+        return true;
     }
 
     public boolean isUsedByUnit() {

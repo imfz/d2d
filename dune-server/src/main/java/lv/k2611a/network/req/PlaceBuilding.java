@@ -63,18 +63,11 @@ public class PlaceBuilding extends AbstractGameStateChanger {
 
             int newX = x+1;
             int newY = y+1;
+            int entranceExitY = y+2;
 
-            boolean entranceBlocked = false;
-
-            if (y + 2 >= map.getHeight()) {
-                entranceBlocked = true;
-            } else {
-                if ((map.isObstacle(x, y + 2)) && (map.isObstacle(x + 1, y + 2)) && (map.isObstacle(x + 2, y + 2))) {
-                    entranceBlocked = true;
-                }
-            }
-
-            if (entranceBlocked) {
+            if (!(map.isUnoccupied(x, entranceExitY)
+                  || map.isUnoccupied(x + 1, entranceExitY)
+                  || map.isUnoccupied(x + 2, entranceExitY))) {
                 Tile freeTile = map.getNearestFreeTile(x + 1, y + 1);
                 if (freeTile == null) {
                     log.warn("Cannot place harvester, all tiles occupied");
@@ -118,7 +111,7 @@ public class PlaceBuilding extends AbstractGameStateChanger {
     private boolean terrainAllowsConstruction(Map map, BuildingType buildingTypeBuilt) {
         for (int x = 0; x < buildingTypeBuilt.getWidth(); x++) {
             for (int y = 0; y < buildingTypeBuilt.getHeight(); y++) {
-                if (map.isObstacle(this.x + x, this.y + y)) {
+                if (!map.isUnoccupied(this.x + x, this.y + y)) {
                     return false;
                 }
                 if (map.getTile(this.x + x, this.y + y).getTileType() != TileType.ROCK) {

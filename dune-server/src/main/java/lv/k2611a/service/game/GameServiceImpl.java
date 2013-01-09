@@ -511,7 +511,6 @@ public class GameServiceImpl implements GameService {
     private void mapFillTileUsage(Map map) {
         map.clearUsageFlag();
         map.getRefineryEntranceList().clear();
-        map.getRefinerySecondEntranceList().clear();
         map.getHarvesters().clear();
         map.getFreeHarvesters().clear();
         for (Building building : map.getBuildings()) {
@@ -522,15 +521,14 @@ public class GameServiceImpl implements GameService {
             }
         }
         for (Building building : map.getBuildingsByType(BuildingType.REFINERY)) {
-            Point point = building.getPoint();
-            point = new Point(point.getX() + 1, point.getY() + 1);
-            RefineryEntrance refineryEntrance = new RefineryEntrance(building.getOwnerId(), point, building.getId());
-
-            Point secondEntrance = new Point(building.getPoint().getX() + 1, building.getPoint().getY());
-            RefineryEntrance refinerySecondEntrance = new RefineryEntrance(building.getOwnerId(), point, building.getId());
-
-            map.getRefineryEntranceList().put(point, refineryEntrance);
-            map.getRefinerySecondEntranceList().put(secondEntrance, refinerySecondEntrance);
+            if (map.isPassable(building.getX(), building.getY() + 2)
+                || map.isPassable(building.getX() + 1, building.getY() + 2)
+                || map.isPassable(building.getX() + 2, building.getY() + 2)) {
+                Point point = building.getPoint();
+                point = new Point(point.getX() + 1, point.getY() + 1);
+                RefineryEntrance refineryEntrance = new RefineryEntrance(building.getOwnerId(), point, building.getId());
+                map.getRefineryEntranceList().put(point, refineryEntrance);
+            }
         }
         for (Unit unit : map.getUnitsByType(UnitType.HARVESTER)) {
             map.getHarvesters().add(unit.getId());

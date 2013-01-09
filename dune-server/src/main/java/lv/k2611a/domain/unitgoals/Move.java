@@ -21,7 +21,7 @@ public class Move implements UnitGoal {
     private int goalY;
     private List<Node> path;
     private AStar aStarCache = new AStar();
-    private int neededRange = 0;
+    private int goalRadius = 0;
     private MoveExpired moveExpired;
 
     public Move(int goalX, int goalY) {
@@ -29,10 +29,10 @@ public class Move implements UnitGoal {
         this.goalY = goalY;
     }
 
-    public Move(int goalX, int goalY, int neededRange, MoveExpired moveExpired) {
+    public Move(int goalX, int goalY, int goalRadius, MoveExpired moveExpired) {
         this.goalX = goalX;
         this.goalY = goalY;
-        this.neededRange = neededRange;
+        this.goalRadius = goalRadius;
         this.moveExpired = moveExpired;
     }
 
@@ -68,30 +68,31 @@ public class Move implements UnitGoal {
         int ticksToNextCell = unit.getUnitType().getSpeed();
         if (unit.getTicksMovingToNextCell() >= ticksToNextCell - 1) {
             // moved to new cell
-            moveUnit(unit);
-            if (path.size() < neededRange) {
-                unit.removeGoal(this);
-                return;
-            }
-            if (moveExpired != null) {
-                if (moveExpired.isExpired(this, map)) {
+            if (!moveUnit(unit, map)) {
+                if (path.size() < goalRadius) {
                     unit.removeGoal(this);
                     return;
                 }
-            }
-            Node next;
-            if (!(path.isEmpty())) {
-                next = path.get(0);
-                // recalc path if we hit an obstacle
-                if (map.isObstacle(next, unit.getId(), unit.getOwnerId(), unit.getUnitType() == UnitType.HARVESTER)) {
-                    calcPath(unit, map);
+                if (moveExpired != null) {
+                    if (moveExpired.isExpired(this, map)) {
+                        unit.removeGoal(this);
+                        return;
+                    }
                 }
-                lookAtNextNode(unit);
+                Node next;
+                if (!(path.isEmpty())) {
+                    next = path.get(0);
+                    // recalc path if we hit an obstacle
+                    if (!map.isUnoccupied(next, unit.getId(), unit.getOwnerId(), unit.getUnitType() == UnitType.HARVESTER)) {
+                        calcPath(unit, map);
+                    }
+                    lookAtNextNode(unit);
+                }
             }
         } else {
             if (!path.isEmpty()) {
                 Node next = path.get(0);
-                if (map.isObstacle(next, unit.getId(), unit.getOwnerId(), unit.getUnitType() == UnitType.HARVESTER)) {
+                if (!map.isUnoccupied(next, unit.getId(), unit.getOwnerId(), unit.getUnitType() == UnitType.HARVESTER)) {
                     calcPath(unit, map);
                 } else {
                     unit.setTicksMovingToNextCell(unit.getTicksMovingToNextCell() + 1);
@@ -106,21 +107,29 @@ public class Move implements UnitGoal {
 
     }
 
-    private void moveUnit(Unit unit) {
-        unit.setTicksMovingToNextCell(0);
-        Node next = path.get(0);
-        unit.setX(next.getX());
-        unit.setY(next.getY());
-        path.remove(next);
+    private boolean moveUnit(Unit unit, Map map) {
+         unit.setTicksMovingToNextCell(0);
+         Node next = path.get(0);
+         if (map.isUnoccupied(next, unit.getId(), unit.getOwnerId(), unit.getUnitType() == UnitType.HARVESTER)) {
+            unit.setX(next.getX());
+            unit.setY(next.getY());
+            path.remove(next);
+            return true;
+         }
+         return false;
     }
 
     private void calcPath(Unit unit, Map map) {
-        if (neededRange > 1) {
-            path = aStarCache.calcPathEvenIfBlocked(unit.getX(), unit.getY(), goalX, goalY, map, unit.getId(),
-                    unit.getUnitType() == UnitType.HARVESTER, unit.getOwnerId(), neededRange);
+        //TODO: goalRadius parameter should tell the required radius range from target AStar should plan route to
+        //For harvesters/units MOVING, this should be 0. For units that attempt to get to their max attack range > 0.
+        if (unit.getUnitType() != UnitType.HARVESTER) {
+            // log.warn("Unit path calc");
+            path = aStarCache.calcPathEvenIfBlocked(unit, map, goalX, goalY, goalRadius);
         } else {
-            path = aStarCache.calcShortestPath(unit.getX(), unit.getY(), goalX, goalY, map, unit.getId(),
-                    unit.getUnitType() == UnitType.HARVESTER, unit.getOwnerId());
+            path = aStarCache.calcPathHarvester(unit, map, goalX, goalY);
+            // log.warn("Harvester path calc");
+            // path = aStarCache.calcShortestPath(unit.getX(), unit.getY(), goalX, goalY, map, unit.getId(),
+            //        unit.getUnitType() == UnitType.HARVESTER, unit.getOwnerId());
         }
     }
 

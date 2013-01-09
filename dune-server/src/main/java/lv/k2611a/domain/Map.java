@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import lv.k2611a.util.AStar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +30,6 @@ public class Map {
     private int lastBulletId = 0;
 
     private HashMap<Point, RefineryEntrance> refineryEntranceList = new HashMap<Point, RefineryEntrance>();
-    private HashMap<Point, RefineryEntrance> refinerySecondEntranceList = new HashMap<Point, RefineryEntrance>();
     private Set<Integer> harvesters = new HashSet<Integer>();
     private Set<Integer> freeHarvesters = new HashSet<Integer>();
 
@@ -407,26 +407,39 @@ public class Map {
         return Math.sqrt(deltaX * deltaX + deltaY * deltaY);
     }
 
-    public boolean isObstacle(Node neighbor, int unitId, int ownerid, boolean isHarvester) {
-        return isObstacle(neighbor.getX(), neighbor.getY(), unitId, ownerid, isHarvester);
+    // Check if the tile contains no building. Units are not considered an obstacle in this case, as they might move.
+    public boolean isPassable(Node neighbor) {
+        return getTile(neighbor.getX(), neighbor.getY()).isPassable();
     }
 
-    private boolean harvesterCheck(Point point, int unitId, int ownerid, boolean isHarvester) {
+    // Check if the tile contains no buildings or units. Also used for Harvester move.
+    public boolean isUnoccupied(Node neighbor, int unitId, int ownerid, boolean isHarvester) {
+        if (refineryEntranceCheck(neighbor.getX(), neighbor.getY(), unitId, ownerid, isHarvester)) {
+            return true;
+        }
+        return getTile(neighbor.getX(), neighbor.getY()).isUnoccupied(unitId);
+    }
+
+    private boolean refineryEntranceCheck(int x, int y, int unitId, int ownerid, boolean isHarvester) {
+        Point point = new Point(x,y);
         if (isHarvester) {
             if (getTile(point).isUsedByUnit()) {
                 return false;
             }
-            if (this.harvesters.contains(unitId)) {
-                RefineryEntrance refineryEntrance = this.refineryEntranceList.get(point);
-                if (refineryEntrance != null) {
-                    if (refineryEntrance.getOwnerId() == ownerid) {
-                        return true;
-                    }
+            RefineryEntrance refineryEntrance = this.refineryEntranceList.get(point);
+            // Refinery entrance should be passable for non-empty harvesters
+            if (this.harvesters.contains(unitId) && !this.freeHarvesters.contains(unitId) && refineryEntrance != null) {
+                 if (refineryEntrance.getOwnerId() == ownerid) {
+                    return true;
                 }
-                if (this.freeHarvesters.contains(unitId)) {
-                    RefineryEntrance secondEntrance = this.refinerySecondEntranceList.get(point);
-                    if (secondEntrance != null) {
-                        if (secondEntrance.getOwnerId() == ownerid) {
+            }
+            // This is a reverse-lookup for 3 upper tiles of refinery when we are leaving refinery.
+            if (this.freeHarvesters.contains(unitId)) {
+                for (int entranceX = x - 1; entranceX < x + 2; entranceX++) {
+                    point = new Point(entranceX, y + 1);
+                    refineryEntrance = this.refineryEntranceList.get(point);
+                    if (refineryEntrance != null) {
+                        if (refineryEntrance.getOwnerId() == ownerid) {
                             return true;
                         }
                     }
@@ -436,20 +449,62 @@ public class Map {
         return false;
     }
 
-    public boolean isObstacle(int x, int y) {
-        Tile tile = getTile(x, y);
-        if (tile == null) {
+
+    // Check if the tile contains no buildings or units. Used only for Harvester pathfinding in AStar.
+    public boolean isUnoccupiedHarvesterAStar(Node start, Node neighbor, int unitId, int ownerid, boolean isHarvester) {
+        if (refineryEntranceCheck(neighbor.getX(), neighbor.getY(), unitId, ownerid, isHarvester, start.getX(), start.getY())) {
             return true;
         }
-        return !tile.isPassable();
+        return getTile(neighbor.getX(), neighbor.getY()).isUnoccupied(unitId);
     }
 
-    public boolean isObstacle(int x, int y, int unitId, int ownerid, boolean isHarvester) {
-        if (harvesterCheck(new Point(x, y), unitId, ownerid, isHarvester)) {
+    private boolean refineryEntranceCheck(int x, int y, int unitId, int ownerid, boolean isHarvester, int startX, int startY) {
+        Point point = new Point(x,y);
+        Point startPoint = new Point(startX, startY);
+        if (isHarvester) {
+            if (getTile(point).isUsedByUnit()) {
+                return false;
+            }
+            RefineryEntrance refineryEntrance = this.refineryEntranceList.get(point);
+            // Refinery entrance should be passable for non-empty harvesters
+            if (this.harvesters.contains(unitId) && !this.freeHarvesters.contains(unitId) && refineryEntrance != null) {
+                if (refineryEntrance.getOwnerId() == ownerid) {
+                    return true;
+                }
+            }
+            // This is a lookup for 3 upper tiles of refinery when we are planning to leave the refinery.
+            refineryEntrance = this.refineryEntranceList.get(startPoint);
+            if (this.freeHarvesters.contains(unitId) && refineryEntrance != null) {
+                if (refineryEntrance.getOwnerId() == ownerid) {
+                    if (y == startY-1) {
+                        for (int pointX = x - 1; pointX < x + 2; pointX++) {
+                            if (pointX == startX) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean isUnoccupied(int x, int y) {
+        Tile tile = getTile(x, y);
+        if (tile == null) {
             return false;
         }
-        return !getTile(x, y).isPassable(unitId);
+        return tile.isUnoccupied();
     }
+
+    public boolean isPassable(int x, int y) {
+        Tile tile = getTile(x, y);
+        if (tile == null) {
+            return false;
+        }
+        return tile.isPassable();
+    }
+
 
     public void setUsed(int x, int y, int unitId) {
         getTile(x, y).setUsed(unitId);
@@ -487,13 +542,13 @@ public class Map {
     }
 
     public Tile getNearestFreeTile(int x, int y) {
-        if (!isObstacle(x, y)) {
+        if (isUnoccupied(x, y)) {
             getTile(x, y);
         }
         for (int radius = 0; radius < 10; radius++) {
             for (int currentX = x - radius; currentX < x + radius; currentX++) {
                 for (int currentY = y - radius; currentY < y + radius; currentY++) {
-                    if (!isObstacle(currentX, currentY)) {
+                    if (isUnoccupied(currentX, currentY)) {
                         return getTile(currentX, currentY);
                     }
                 }
@@ -505,7 +560,7 @@ public class Map {
     public Tile getNearestFreeTileForUnitPlacement(int minX, int maxX, int minY, int maxY) {
         for (int currentX = minX; currentX <= maxX; currentX++) {
             for (int currentY = maxY; currentY >= minY; currentY--) {
-                if (!isObstacle(currentX, currentY)) {
+                if (isUnoccupied(currentX, currentY)) {
                     return getTile(currentX, currentY);
                 }
             }
@@ -535,10 +590,6 @@ public class Map {
         return refineryEntranceList;
     }
 
-    public HashMap<Point, RefineryEntrance> getRefinerySecondEntranceList() {
-        return refinerySecondEntranceList;
-    }
-
     public Set<Integer> getHarvesters() {
         return harvesters;
     }
@@ -555,7 +606,7 @@ public class Map {
             found = false;
             for (Tile[] tile : tiles) {
                 for (Tile tile1 : tile) {
-                    if (tile1.isPassable()) {
+                    if (tile1.isUnoccupied()) {
                         if (tile1.getPassableSegmentNumber() == -1) {
                             segmentNumber++;
                             spreadSegment(segmentNumber, tile1);
@@ -570,7 +621,7 @@ public class Map {
     private void spreadSegment(int segmentNumber, Tile tile) {
         tile.setPassableSegmentNumber(segmentNumber);
         for (Tile neighbour : getTileNeighbours(tile.getX(), tile.getY())) {
-            if (neighbour.isPassable()) {
+            if (neighbour.isUnoccupied()) {
                 if (neighbour.getPassableSegmentNumber() == -1) {
                     spreadSegment(segmentNumber, neighbour);
                 }
