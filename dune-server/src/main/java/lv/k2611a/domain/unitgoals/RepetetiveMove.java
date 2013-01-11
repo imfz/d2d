@@ -4,6 +4,7 @@ import java.util.Random;
 
 import lv.k2611a.domain.Map;
 import lv.k2611a.domain.Unit;
+import lv.k2611a.network.UnitDTO;
 import lv.k2611a.service.game.GameServiceImpl;
 
 public class RepetetiveMove implements UnitGoal {
@@ -35,5 +36,9 @@ public class RepetetiveMove implements UnitGoal {
                 weTried = true;
             }
         }
+    }
+    @Override
+    public void saveAdditionalInfoIntoDTO(Unit unit, UnitDTO dto) {
+
     }
 }

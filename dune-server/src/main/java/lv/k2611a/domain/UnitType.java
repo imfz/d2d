@@ -5,11 +5,11 @@ import java.util.Set;
 
 public enum UnitType implements EntityType {
     // id speed turnSpeed hp ticksToBuild costPerTick ticksToAttack attackRange attackDamage bulletSpeed bulletType
-    BATTLE_TANK((byte)1, 30, 2, 100, 10, 5, 20, 5, 5, 3, BulletType.TANK_SHOT),
+    BATTLE_TANK((byte)1, 30, 10, 100, 10, 5, 20, 5, 5, 3, BulletType.TANK_SHOT),
     SIEGE_TANK((byte)2, 60, 1, 120, 120, 5, 1, 5, 5, 3, BulletType.TANK_SHOT),
     LAUNCHER((byte)3, 30, 1, 50, 100, 5, 1, 5, 5, 3, BulletType.TANK_SHOT),
     DEVASTATOR((byte)4, 100, 1, 200, 200, 5, 1, 5, 5, 3, BulletType.TANK_SHOT),
-    HARVESTER((byte)5, 10, 1, 200, 150, 5, 1, 5, 5, 3, BulletType.TANK_SHOT),
+    HARVESTER((byte)5, 10, 3, 200, 150, 5, 1, 5, 5, 3, BulletType.TANK_SHOT),
     JEEP((byte)6, 100, 1, 200, 50, 5, 1, 5, 5, 3, BulletType.TANK_SHOT),
     TRIKE((byte)7, 100, 1, 200, 20, 5, 1, 5, 5, 3, BulletType.TANK_SHOT),
     SONIC_TANK((byte)8, 100, 1, 200, 40, 5, 20, 5, 5, 3, BulletType.TANK_SHOT),

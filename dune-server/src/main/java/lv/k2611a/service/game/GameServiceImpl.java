@@ -539,7 +539,7 @@ public class GameServiceImpl implements GameService {
 
         for (Unit unit : map.getUnits()) {
             map.setUsed(unit.getX(), unit.getY(), unit.getId());
-            if (unit.getTicksMovingToNextCell() > 0) {
+            if (unit.getTicksSpentOnCurrentGoal() > 0) {
                 Point unitMovingTo = unit.getViewDirection().apply(new Point(unit.getX(), unit.getY()));
                 map.setUsed(unitMovingTo.getX(), unitMovingTo.getY(), unit.getId());
             }

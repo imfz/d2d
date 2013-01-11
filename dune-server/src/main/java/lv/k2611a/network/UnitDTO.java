@@ -158,17 +158,10 @@ public class UnitDTO implements CustomSerialization {
         dto.setMaxHp((short) unit.getUnitType().getHp());
         dto.setId(unit.getId());
         dto.setViewDirection((byte) unit.getViewDirection().getIdOnJS());
-        double travelledPercents = (double) unit.getTicksMovingToNextCell() / unit.getUnitType().getSpeed() * 100;
-        dto.setTravelledPercents((byte) travelledPercents);
         dto.setOwnerId((byte) unit.getOwnerId());
-        if (unit.getUnitType() == UnitType.HARVESTER) {
-            int spicePercents = (int) ((double) unit.getTicksCollectingSpice() / Harvest.TICKS_FOR_FULL * 100);
-            dto.setSpicePercents((byte) spicePercents);
-            UnitGoal uncasted = unit.getCurrentGoal();
-            if (uncasted instanceof Harvest) {
-                Harvest casted = (Harvest)uncasted;
-                dto.setHarvesting((byte) casted.getCollectingSpice());
-            }
+
+        if (unit.getCurrentGoal() != null) {
+            unit.getCurrentGoal().saveAdditionalInfoIntoDTO(unit, dto);
         }
         return dto;
     }

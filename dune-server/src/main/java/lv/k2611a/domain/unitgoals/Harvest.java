@@ -11,6 +11,7 @@ import lv.k2611a.domain.Tile;
 import lv.k2611a.domain.TileType;
 import lv.k2611a.domain.Unit;
 import lv.k2611a.domain.UnitType;
+import lv.k2611a.network.UnitDTO;
 import lv.k2611a.service.game.GameService;
 import lv.k2611a.service.game.GameServiceImpl;
 import lv.k2611a.util.AStar;
@@ -174,5 +175,12 @@ public class Harvest implements UnitGoal {
         public void setDistance(double distance) {
             this.distance = distance;
         }
+    }
+
+    @Override
+    public void saveAdditionalInfoIntoDTO(Unit unit, UnitDTO dto) {
+        int spicePercents = (int) ((double) unit.getTicksCollectingSpice() / Harvest.TICKS_FOR_FULL * 100);
+        dto.setSpicePercents((byte) spicePercents);
+        dto.setHarvesting((byte)getCollectingSpice());
     }
 }

@@ -2,6 +2,7 @@ package lv.k2611a.domain.unitgoals;
 
 import java.util.List;
 
+import lv.k2611a.network.UnitDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +54,7 @@ public class Move implements UnitGoal {
     public void process(Unit unit, Map map, GameServiceImpl gameService) {
         if (path == null) {
             calcPath(unit, map);
-            lookAtNextNode(unit);
+            // lookAtNextNode(unit);
         }
         if (path == null) {
             log.warn("Recalculated path, but still null");
@@ -61,12 +62,20 @@ public class Move implements UnitGoal {
         }
         if (path.isEmpty()) {
             unit.removeGoal(this);
-            unit.setTicksMovingToNextCell(0);
+            unit.setTicksSpentOnCurrentGoal(0);
+            return;
+        }
+
+        //HANDLE TURNS
+        Node next = path.get(0);
+        ViewDirection goalDirection = ViewDirection.getDirection(unit.getPoint(), next.getPoint());
+        if (unit.getViewDirection() != goalDirection) {
+            unit.insertGoalBeforeCurrent(new Turn(goalDirection));
             return;
         }
 
         int ticksToNextCell = unit.getUnitType().getSpeed();
-        if (unit.getTicksMovingToNextCell() >= ticksToNextCell - 1) {
+        if (unit.getTicksSpentOnCurrentGoal() >= ticksToNextCell - 1) {
             // moved to new cell
             if (!moveUnit(unit, map)) {
                 if (path.size() < goalRadius) {
@@ -79,36 +88,35 @@ public class Move implements UnitGoal {
                         return;
                     }
                 }
-                Node next;
                 if (!(path.isEmpty())) {
                     next = path.get(0);
                     // recalc path if we hit an obstacle
                     if (!map.isUnoccupied(next, unit.getId(), unit.getOwnerId(), unit.getUnitType() == UnitType.HARVESTER)) {
                         calcPath(unit, map);
                     }
-                    lookAtNextNode(unit);
+                    // lookAtNextNode(unit);
                 }
             }
         } else {
             if (!path.isEmpty()) {
-                Node next = path.get(0);
+                next = path.get(0);
                 if (!map.isUnoccupied(next, unit.getId(), unit.getOwnerId(), unit.getUnitType() == UnitType.HARVESTER)) {
                     calcPath(unit, map);
                 } else {
-                    unit.setTicksMovingToNextCell(unit.getTicksMovingToNextCell() + 1);
+                    unit.setTicksSpentOnCurrentGoal(unit.getTicksSpentOnCurrentGoal() + 1);
                 }
-                lookAtNextNode(unit);
+                // lookAtNextNode(unit);
             }
         }
         if (path.isEmpty()) {
             unit.removeGoal(null);
-            unit.setTicksMovingToNextCell(0);
+            unit.setTicksSpentOnCurrentGoal(0);
         }
 
     }
 
     private boolean moveUnit(Unit unit, Map map) {
-         unit.setTicksMovingToNextCell(0);
+         unit.setTicksSpentOnCurrentGoal(0);
          Node next = path.get(0);
          if (map.isUnoccupied(next, unit.getId(), unit.getOwnerId(), unit.getUnitType() == UnitType.HARVESTER)) {
             unit.setX(next.getX());
@@ -121,15 +129,13 @@ public class Move implements UnitGoal {
 
     private void calcPath(Unit unit, Map map) {
         //TODO: goalRadius parameter should tell the required radius range from target AStar should plan route to
-        //For harvesters/units MOVING, this should be 0. For units that attempt to get to their max attack range > 0.
+        //For units MOVING, this should be 0. For units that attempt to get to their max attack range > 0.
         if (unit.getUnitType() != UnitType.HARVESTER) {
             // log.warn("Unit path calc");
             path = aStarCache.calcPathEvenIfBlocked(unit, map, goalX, goalY, goalRadius);
         } else {
-            path = aStarCache.calcPathHarvester(unit, map, goalX, goalY);
             // log.warn("Harvester path calc");
-            // path = aStarCache.calcShortestPath(unit.getX(), unit.getY(), goalX, goalY, map, unit.getId(),
-            //        unit.getUnitType() == UnitType.HARVESTER, unit.getOwnerId());
+            path = aStarCache.calcPathHarvester(unit, map, goalX, goalY);
         }
     }
 
@@ -149,5 +155,11 @@ public class Move implements UnitGoal {
                 ", path=" + path +
                 ", aStarCache=" + aStarCache +
                 '}';
+    }
+
+    @Override
+    public void saveAdditionalInfoIntoDTO(Unit unit, UnitDTO dto) {
+        double travelledPercents = (double) unit.getTicksSpentOnCurrentGoal() / unit.getUnitType().getSpeed() * 100;
+        dto.setTravelledPercents((byte) travelledPercents);
     }
 }

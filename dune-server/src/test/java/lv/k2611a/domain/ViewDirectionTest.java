@@ -17,9 +17,33 @@ public class ViewDirectionTest {
         assertEquals(ViewDirection.BOTTOM, ViewDirection.getDirection(0,0,0,1));
         assertEquals(ViewDirection.BOTTOMLEFT, ViewDirection.getDirection(0,0,-1,1));
         assertEquals(ViewDirection.TOPRIGHT, ViewDirection.getDirection(0,0,1,-1));
-
         assertEquals(ViewDirection.TOP, ViewDirection.getDirection(0,0,0,0));
     }
+
+    @Test
+    public void testCorrectTurning() {
+        int testRangeConstant = 20;
+        ViewDirection viewDirections[] = new ViewDirection[testRangeConstant*2];
+        // First part of test is left turn(-45 degrees) by using an angle -90 degrees from current
+        for (int i = -testRangeConstant; i < testRangeConstant; i++) {
+            viewDirections[i+testRangeConstant] = ViewDirection.getDirectionByAngle(ViewDirection.VIEW_DIRECTION_STEP*i);
+            viewDirections[i+testRangeConstant] =
+                         viewDirections[i+testRangeConstant].turnInDirection(
+                            ViewDirection.getDirectionByAngle(ViewDirection.VIEW_DIRECTION_STEP*(i-2)));
+            assertEquals(viewDirections[i+testRangeConstant].getAngle(),
+                         ViewDirection.getDirectionByAngle(ViewDirection.VIEW_DIRECTION_STEP*(i-1)).getAngle());
+        }
+        // Second part of test is right turn(+45 degrees) by using an angle +90 degrees from current
+        for (int i = -testRangeConstant; i < testRangeConstant; i++) {
+            viewDirections[i+testRangeConstant] = ViewDirection.getDirectionByAngle(ViewDirection.VIEW_DIRECTION_STEP*i);
+            viewDirections[i+testRangeConstant] =
+                         viewDirections[i+testRangeConstant].turnInDirection(
+                            ViewDirection.getDirectionByAngle(ViewDirection.VIEW_DIRECTION_STEP*(i+2)));
+            assertEquals(viewDirections[i+testRangeConstant].getAngle(),
+                         ViewDirection.getDirectionByAngle(ViewDirection.VIEW_DIRECTION_STEP*(i+1)).getAngle());
+        }
+    }
+
 
     @Test
     public void testApplyIsCorrect() {

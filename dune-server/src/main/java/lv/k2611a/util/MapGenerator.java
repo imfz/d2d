@@ -16,7 +16,7 @@ import lv.k2611a.domain.TileType;
 public class MapGenerator {
 
     private static final Logger log = LoggerFactory.getLogger(MapGenerator.class);
-    private static final int BASE_RADIUS = 6;
+    private static final int BASE_RADIUS = 8;
     private static final int SPICE_RADIUS = 5;
     private static final int SPICE_COUNT = 7;
 

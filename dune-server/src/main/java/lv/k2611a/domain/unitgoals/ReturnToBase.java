@@ -13,6 +13,7 @@ import lv.k2611a.domain.RefineryEntrance;
 import lv.k2611a.domain.Unit;
 import lv.k2611a.domain.UnitType;
 import lv.k2611a.domain.ViewDirection;
+import lv.k2611a.network.UnitDTO;
 import lv.k2611a.service.game.GameServiceImpl;
 import lv.k2611a.util.AStar;
 import lv.k2611a.util.Point;
@@ -206,5 +207,9 @@ public class ReturnToBase implements UnitGoal {
                 ", targetRefineryId=" + targetRefineryId +
                 ", ticksToWait=" + ticksToWait +
                 '}';
+    }
+    @Override
+    public void saveAdditionalInfoIntoDTO(Unit unit, UnitDTO dto) {
+
     }
 }

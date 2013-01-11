@@ -4,10 +4,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 public enum TileType {
-    SAND((byte)1, 10),
-    ROCK((byte)2, 10),
-    SPICE((byte)3, 10),
-    RICH_SPICE((byte)4, 10)
+    SAND((byte)1),
+    ROCK((byte)2),
+    SPICE((byte)3),
+    RICH_SPICE((byte)4)
     ;
 
     private static TileType[] indexByJsId;
@@ -30,19 +30,13 @@ public enum TileType {
     }
 
     private byte idOnJS;
-    private int movementCost;
 
-    private TileType(byte idOnJS, int movementCost) {
+    private TileType(byte idOnJS) {
         this.idOnJS = idOnJS;
-        this.movementCost = movementCost;
     }
 
     public byte getIdOnJS() {
         return idOnJS;
-    }
-
-    public int getMovementCost() {
-        return movementCost;
     }
 
     public static TileType getByJsId(int idInIs) {

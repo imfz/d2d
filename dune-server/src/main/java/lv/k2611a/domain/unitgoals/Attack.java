@@ -10,6 +10,7 @@ import lv.k2611a.domain.Entity;
 import lv.k2611a.domain.Map;
 import lv.k2611a.domain.Unit;
 import lv.k2611a.domain.ViewDirection;
+import lv.k2611a.network.UnitDTO;
 import lv.k2611a.service.game.GameServiceImpl;
 import lv.k2611a.util.Point;
 
@@ -165,5 +166,9 @@ public class Attack implements UnitGoal {
     private boolean inRange(Unit target, Unit unit, Map map) {
         Point bestPoint = target.getPoint();
         return Map.getDistanceBetween(bestPoint, unit.getPoint()) <= unit.getUnitType().getAttackRange();
+    }
+    @Override
+    public void saveAdditionalInfoIntoDTO(Unit unit, UnitDTO dto) {
+
     }
 }

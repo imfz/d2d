@@ -14,7 +14,7 @@ public class Unit {
     private UnitType unitType;
     private ViewDirection viewDirection = ViewDirection.TOP;
     private List<UnitGoal> goals = new ArrayList<UnitGoal>();
-    private int ticksMovingToNextCell;
+    private int ticksSpentOnCurrentGoal;
     private int hp;
     private int ownerId;
     private int ticksCollectingSpice;
@@ -75,19 +75,19 @@ public class Unit {
 
     public void setGoal(UnitGoal goal) {
         this.goals = new ArrayList<UnitGoal>();
-        if (ticksMovingToNextCell > 0) {
+        if (ticksSpentOnCurrentGoal > 0) {
             Move move = new Move(viewDirection.apply(new Point(x,y)));
             goals.add(move);
         }
         goals.add(goal);
     }
 
-    public int getTicksMovingToNextCell() {
-        return ticksMovingToNextCell;
+    public int getTicksSpentOnCurrentGoal() {
+        return ticksSpentOnCurrentGoal;
     }
 
-    public void setTicksMovingToNextCell(int ticksMovingToNextCell) {
-        this.ticksMovingToNextCell = ticksMovingToNextCell;
+    public void setTicksSpentOnCurrentGoal(int ticksSpentOnCurrentGoal) {
+        this.ticksSpentOnCurrentGoal = ticksSpentOnCurrentGoal;
     }
 
     public void removeGoal(UnitGoal goal) {
