@@ -32,6 +32,7 @@ public class MoveTest {
         unit.setUnitType(UnitType.LAUNCHER);
         unit.setX(0);
         unit.setY(0);
+        unit.setViewDirection(ViewDirection.RIGHT);
         int id = map.addUnit(unit);
 
         gameService.setMap(map);
@@ -63,6 +64,7 @@ public class MoveTest {
             unit.setUnitType(UnitType.BATTLE_TANK);
             unit.setX(0);
             unit.setY(horizontalLineNumber);
+            unit.setViewDirection(ViewDirection.RIGHT);
             map.addUnit(unit);
         }
 
@@ -104,6 +106,7 @@ public class MoveTest {
             unit.setGoal(new Move(verticalLineNumber, mapHeight - 1));
             unit.setUnitType(UnitType.BATTLE_TANK);
             unit.setX(verticalLineNumber);
+            unit.setViewDirection(ViewDirection.BOTTOM);
             unit.setY(0);
             map.addUnit(unit);
         }

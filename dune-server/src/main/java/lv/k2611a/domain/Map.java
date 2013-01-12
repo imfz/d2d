@@ -507,7 +507,11 @@ public class Map {
 
 
     public void setUsed(int x, int y, int unitId) {
-        getTile(x, y).setUsed(unitId);
+        Tile tile = getTile(x, y);
+        if (tile == null) {
+            return;
+        }
+        tile.setUsed(unitId);
     }
 
     public void clearUsageFlag() {
