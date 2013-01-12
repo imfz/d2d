@@ -146,4 +146,8 @@ public enum ViewDirection {
         return ViewDirection.TOP;
     }
 
+    public static int ticksToTurn(int angle) {
+        return angle / VIEW_DIRECTION_STEP;
+    }
+
 }

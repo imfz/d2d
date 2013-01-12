@@ -74,16 +74,16 @@ public class AStar {
                         neighbor.setPreviousNode(current);
                         neighbor.setDistanceFromStart(neighborDistanceFromStart);
                         neighbor.setHeuristicDistanceFromGoal(neighborDistanceFromStart
-                                + 3 * Map.getDistanceBetween(neighbor, goal) * unit.getUnitType().getSpeed());
+                                + 3 * Map.getDistanceBetween(neighbor, goal) * unit.getUnitType().getSpeed() + getHeuristicSalt(neighbor));
                         openSet.add(neighbor);
                     } else if (neighborDistanceFromStart < current.getDistanceFromStart()) {
                         neighbor.setPreviousNode(current);
                         neighbor.setDistanceFromStart(neighborDistanceFromStart);
                         neighbor.setHeuristicDistanceFromGoal(neighborDistanceFromStart
-                                + 3 * Map.getDistanceBetween(neighbor, goal) * unit.getUnitType().getSpeed());
+                                + 3 * Map.getDistanceBetween(neighbor, goal) * unit.getUnitType().getSpeed() + getHeuristicSalt(neighbor));
                     }
                 } else {
-                    neighbor.setHeuristicDistanceFromGoal(Double.MAX_VALUE);
+                    neighbor.setHeuristicDistanceFromGoal(Double.MAX_VALUE / 2 + getHeuristicSalt(neighbor));
                     closedSet.add(neighbor);
                 }
             }
@@ -151,16 +151,16 @@ public class AStar {
                         neighbor.setPreviousNode(current);
                         neighbor.setDistanceFromStart(neighborDistanceFromStart);
                         neighbor.setHeuristicDistanceFromGoal(neighborDistanceFromStart
-                                + 2 * Map.getDistanceBetween(neighbor, goal) * unit.getUnitType().getSpeed());
+                                + 2 * Map.getDistanceBetween(neighbor, goal) * unit.getUnitType().getSpeed() + getHeuristicSalt(neighbor));
                         openSet.add(neighbor);
                     } else if (neighborDistanceFromStart < current.getDistanceFromStart()) {
                         neighbor.setPreviousNode(current);
                         neighbor.setDistanceFromStart(neighborDistanceFromStart);
                         neighbor.setHeuristicDistanceFromGoal(neighborDistanceFromStart
-                                + 2 * Map.getDistanceBetween(neighbor, goal) * unit.getUnitType().getSpeed());
+                                + 2 * Map.getDistanceBetween(neighbor, goal) * unit.getUnitType().getSpeed() + getHeuristicSalt(neighbor));
                     }
                 } else {
-                    neighbor.setHeuristicDistanceFromGoal(Double.MAX_VALUE);
+                    neighbor.setHeuristicDistanceFromGoal(Double.MAX_VALUE / 2  + getHeuristicSalt(neighbor));
                     closedSet.add(neighbor);
                 }
             }
@@ -184,6 +184,14 @@ public class AStar {
             }
         }
         return bestNode;
+    }
+
+    private double getHeuristicSalt(Node node) {
+        return getHeuristicSalt(node.getX(), node.getY());
+    }
+
+    private double getHeuristicSalt(double x, double y) {
+        return x * 0.001 + y * 0.000001;
     }
 
     private TreeSet<Node> createSortedNodeSet() {
@@ -229,9 +237,9 @@ public class AStar {
     private static double getPathCost(int unitId, Map map, Node node1, Node node2) {
         Tile targetTile = map.getTile(node2.getX(), node2.getY());
         if (targetTile.isUnoccupied(unitId)) {
-            return map.getDistanceBetween(node1, node2);
+            return Map.getDistanceBetween(node1, node2);
         }
-        return map.getDistanceBetween(node1, node2) + AStar.OCCUPIED_TILE_COST;
+        return Map.getDistanceBetween(node1, node2) + AStar.OCCUPIED_TILE_COST;
     }
 
     private int getRequiredTicksToTurn(int currentAngle, int goalAngle) {
@@ -248,9 +256,9 @@ public class AStar {
             turnRight = goalAngle - currentAngle;
         }
         if (turnLeft > turnRight) {
-            return turnRight / ViewDirection.VIEW_DIRECTION_STEP;
+            return ViewDirection.ticksToTurn(turnRight);
         } else {
-            return turnLeft / ViewDirection.VIEW_DIRECTION_STEP;
+            return ViewDirection.ticksToTurn(turnLeft);
         }
     }
 }
