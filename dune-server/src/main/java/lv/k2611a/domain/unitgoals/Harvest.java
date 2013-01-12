@@ -179,8 +179,6 @@ public class Harvest implements UnitGoal {
 
     @Override
     public void saveAdditionalInfoIntoDTO(Unit unit, UnitDTO dto) {
-        int spicePercents = (int) ((double) unit.getTicksCollectingSpice() / Harvest.TICKS_FOR_FULL * 100);
-        dto.setSpicePercents((byte) spicePercents);
         dto.setHarvesting((byte)getCollectingSpice());
     }
 }

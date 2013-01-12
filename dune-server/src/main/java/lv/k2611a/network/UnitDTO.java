@@ -160,6 +160,11 @@ public class UnitDTO implements CustomSerialization {
         dto.setViewDirection((byte) unit.getViewDirection().getIdOnJS());
         dto.setOwnerId((byte) unit.getOwnerId());
 
+        if (unit.getUnitType() == UnitType.HARVESTER) {
+            int spicePercents = (int) ((double) unit.getTicksCollectingSpice() / Harvest.TICKS_FOR_FULL * 100);
+            dto.setSpicePercents((byte) spicePercents);
+        }
+
         if (unit.getCurrentGoal() != null) {
             unit.getCurrentGoal().saveAdditionalInfoIntoDTO(unit, dto);
         }
