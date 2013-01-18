@@ -17,8 +17,10 @@ public class AStar {
     private HashSet<Node> closedSet;
     private SortedSet<Node> openSet;
 
-    public static final double OCCUPIED_TILE_COST = 15.0;
-    public static final double DEPTH_OF_PATH = 30.0;
+    public static double UNIT_HEURISTICS = 3.0;
+    public static double OCCUPIED_TILE_COST = 5.0 * UNIT_HEURISTICS;
+    public static double PATH_LENGTH = 10.0 * UNIT_HEURISTICS;
+    public static double HARVESTER_HEURISTICS = 2.0;
 
     public List<Node> calcPathEvenIfBlocked(Unit unit, Map map, int toX, int toY, int goalRadius) {
 
@@ -34,22 +36,24 @@ public class AStar {
         openSet = createSortedNodeSet();
 
         start.setDistanceFromStart(0);
-        start.setHeuristicDistanceFromGoal(3 * Map.getDistanceBetween(start, goal));
-        double maximumDepthOfPath = start.getHeuristicDistanceFromGoal() - DEPTH_OF_PATH;
+        start.setHeuristicDistanceFromGoal(UNIT_HEURISTICS * Map.getDistanceBetween(start, goal));
+        double minimalDistanceToReachGoalRadius = UNIT_HEURISTICS * goalRadius;
+        double minimalDistanceToReachAStarRange = start.getHeuristicDistanceFromGoal() - PATH_LENGTH;
+        double requiredDistanceToGoal = Math.max(minimalDistanceToReachGoalRadius, minimalDistanceToReachAStarRange);
 
         openSet.add(start);
         while (!openSet.isEmpty()) {
             Node current = openSet.first();
 
-            if (Map.getDistanceBetween(current, goal) <= goalRadius || current.getHeuristicDistanceFromGoal() <= maximumDepthOfPath) {
+            if (current.getHeuristicDistanceFromGoal() <= requiredDistanceToGoal) {
                 return reconstructPath(current);
             }
 
             openSet.remove(current);
             closedSet.add(current);
 
-            // 200 iterations should be enough, as we will return the found path for the units even if we ran out of nodes.
-            if (closedSet.size() >= 200) {
+            // 150 iterations should be enough, as we will return the found path for the units even if we ran out of nodes.
+            if (closedSet.size() >= 150) {
                 log.warn("AStar maximum iteration count reached");
                 return reconstructPath(getBestNode(closedSet));
             }
@@ -74,13 +78,13 @@ public class AStar {
                         neighbor.setPreviousNode(current);
                         neighbor.setDistanceFromStart(neighborDistanceFromStart);
                         neighbor.setHeuristicDistanceFromGoal(neighborDistanceFromStart
-                                + 3 * Map.getDistanceBetween(neighbor, goal) * unit.getUnitType().getSpeed() + getHeuristicSalt(neighbor));
+                                + UNIT_HEURISTICS * Map.getDistanceBetween(neighbor, goal) * unit.getUnitType().getSpeed() + getHeuristicSalt(neighbor));
                         openSet.add(neighbor);
                     } else if (neighborDistanceFromStart < current.getDistanceFromStart()) {
                         neighbor.setPreviousNode(current);
                         neighbor.setDistanceFromStart(neighborDistanceFromStart);
                         neighbor.setHeuristicDistanceFromGoal(neighborDistanceFromStart
-                                + 3 * Map.getDistanceBetween(neighbor, goal) * unit.getUnitType().getSpeed() + getHeuristicSalt(neighbor));
+                                + UNIT_HEURISTICS * Map.getDistanceBetween(neighbor, goal) * unit.getUnitType().getSpeed() + getHeuristicSalt(neighbor));
                     }
                 } else {
                     neighbor.setHeuristicDistanceFromGoal(Double.MAX_VALUE / 2 + getHeuristicSalt(neighbor));
@@ -100,7 +104,7 @@ public class AStar {
         Node start = new Node(unit.getX(), unit.getY());
         Node goal = new Node(toX, toY);
 
-        if (!map.isUnoccupied(goal, unit.getId(), unit.getOwnerId(), unit.getUnitType() == UnitType.HARVESTER)) {
+        if (!map.isUnoccupied(goal, unit)) {
             return new ArrayList<Node>();
         }
 
@@ -141,7 +145,7 @@ public class AStar {
                 if (closedSet.contains(neighbor)) {
                     continue;
                 }
-                boolean isUnoccupied = map.isUnoccupiedHarvesterAStar(start, neighbor, unit.getId(), unit.getOwnerId(), unit.getUnitType() == UnitType.HARVESTER);
+                boolean isUnoccupied = map.isUnoccupiedAStar(start, neighbor, unit);
                 if (isUnoccupied) {
                     int neighborDirection = ViewDirection.getDirection(current.getPoint(), neighbor.getPoint()).getAngle();
                     double neighborDistanceFromStart = current.getDistanceFromStart()
@@ -151,13 +155,13 @@ public class AStar {
                         neighbor.setPreviousNode(current);
                         neighbor.setDistanceFromStart(neighborDistanceFromStart);
                         neighbor.setHeuristicDistanceFromGoal(neighborDistanceFromStart
-                                + 2 * Map.getDistanceBetween(neighbor, goal) * unit.getUnitType().getSpeed() + getHeuristicSalt(neighbor));
+                                + HARVESTER_HEURISTICS * Map.getDistanceBetween(neighbor, goal) * unit.getUnitType().getSpeed() + getHeuristicSalt(neighbor));
                         openSet.add(neighbor);
                     } else if (neighborDistanceFromStart < current.getDistanceFromStart()) {
                         neighbor.setPreviousNode(current);
                         neighbor.setDistanceFromStart(neighborDistanceFromStart);
                         neighbor.setHeuristicDistanceFromGoal(neighborDistanceFromStart
-                                + 2 * Map.getDistanceBetween(neighbor, goal) * unit.getUnitType().getSpeed() + getHeuristicSalt(neighbor));
+                                + HARVESTER_HEURISTICS * Map.getDistanceBetween(neighbor, goal) * unit.getUnitType().getSpeed() + getHeuristicSalt(neighbor));
                     }
                 } else {
                     neighbor.setHeuristicDistanceFromGoal(Double.MAX_VALUE / 2  + getHeuristicSalt(neighbor));
@@ -239,7 +243,7 @@ public class AStar {
         if (targetTile.isUnoccupied(unitId)) {
             return Map.getDistanceBetween(node1, node2);
         }
-        return Map.getDistanceBetween(node1, node2) + AStar.OCCUPIED_TILE_COST;
+        return Map.getDistanceBetween(node1, node2) + OCCUPIED_TILE_COST;
     }
 
     private int getRequiredTicksToTurn(int currentAngle, int goalAngle) {

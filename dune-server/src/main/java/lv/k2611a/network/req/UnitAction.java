@@ -12,10 +12,7 @@ import lv.k2611a.domain.Tile;
 import lv.k2611a.domain.TileType;
 import lv.k2611a.domain.Unit;
 import lv.k2611a.domain.UnitType;
-import lv.k2611a.domain.unitgoals.Attack;
-import lv.k2611a.domain.unitgoals.Harvest;
-import lv.k2611a.domain.unitgoals.RepetetiveMove;
-import lv.k2611a.domain.unitgoals.ReturnToBase;
+import lv.k2611a.domain.unitgoals.*;
 import lv.k2611a.util.Point;
 
 public class UnitAction extends AbstractGameStateChanger {
@@ -84,7 +81,7 @@ public class UnitAction extends AbstractGameStateChanger {
                     return;
                 }
             }
-            unit.setGoal(new RepetetiveMove(x, y));
+            unit.setGoal(new Move(x, y));
         }
     }
 
@@ -98,10 +95,10 @@ public class UnitAction extends AbstractGameStateChanger {
                 if (refineryEntrance.getOwnerId() == unit.getOwnerId()) {
                     unit.setGoal(new ReturnToBase(refineryEntrance));
                 } else {
-                    unit.setGoal(new RepetetiveMove(x, y));
+                    unit.setGoal(new Move(x, y));
                 }
             } else {
-                unit.setGoal(new RepetetiveMove(x, y));
+                unit.setGoal(new Move(x, y));
             }
         }
     }

@@ -37,7 +37,7 @@ public class AStarTest {
     }
 
     @Test
-    public void testAStarPerformance() {
+    public void testAStarPerformanceUnits() {
         Map map = new Map(256,256);
         long startTime = System.currentTimeMillis();
         int iterationCount = 100;
@@ -50,6 +50,28 @@ public class AStarTest {
         map.addUnit(unit);
         for (int i = 0; i < iterationCount; i++) {
             int result = new AStar().calcPathEvenIfBlocked(unit, map, 255, 255, 0).size();
+            totalMoveCount += result;
+        }
+        long endTime = System.currentTimeMillis();
+        long delta = endTime - startTime;
+        double timeForIteration = (double)delta / iterationCount;
+        System.out.println("A star time for iteration " + timeForIteration + " ms " + " total move count " + totalMoveCount);
+    }
+
+    @Test
+    public void testAStarPerformanceHarvesters() {
+        Map map = new Map(256,256);
+        long startTime = System.currentTimeMillis();
+        int iterationCount = 100;
+        int totalMoveCount = 0;
+        Unit unit = new Unit();
+        unit.setUnitType(UnitType.HARVESTER);
+        unit.setOwnerId(1);
+        unit.setX(0);
+        unit.setY(0);
+        map.addUnit(unit);
+        for (int i = 0; i < iterationCount; i++) {
+            int result = new AStar().calcPathHarvester(unit, map, 255, 255).size();
             totalMoveCount += result;
         }
         long endTime = System.currentTimeMillis();

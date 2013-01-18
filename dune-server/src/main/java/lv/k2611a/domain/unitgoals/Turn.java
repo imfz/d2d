@@ -16,6 +16,11 @@ public class Turn implements UnitGoal {
     }
 
     @Override
+    public void reserveTiles(Unit unit, Map map) {
+        map.setUsed(unit.getX(), unit.getY(), unit.getId());
+    }
+
+    @Override
     public void process(Unit unit, Map map, GameServiceImpl gameService) {
         if (unit.getViewDirection() != goalDirection) {
             int ticksRequiredToTurn = unit.getUnitType().getTurnSpeed();

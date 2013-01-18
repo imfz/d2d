@@ -20,11 +20,11 @@ import lv.k2611a.util.Point;
 public class Harvest implements UnitGoal {
 
     public static int TICKS_FOR_FULL = 200;
-
     private Point targetSpice;
     private int collectingSpice;
     private int wasCollectingSpice;
     private int ticksToWait;
+    private boolean enrouteToSpice = false;
 
     public Harvest() {
     }
@@ -34,7 +34,16 @@ public class Harvest implements UnitGoal {
     }
 
     @Override
+    public void reserveTiles(Unit unit, Map map) {
+        map.setUsed(unit.getX(), unit.getY(), unit.getId());
+    }
+
+    @Override
     public void process(Unit unit, Map map, GameServiceImpl gameService) {
+        if (enrouteToSpice && !targetSpice.equals(unit.getPoint())) {
+            ticksToWait = 10 + new Random().nextInt(40);
+        }
+        enrouteToSpice = false;
         if (ticksToWait > 0) {
             ticksToWait--;
             return;
@@ -55,8 +64,7 @@ public class Harvest implements UnitGoal {
 
     }
 
-
-    private void lookForSpice(Unit unit, Map map, GameService gameService) {
+    private void lookForSpice(Unit unit, Map map, GameServiceImpl gameService) {
         if (targetSpice == null) {
             searchTargetSpice(unit, map);
         }
@@ -73,7 +81,7 @@ public class Harvest implements UnitGoal {
                     Point newTarget = map.getRandomFreeTile(unit.getPoint(), 7, 25);
                     if (newTarget != null) {
                         if (AStar.pathExists(unit, map, newTarget)) {
-                            unit.setGoal(new RepetetiveMove(newTarget.getX(), newTarget.getY()));
+                            unit.setGoal(new Move(newTarget.getX(), newTarget.getY()));
                         }
                     }
                     iterationCount++;
@@ -96,12 +104,14 @@ public class Harvest implements UnitGoal {
         if (targetSpice.equals(unit.getPoint())) {
             harvestSpice(unit, map, gameService);
         } else {
-            moveToSpice(unit);
+            moveToSpice(unit, map, gameService);
         }
     }
 
-    private void moveToSpice(Unit unit) {
+    private void moveToSpice(Unit unit, Map map, GameServiceImpl gameService) {
+        enrouteToSpice = true;
         unit.insertGoalBeforeCurrent(new Move(targetSpice));
+        unit.getCurrentGoal().process(unit, map, gameService);
     }
 
 

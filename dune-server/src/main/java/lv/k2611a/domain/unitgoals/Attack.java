@@ -13,107 +13,76 @@ import lv.k2611a.domain.ViewDirection;
 import lv.k2611a.network.UnitDTO;
 import lv.k2611a.service.game.GameServiceImpl;
 import lv.k2611a.util.Point;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Attack implements UnitGoal {
 
-    private Entity entity;
-    private int entityId;
+    private static final Logger log = LoggerFactory.getLogger(Move.class);
+    private int targetId;
+    private Entity targetEntity;
 
-    public Attack(Entity entity, int entityId) {
-        this.entity = entity;
-        this.entityId = entityId;
+    public Attack(Entity targetEntity, int targetId) {
+        this.targetId = targetId;
+        this.targetEntity = targetEntity;
     }
 
-    public Entity getEntity() {
-        return entity;
-    }
-
-    public void setEntity(Entity entity) {
-        this.entity = entity;
-    }
-
-    public int getEntityId() {
-        return entityId;
-    }
-
-    public void setEntityId(int entityId) {
-        this.entityId = entityId;
+    @Override
+    public void reserveTiles(Unit unit, Map map) {
+        map.setUsed(unit.getX(), unit.getY(), unit.getId());
     }
 
     @Override
     public void process(Unit unit, Map map, GameServiceImpl gameService) {
-        if (entity == Entity.BUILDING) {
-            if (map.getBuilding(entityId) == null) {
+        if (targetEntity == Entity.BUILDING) {
+            if (map.getBuilding(targetId) == null) {
+                unit.removeGoal(this);
                 return;
             }
-            attackBuilding(unit,map,gameService);
-        }
-        if (entity == Entity.UNIT) {
-            if (map.getUnit(entityId) == null) {
+            Point targetBuildingPoint = getClosestPoint(map.getBuilding(targetId), unit);
+            attackTarget(unit, targetBuildingPoint, map, gameService);
+        } else if (targetEntity == Entity.UNIT) {
+            if (map.getUnit(targetId) == null) {
+                unit.removeGoal(this);
                 return;
             }
-            attackUnit(unit, map, gameService);
-        }
-    }
-
-    private void attackUnit(Unit unit, Map map, GameServiceImpl gameService) {
-        Unit target = map.getUnit(entityId);
-        if (inRange(target,unit,map)) {
-            fireUnit(target, unit, map, gameService);
+            Point targetUnitPoint = map.getUnit(targetId).getPoint();
+            attackTarget(unit, targetUnitPoint, map, gameService);
         } else {
-            move(target,unit,map);
+            log.warn("An alien is under attack!");
+            unit.removeGoal(this);
         }
     }
-
-    private void attackBuilding(Unit unit, Map map, GameServiceImpl gameService) {
-        Building building = map.getBuilding(entityId);
-        if (inRange(building,unit,map)) {
-            fireBuilding(building, unit, map, gameService);
+    private void attackTarget(Unit unit, Point targetPoint, Map map, GameServiceImpl gameService) {
+        if (targetInAttackRange(unit, targetPoint)) {
+            // unit.setViewDirection(ViewDirection.getDirection(unit.getPoint(), closestBuildingPoint));
+            if (unit.getTicksReloading() == 0) {
+                fire(unit, map, targetPoint);
+            }
         } else {
-            move(building,unit,map);
+            unit.insertGoalBeforeCurrent(new Chase(targetEntity, targetId, targetPoint));
+            unit.getCurrentGoal().process(unit, map, gameService);
         }
     }
 
-    private void move(Building building, Unit unit, Map map) {
-        Point bestPoint = getClosestPoint(building, unit);
-        final int buildingId = building.getId();
-        final int unitOwnerId = unit.getOwnerId();
-        unit.insertGoalBeforeCurrent(new Move(bestPoint.getX(), bestPoint.getY(),unit.getUnitType().getAttackRange(), new MoveExpired() {
-            @Override
-            public boolean isExpired(Move move, Map map) {
-                Building building = map.getBuilding(buildingId);
-                if (building == null) {
-                    return true;
-                }
-                if (building.getOwnerId() == unitOwnerId) {
-                    return true;
-                }
-                return false;
-            }
-        }));
+    private boolean targetInAttackRange(Unit unit, Point targetPoint) {
+        return Map.getDistanceBetween(unit.getPoint(), targetPoint) <= unit.getUnitType().getAttackRange();
     }
 
-    private void move(Unit target, Unit unit, Map map) {
-        Point bestPoint = target.getPoint();
-        final int unitId = target.getId();
-        final int ownerId = target.getOwnerId();
-        final Point unitPoint = target.getPoint();
-        unit.insertGoalBeforeCurrent(new Move(bestPoint.getX(), bestPoint.getY(),unit.getUnitType().getAttackRange(), new MoveExpired() {
-            @Override
-            public boolean isExpired(Move move, Map map) {
-                Unit unit = map.getUnit(unitId);
-                if (unit == null) {
-                    return true;
-                }
-                if (unit.getOwnerId() == ownerId) {
-                    return true;
-                }
-                if (!unitPoint.equals(unit.getPoint())) {
-                    return true;
-                }
-                return false;
-            }
-        }));
+    private void fire(Unit unit, Map map, Point target) {
+        Bullet bullet = new Bullet();
+        bullet.setDamageToDeal(unit.getUnitType().getAttackDamage());
+        bullet.setStartX(unit.getX());
+        bullet.setStartY(unit.getY());
+        bullet.setGoalX(target.getX());
+        bullet.setGoalY(target.getY());
+        int bulletTicksToMove = (int) Math.round(unit.getUnitType().getBulletSpeed() * Map.getDistanceBetween(unit.getPoint(), target));
+
+        bullet.setTicksToMove(bulletTicksToMove);
+        bullet.setTicksToMoveTotal(bulletTicksToMove);
+        bullet.setBulletType(BulletType.TANK_SHOT);
+        map.addBullet(bullet);
+        unit.setTicksReloading(unit.getUnitType().getTicksToAttack());
     }
 
     private Point getClosestPoint(Building building, Unit unit) {
@@ -126,47 +95,6 @@ public class Attack implements UnitGoal {
         return Map.getClosestNode(unit.getPoint(), points);
     }
 
-    private void fireBuilding(Building building, Unit unit, Map map, GameServiceImpl gameService) {
-        Point closestPoint = getClosestPoint(building, unit);
-        unit.setViewDirection(ViewDirection.getDirection(unit.getPoint(), closestPoint));
-        if (unit.getTicksReloading() == 0) {
-            fire(unit, map, closestPoint);
-        }
-    }
-
-    private void fireUnit(Unit target, Unit unit, Map map, GameServiceImpl gameService) {
-        Point closestPoint = target.getPoint();
-        unit.setViewDirection(ViewDirection.getDirection(unit.getPoint(), closestPoint));
-        if (unit.getTicksReloading() == 0) {
-            fire(unit, map, closestPoint);
-        }
-    }
-
-    private void fire(Unit unit, Map map, Point closestPoint) {
-        Bullet bullet = new Bullet();
-        bullet.setDamageToDeal(unit.getUnitType().getAttackDamage());
-        bullet.setStartX(unit.getX());
-        bullet.setStartY(unit.getY());
-        bullet.setGoalX(closestPoint.getX());
-        bullet.setGoalY(closestPoint.getY());
-        int bulletTicksToMove = (int) Math.round(unit.getUnitType().getBulletSpeed() * Map.getDistanceBetween(unit.getPoint(), closestPoint));
-
-        bullet.setTicksToMove(bulletTicksToMove);
-        bullet.setTicksToMoveTotal(bulletTicksToMove);
-        bullet.setBulletType(BulletType.TANK_SHOT);
-        map.addBullet(bullet);
-        unit.setTicksReloading(unit.getUnitType().getTicksToAttack());
-    }
-
-    private boolean inRange(Building building, Unit unit, Map map) {
-        Point bestPoint = getClosestPoint(building, unit);
-        return Map.getDistanceBetween(bestPoint, unit.getPoint()) <= unit.getUnitType().getAttackRange();
-    }
-
-    private boolean inRange(Unit target, Unit unit, Map map) {
-        Point bestPoint = target.getPoint();
-        return Map.getDistanceBetween(bestPoint, unit.getPoint()) <= unit.getUnitType().getAttackRange();
-    }
     @Override
     public void saveAdditionalInfoIntoDTO(Unit unit, UnitDTO dto) {
 

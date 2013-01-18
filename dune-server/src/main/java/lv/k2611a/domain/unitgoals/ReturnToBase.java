@@ -41,6 +41,11 @@ public class ReturnToBase implements UnitGoal {
     }
 
     @Override
+    public void reserveTiles(Unit unit, Map map) {
+        map.setUsed(unit.getX(), unit.getY(), unit.getId());
+    }
+
+    @Override
     public void process(Unit unit, Map map, GameServiceImpl gameService) {
         if (ticksToWait > 0) {
             ticksToWait--;
@@ -84,18 +89,19 @@ public class ReturnToBase implements UnitGoal {
         if (unit.getPoint().equals(targetRefinery)) {
             unloadSpice(unit, map, gameService);
         } else {
-            moveToRefinery(map, unit);
+            moveToRefinery(map, unit, gameService);
         }
 
     }
 
-    private void moveToRefinery(Map map, Unit unit) {
+    private void moveToRefinery(Map map, Unit unit, GameServiceImpl gameService) {
         if (map.getTile(targetRefinery).isUsedByUnit()) {
             // refinery already occupied, go search for another
             targetRefinery = null;
             targetRefineryId = 0;
         } else {
             unit.insertGoalBeforeCurrent(new Move(targetRefinery));
+            unit.getCurrentGoal().process(unit, map, gameService);
         }
     }
 
@@ -159,7 +165,7 @@ public class ReturnToBase implements UnitGoal {
         }
         targetRefinery = null;
         targetRefineryId = 0;
-        ticksToWait = new Random().nextInt(80);
+        ticksToWait = 10 + new Random().nextInt(40);
     }
 
 

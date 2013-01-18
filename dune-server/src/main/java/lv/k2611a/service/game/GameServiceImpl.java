@@ -12,6 +12,9 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PreDestroy;
 
+import lv.k2611a.domain.unitgoals.Chase;
+import lv.k2611a.domain.unitgoals.Move;
+import lv.k2611a.domain.unitgoals.UnitGoal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -511,8 +514,6 @@ public class GameServiceImpl implements GameService {
     private void mapFillTileUsage(Map map) {
         map.clearUsageFlag();
         map.getRefineryEntranceList().clear();
-        map.getHarvesters().clear();
-        map.getFreeHarvesters().clear();
         for (Building building : map.getBuildings()) {
             for (int x = 0; x < building.getType().getWidth(); x++) {
                 for (int y = 0; y < building.getType().getHeight(); y++) {
@@ -530,18 +531,13 @@ public class GameServiceImpl implements GameService {
                 map.getRefineryEntranceList().put(point, refineryEntrance);
             }
         }
-        for (Unit unit : map.getUnitsByType(UnitType.HARVESTER)) {
-            map.getHarvesters().add(unit.getId());
-            if (unit.getTicksCollectingSpice() == 0) {
-                map.getFreeHarvesters().add(unit.getId());
-            }
-        }
 
         for (Unit unit : map.getUnits()) {
-            map.setUsed(unit.getX(), unit.getY(), unit.getId());
-            if (unit.getTicksSpentOnCurrentGoal() > 0) {
-                Point unitMovingTo = unit.getViewDirection().apply(new Point(unit.getX(), unit.getY()));
-                map.setUsed(unitMovingTo.getX(), unitMovingTo.getY(), unit.getId());
+            UnitGoal unitGoal = unit.getCurrentGoal();
+            if (unitGoal != null) {
+                unit.getCurrentGoal().reserveTiles(unit, map);
+            } else {
+                map.setUsed(unit.getX(), unit.getY(), unit.getId());
             }
         }
         //map.buildPassableSegmentCache();
