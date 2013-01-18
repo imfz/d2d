@@ -45,11 +45,12 @@ Lobby.prototype.logout = function () {
 };
 
 Lobby.prototype.signIn = function () {
+    var host = $("#host").val();
     var username = $("#username").val();
     if (username.length == 0) {
         Utils.showError("Username empty");
     } else {
-        this.network.start(username);
+        this.network.start(username, host);
     }
 };
 

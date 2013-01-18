@@ -5,10 +5,10 @@ function NetworkConnection() {
     this.ws = null;
 }
 
-NetworkConnection.prototype.start = function (name) {
+NetworkConnection.prototype.start = function (name, host) {
     this._username = name;
     this._connEstablished = false;
-    var location = "ws://localhost:8080/chat";
+    var location = host;
     this._ws = new WebSocket(location, "chat");
     this._ws.binaryType = "arraybuffer";
     this._ws.onopen = this.onopen;
