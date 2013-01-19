@@ -74,10 +74,17 @@ public class Unit {
     }
 
     public void setGoal(UnitGoal goal) {
+        UnitGoal currentGoal = getCurrentGoal();
         this.goals = new ArrayList<UnitGoal>();
-        if (ticksSpentOnCurrentGoal > 0) {
-            Move move = new Move(viewDirection.apply(new Point(x,y)));
-            goals.add(move);
+
+        // finish current move.
+        if (currentGoal != null) {
+            if (currentGoal instanceof Move) {
+                if (ticksSpentOnCurrentGoal > 0) {
+                    Move move = new Move(viewDirection.apply(new Point(x, y)));
+                    goals.add(move);
+                }
+            }
         }
         goals.add(goal);
     }
@@ -107,7 +114,7 @@ public class Unit {
     }
 
     public Point getPoint() {
-        return new Point(x,y);
+        return new Point(x, y);
     }
 
     public int getTicksCollectingSpice() {
