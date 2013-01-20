@@ -45,7 +45,6 @@ $(function () {
     sprites.setUnitSprite(Utils.getImageElement("images/units.png"));
     sprites.setBulletSprite(Utils.getImageElement("images/bullet.png"));
     sprites.setBuildingsSprite(Utils.getImageElement("images/buildings.png"));
-    sprites.setHarvesterSprite(Utils.getImageElement("images/harvester.png"));
 
     sprites.setOkButton(Utils.getImageElement("images/okbutton.png"));
 

@@ -173,10 +173,6 @@ Sprites.prototype.setBuildingsSprite = function (buildingsSprite) {
     this.buildingsSprite = buildingsSprite;
 };
 
-Sprites.prototype.setHarvesterSprite = function (harvesterSprite) {
-    this.harvesterSprite = harvesterSprite;
-};
-
 Sprites.prototype.setOkButton = function (okButtonSprite) {
     this.okButtonSprite = okButtonSprite;
 };
