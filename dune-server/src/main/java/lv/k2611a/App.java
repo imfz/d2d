@@ -30,7 +30,7 @@ public class App {
 
 
         ResourceHandler resourceHandler = new ResourceHandler();
-        resourceHandler.setResourceBase("./dune-client/resources/");
+        resourceHandler.setResourceBase("dune-client/resources/");
 
         DefaultHandler defaultHandler = new DefaultHandler();
 
