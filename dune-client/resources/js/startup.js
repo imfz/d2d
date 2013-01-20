@@ -13,6 +13,9 @@ $(function () {
     var thing = { plugin: 'jquery-json', version: 2.4 };
 
     console.log("Initialized");
+
+    $("#host").val("ws://" + window.location.hostname + ":" + window.location.port +  "/chat");
+
     gameLog = new GameLog();
     sprites = new Sprites();
     engine = new GameEngine();
@@ -31,7 +34,6 @@ $(function () {
 
     var minimapCanvas = $("#minimap").get(0);
     minimapEngine.setCanvas(minimapCanvas);
-    minimapEngine.setBufferCanvas($("#minimap_buffer").get(0));
     minimapEngine.setMap(map);
     minimapEngine.setEngine(engine);
 
@@ -39,19 +41,18 @@ $(function () {
 
     rightmenu.setMainSprite(Utils.getImageElement("images/buys.jpg"));
 
-    sprites.setMainSprite(Utils.getImageElement("images/main_sprite.jpg"));
+    sprites.setMainSprite(Utils.getImageElement("images/main_sprite.png"));
     sprites.setUnitSprite(Utils.getImageElement("images/units.png"));
     sprites.setBulletSprite(Utils.getImageElement("images/bullet.png"));
-    sprites.setBuildingsSprite(Utils.getImageElement("images/buildings.jpg"));
-    sprites.setRefinerySprite(Utils.getImageElement("images/refinery.jpg"));
+    sprites.setBuildingsSprite(Utils.getImageElement("images/buildings.png"));
     sprites.setHarvesterSprite(Utils.getImageElement("images/harvester.png"));
 
     sprites.setOkButton(Utils.getImageElement("images/okbutton.png"));
-    sprites.setBuildBgGreen(Utils.getImageElement("images/build_bg_green.png"));
-    sprites.setBuildBgRed(Utils.getImageElement("images/build_bg_red.png"));
-    sprites.setBuildBgYellow(Utils.getImageElement("images/build_bg_yellow.png"));
 
     Utils.afterImagesLoaded(function() {
+
+        sprites.buildUnitSprites();
+
         minimapEngine.bindEvents();
 
         rightmenu.bindEvents();

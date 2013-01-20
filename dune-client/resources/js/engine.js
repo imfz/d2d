@@ -1,21 +1,21 @@
-var TILE_HEIGHT = 63;
-var TILE_WIDTH = 63;
+var TILE_HEIGHT = 32;
+var TILE_WIDTH = 32;
 var OK_BUTTON_ENABLED_TICKS = 30;
 var OK_BUTTON_DISABLED_TICKS = 30;
 
-var HP_BAR_LENGTH = 33;
-var HP_BAR_HEIGHT = 5;
-var HP_BAR_X_OFFSET = 15;
-var HP_BAR_Y_OFFSET = 3;
+var HP_BAR_LENGTH = 16;
+var HP_BAR_HEIGHT = 2;
+var HP_BAR_X_OFFSET = 7;
+var HP_BAR_Y_OFFSET = 2;
 
-var SPICE_BAR_LENGTH = 33;
-var SPICE_BAR_HEIGHT = 5;
-var SPICE_BAR_X_OFFSET = 15;
-var SPICE_BAR_Y_OFFSET = 11;
+var SPICE_BAR_LENGTH = 16;
+var SPICE_BAR_HEIGHT = 2;
+var SPICE_BAR_X_OFFSET = 7;
+var SPICE_BAR_Y_OFFSET = 7;
 
-var BUILDING_HP_BAR_HEIGHT = 5;
-var BUILDING_HP_BAR_X_OFFSET = 15;
-var BUILDING_HP_BAR_Y_OFFSET = 3;
+var BUILDING_HP_BAR_HEIGHT = 2;
+var BUILDING_HP_BAR_X_OFFSET = 7;
+var BUILDING_HP_BAR_Y_OFFSET = 2;
 
 
 var ZOOM_IN_FACTOR = 0.5;
@@ -30,10 +30,10 @@ function GameEngine() {
     this.scale = 1.0;
     this.frameCount = 0;
     this.startTime = 0;
-    this.shownUnits = new Array();
-    this.shownBuildings = new Array();
-    this.selectedUnitId = new Array();
-    this.groups = new Array();
+    this.shownUnits = [];
+    this.shownBuildings = [];
+    this.selectedUnitId = [];
+    this.groups = [];
     this.hotkeysEnabled = true;
     console.log("Created game engine");
 }

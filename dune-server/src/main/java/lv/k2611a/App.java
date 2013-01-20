@@ -5,6 +5,7 @@ import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
+import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -27,10 +28,14 @@ public class App {
         ServletHandler servletHandler = new ServletHandler();
         servletHandler.addServletWithMapping(GameServlet.class, "/chat/*");
 
+
+        ResourceHandler resourceHandler = new ResourceHandler();
+        resourceHandler.setResourceBase("./dune-client/resources/");
+
         DefaultHandler defaultHandler = new DefaultHandler();
 
         HandlerList handlers = new HandlerList();
-        handlers.setHandlers(new Handler[]{servletHandler, defaultHandler});
+        handlers.setHandlers(new Handler[]{servletHandler, resourceHandler, defaultHandler});
         server.setHandler(handlers);
 
         server.start();

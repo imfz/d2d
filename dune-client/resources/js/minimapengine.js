@@ -2,15 +2,14 @@ function MinimapGameEngine() {
     this.frameCount = 0;
     this.startTime = 0;
     this.isMouseDown = false;
+    this.buffer = document.createElement("canvas");
     console.log("Created minimap engine");
 }
 
 MinimapGameEngine.prototype.setCanvas = function (canvas) {
     this.canvas = canvas;
-};
-
-MinimapGameEngine.prototype.setBufferCanvas = function (buffer) {
-    this.buffer = buffer;
+    this.buffer.width = canvas.width;
+    this.buffer.height = canvas.height;
 };
 
 MinimapGameEngine.prototype.setMap = function (map) {
