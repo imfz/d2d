@@ -328,7 +328,6 @@ Sprites.prototype.buildBuildingMarkers = function() {
         var newSprite = document.createElement("canvas");
         colorize(this.buildingMarkerSprite, newSprite, playerNum);
         this["buildingMarkerSprite" + playerNum] = newSprite;
-        document.body.appendChild(newSprite);
     }
 
     console.log("Building markers colored");
