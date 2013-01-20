@@ -443,12 +443,6 @@ GameEngine.prototype.centerOnMain = function () {
 GameEngine.prototype.setCoordinates = function (x, y) {
     var mapX = x;
     var mapY = y;
-    if (mapX < 0) {
-        mapX = 0;
-    }
-    if (mapY < 0) {
-        mapY = 0;
-    }
     if (mapX >= this.map.width) {
         mapX = this.map.width - 1;
     }
@@ -460,6 +454,12 @@ GameEngine.prototype.setCoordinates = function (x, y) {
     }
     if (mapY >= this.map.height - this.heightInTiles) {
         mapY = this.map.height - this.heightInTiles;
+    }
+    if (mapX < 0) {
+        mapX = 0;
+    }
+    if (mapY < 0) {
+        mapY = 0;
     }
     this.x = mapX;
     this.y = mapY;
@@ -534,7 +534,7 @@ GameEngine.prototype.getBuildingPlacementConfig = function (buildingTypeBuilt) {
         width = 3;
         height = 2;
     }
-    var result = new Object();
+    var result = {};
     result.width = width;
     result.height = height;
     return result;
@@ -556,7 +556,7 @@ GameEngine.prototype.render = function () {
     var bullets = this.map.getBullets(this.x - 1, this.y - 1, this.x + this.widthInTiles + 1, this.y + this.heightInTiles + 1);
     var units = this.map.getUnits(this.x - 1, this.y - 1, this.x + this.widthInTiles, this.y + this.heightInTiles);
 
-    this.renderTiles(units, buildings);
+    this.renderTiles();
     this.renderBuildings(buildings);
     this.renderBuildingPlacement(units, buildings);
     this.renderUnits(units);
@@ -582,7 +582,7 @@ requestAnimFrame = (function () {
         };
 })();
 
-GameEngine.prototype.renderTiles = function (units, buildings) {
+GameEngine.prototype.renderTiles = function () {
     var context = this.canvas.getContext("2d");
 
     for (var x = this.x; x < this.x + this.widthInTiles; x++) {
@@ -590,6 +590,14 @@ GameEngine.prototype.renderTiles = function (units, buildings) {
             var tileConfig = sprites.getTileConfig(x, y, this.map);
             if (tileConfig) {
                 context.drawImage(tileConfig.sprite, tileConfig.x, tileConfig.y, TILE_WIDTH, TILE_HEIGHT, (x - this.x) * TILE_WIDTH, (y - this.y) * TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT);
+            } else {
+                context.beginPath();
+                context.rect((x - this.x) * TILE_WIDTH, (y - this.y) * TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT);
+                context.fillStyle = 'black';
+                context.fill();
+                context.lineWidth = 7;
+                context.strokeStyle = 'black';
+                context.stroke();
             }
 
         }
@@ -666,7 +674,7 @@ GameEngine.prototype.renderBuildings = function (buildings) {
     }
     var context = this.canvas.getContext("2d");
 
-    this.shownBuildings = new Array();
+    this.shownBuildings = [];
     for (var i = 0; i < buildings.length; i++) {
         var building = buildings[i];
         var buildingConfig = sprites.getBuildingConfig(building);
@@ -722,7 +730,7 @@ GameEngine.prototype.renderBuildings = function (buildings) {
 
 GameEngine.prototype.renderUnits = function (units) {
     var context = this.canvas.getContext("2d");
-    this.shownUnits = new Array();
+    this.shownUnits = [];
     // +1 to handle units moving from/into screen
     for (var i = 0; i < units.length; i++) {
         var unit = units[i];

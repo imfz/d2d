@@ -49,6 +49,12 @@ Sprites.prototype.getTileConfig = function (targetTileX, targetTileY, map) {
     if (targetTileY >= map.getHeight()) {
         return null;
     }
+    if (targetTileX < 0) {
+        return null;
+    }
+    if (targetTileY < 0) {
+        return null;
+    }
 
     var tileType = map.getTileType(targetTileX, targetTileY);
     var tileTypeUp = map.getTileType(targetTileX, targetTileY - 1);
