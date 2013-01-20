@@ -41,6 +41,12 @@ Utils.getImageElement = function (imgName) {
     return image;
 };
 
+Utils.getImageByDataUrl = function(dataUrl) {
+    var newImg = document.createElement("img");
+    newImg.src = dataUrl;
+    return newImg;
+};
+
 Utils.afterImagesLoaded = function (callback) {
     imageLoadedCallback = callback;
     allImagesLoaded = true;

@@ -45,12 +45,13 @@ $(function () {
     sprites.setUnitSprite(Utils.getImageElement("images/units.png"));
     sprites.setBulletSprite(Utils.getImageElement("images/bullet.png"));
     sprites.setBuildingsSprite(Utils.getImageElement("images/buildings.png"));
+    sprites.setBuildingMarkerSprite(Utils.getImageByDataUrl("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAAzUlEQVQoU42SOw7CMAyGHVUobDkOIyvQSrBzEk7AdUBCiCtwnIyo6iN25OC4qRQvdRx//t3YBgr2AJh0+AJgZCw7IHB3Lt3fvCf/8IqhTwfABRK4c26hIkHbhutxhGfTEEyghhBAFXscQsoIv/cGbBv8KfrbrgCyCvdLBU49AWzYspFqGsrgoI5tslWBmHwe+gD+VatBbHl/jS+OnVWDCPCoCNSvuvafcr5f79fHIbdEL0WaY2mWpVXEGKrhN1u50vbIAgwtQE7SBSTAOTNb5V56txg1rgAAAABJRU5ErkJggg=="));
 
     sprites.setOkButton(Utils.getImageElement("images/okbutton.png"));
 
     Utils.afterImagesLoaded(function() {
 
-        sprites.buildUnitSprites();
+        sprites.init();
 
         minimapEngine.bindEvents();
 

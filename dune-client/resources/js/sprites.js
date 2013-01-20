@@ -1,46 +1,53 @@
 function Sprites() {
-    this.colorPlayerIdSelector();
+}
 
+Sprites.prototype.init = function() {
+    this.colorPlayerIdSelector();
+    this.createBuildingPlacementSprites();
+    this.buildUnitSprites();
+    this.buildBuildingMarkers();
+};
+
+Sprites.prototype.createBuildingPlacementSprites = function() {
     var canvas = document.createElement("canvas");
     var canvas2 = document.createElement("canvas");
     var canvas3 = document.createElement("canvas");
 
-    fillWithLines(canvas, "rgba(255, 0, 0, 1)");
-    fillWithLines(canvas2, "rgba(255, 255, 0, 1)");
-    fillWithLines(canvas3, "rgba(0, 255, 0, 1)");
+    this.fillWithLines(canvas, "rgba(255, 0, 0, 1)");
+    this.fillWithLines(canvas2, "rgba(255, 255, 0, 1)");
+    this.fillWithLines(canvas3, "rgba(0, 255, 0, 1)");
 
     this.bgYellowSprite = canvas2;
     this.bgGreenSprite = canvas3;
     this.bgRedSprite = canvas;
+};
 
-    function fillWithLines(canvasEl, fillStyle) {
-        fillStyle = fillStyle || "rgba(255, 0, 0, 1)";
-        canvasEl = canvasEl || canvas;
-        canvasEl.width = 64;
-        canvasEl.height = 64;
-        // use getContext to use the canvas for drawing
-        var ctx = canvasEl.getContext('2d');
-        var width = canvasEl.width;
-        var height = canvasEl.height;
-        for (var i = 0; i < 10; i++) {
-            var x = -width + i * 16;
-            var x2 = x + 3;
-            var x3 = x + width;
-            var x4 = x2 + width;
-            var y = height;
-            var y2 = 0;
-            // Filled triangle
-            ctx.fillStyle = fillStyle;
-            ctx.beginPath();
-            ctx.moveTo(x, y);
-            ctx.lineTo(x2, y);
-            ctx.lineTo(x4, y2);
-            ctx.lineTo(x3, y2);
-            ctx.lineTo(x, y);
-            ctx.fill();
-        }
+Sprites.prototype.fillWithLines = function (canvasEl, fillStyle) {
+    fillStyle = fillStyle || "rgba(255, 0, 0, 1)";
+    canvasEl.width = 64;
+    canvasEl.height = 64;
+    // use getContext to use the canvas for drawing
+    var ctx = canvasEl.getContext('2d');
+    var width = canvasEl.width;
+    var height = canvasEl.height;
+    for (var i = 0; i < 10; i++) {
+        var x = -width + i * 16;
+        var x2 = x + 3;
+        var x3 = x + width;
+        var x4 = x2 + width;
+        var y = height;
+        var y2 = 0;
+        // Filled triangle
+        ctx.fillStyle = fillStyle;
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(x2, y);
+        ctx.lineTo(x4, y2);
+        ctx.lineTo(x3, y2);
+        ctx.lineTo(x, y);
+        ctx.fill();
     }
-}
+};
 
 Sprites.prototype.getTileConfig = function (targetTileX, targetTileY, map) {
     if (targetTileX >= map.getWidth()) {
@@ -187,6 +194,10 @@ Sprites.prototype.setUnitSprite = function (unitSprite) {
     this.unitSprite = unitSprite;
 };
 
+Sprites.prototype.setBuildingMarkerSprite = function (buildingMarkerSprite) {
+    this.buildingMarkerSprite = buildingMarkerSprite;
+};
+
 Sprites.prototype.buildUnitSprites = function () {
 
     var canvasTemp = document.createElement("canvas");
@@ -301,7 +312,81 @@ Sprites.prototype.buildUnitSprites = function () {
             }
         }
     }
-}
+};
+
+Sprites.prototype.buildBuildingMarkers = function() {
+
+    var canvasTemp = document.createElement("canvas");
+
+    canvasTemp.width = this.buildingMarkerSprite.width;
+    canvasTemp.height = this.buildingMarkerSprite.height;
+
+    var that = this;
+
+    // create colorings
+    for (var playerNum = 0; playerNum < 8; playerNum++) {
+        var newSprite = document.createElement("canvas");
+        colorize(this.buildingMarkerSprite, newSprite, playerNum);
+        this["buildingMarkerSprite" + playerNum] = newSprite;
+        document.body.appendChild(newSprite);
+    }
+
+    console.log("Building markers colored");
+
+    function colorize(canvasFrom, canvasTo, toPlayer) {
+        canvasTo.width = canvasFrom.width;
+        canvasTo.height = canvasFrom.height;
+
+        var context = canvasTo.getContext("2d");
+
+        context.drawImage(canvasFrom, 0, 0, canvasFrom.width, canvasFrom.height, 0, 0, canvasFrom.width, canvasFrom.height);
+
+        var width = canvasTo.width;
+        var height = canvasTo.height;
+        var imgd = context.getImageData(0, 0, canvasTo.width, canvasTo.height);
+        var pix = imgd.data;
+
+        var playerColor = that.getPlayerColor(toPlayer);
+        var playerColorLight = that.getPlayerLightColor(toPlayer);
+        var playerColorDark = that.getPlayerDarkColor(toPlayer);
+
+        for (var x = 0; x < width; x++) {
+            for (var y = 0; y < height; y++) {
+                var pixelColor = getpixel(x, y);
+
+                if ((pixelColor.r >= 230) && ((pixelColor.b <= 100))) { // orange
+                    putpixel(x, y, playerColorLight.r, playerColorLight.g, playerColorLight.b, 255);
+                } else if ((pixelColor.r >= 140) && (pixelColor.b <= 100)) {   // red
+                    putpixel(x, y, playerColor.r, playerColor.g, playerColor.b, 255);
+                }  else if ((pixelColor.r <= 60) && (pixelColor.a > 100)) {   // very dark red
+                    putpixel(x, y, playerColorDark.r, playerColorDark.g, playerColorDark.b, 255);
+                } else {
+                    putpixel(x, y, pixelColor.r, pixelColor.g, pixelColor.b, pixelColor.a);
+                }
+            }
+        }
+
+        function putpixel(ix, iy, rd, gr, bl, alpha) {
+            var p = (width * iy + ix) * 4;
+            pix[p] = rd % 256; // red
+            pix[p + 1] = gr % 256; // green
+            pix[p + 2] = bl % 256; // blue
+            pix[p + 3] = alpha; // alpha
+        }
+
+        function getpixel(ix, iy) {
+            var p = (width * iy + ix) * 4;
+            var result = {};
+            result.r = pix[p];
+            result.g = pix[p + 1];
+            result.b = pix[p + 2];
+            result.a = pix[p + 3];
+            return result;
+        }
+
+        context.putImageData(imgd, 0, 0);
+    }
+};
 
 Sprites.prototype.setBulletSprite = function (bulletSprite) {
     this.bulletSprite = bulletSprite;
@@ -325,6 +410,9 @@ function colorToHex(red, green, blue) {
     return '#' + rgb.toString(16);
 };
 
+Sprites.prototype.getBuildingMarkerSprite = function(ownerId) {
+    return this["buildingMarkerSprite" + ownerId];
+};
 
 Sprites.prototype.getBulletConfig = function (bullet) {
     var sprite = this.bulletSprite;
@@ -589,6 +677,61 @@ Sprites.prototype.getPlayerLightColor = function (playerId) {
     console.log("Unknown player id " + playerId);
     return result;
 };
+
+Sprites.prototype.getPlayerDarkColor = function (playerId) {
+    var result = {};
+    if (playerId == 0) {
+        result.r = 55;
+        result.g = 15;
+        result.b = 15;
+        return result;
+    }
+    if (playerId == 1) {
+        result.r = 15;
+        result.g = 55;
+        result.b = 15;
+        return result;
+    }
+    if (playerId == 2) {
+        result.r = 15;
+        result.g = 15;
+        result.b = 55;
+        return result;
+    }
+    if (playerId == 3) {
+        result.r = 55;
+        result.g = 15;
+        result.b = 55;
+        return result;
+    }
+    if (playerId == 4) {
+        result.r = 15;
+        result.g = 55;
+        result.b = 55;
+        return result;
+    }
+    if (playerId == 5) {
+        result.r = 55;
+        result.g = 55;
+        result.b = 15;
+        return result;
+    }
+    if (playerId == 6) {
+        result.r = 55;
+        result.g = 55;
+        result.b = 55;
+        return result;
+    }
+    if (playerId == 7) {
+        result.r = 15;
+        result.g = 15;
+        result.b = 15;
+        return result;
+    }
+    console.log("Unknown player id " + playerId);
+    return result;
+};
+
 
 
 

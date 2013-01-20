@@ -681,6 +681,22 @@ GameEngine.prototype.renderBuildings = function (buildings) {
         var xToDrawTo = (building.x - this.x) * TILE_WIDTH;
         var yToDrawTo = (building.y - this.y) * TILE_HEIGHT;
         context.drawImage(buildingConfig.sprite, buildingConfig.x, buildingConfig.y, buildingConfig.width, buildingConfig.height, xToDrawTo, yToDrawTo, buildingConfig.width, buildingConfig.height);
+
+        // building marker
+        if (buildingConfig.width >= 2) {
+            context.drawImage(
+                    sprites.getBuildingMarkerSprite(building.ownerId),
+                    0,
+                    0,
+                    14,
+                    14,
+                    xToDrawTo + 1,
+                    yToDrawTo + buildingConfig.height - 15,
+                    14,
+                    14
+            );
+        }
+
         // construction complete image
         if (building.constructionComplete && okButtonEnabled) {
             context.drawImage(sprites.okButtonSprite,
