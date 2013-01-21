@@ -13,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.PreDestroy;
 
 import lv.k2611a.domain.unitgoals.Chase;
+import lv.k2611a.domain.unitgoals.Guard;
 import lv.k2611a.domain.unitgoals.Move;
 import lv.k2611a.domain.unitgoals.UnitGoal;
 import org.slf4j.Logger;
@@ -218,7 +219,6 @@ public class GameServiceImpl implements GameService {
         tickCount++;
 
         changedTiles = new HashSet<Point>();
-
 
         fillPlayerBuildingTypes();
         mapFillTileUsage(map);
@@ -517,7 +517,7 @@ public class GameServiceImpl implements GameService {
         for (Building building : map.getBuildings()) {
             for (int x = 0; x < building.getType().getWidth(); x++) {
                 for (int y = 0; y < building.getType().getHeight(); y++) {
-                    map.setUsed(x + building.getX(), y + building.getY(), BUILDING_USAGE_FLAG);
+                    map.setUsed(x + building.getX(), y + building.getY(), -building.getId());
                 }
             }
         }
@@ -534,13 +534,12 @@ public class GameServiceImpl implements GameService {
 
         for (Unit unit : map.getUnits()) {
             UnitGoal unitGoal = unit.getCurrentGoal();
-            if (unitGoal != null) {
-                unit.getCurrentGoal().reserveTiles(unit, map);
-            } else {
-                map.setUsed(unit.getX(), unit.getY(), unit.getId());
+            if (unitGoal == null) {
+                log.error("WE HAEV NO GOAL!");
+                unit.insertGoalBeforeCurrent(new Guard());
             }
+            unit.getCurrentGoal().reserveTiles(unit, map);
         }
-        //map.buildPassableSegmentCache();
     }
 
     private List<BuildingDTO> getBuildings() {

@@ -3,11 +3,15 @@ package lv.k2611a.domain;
 import java.util.ArrayList;
 import java.util.List;
 
-import lv.k2611a.domain.unitgoals.Move;
-import lv.k2611a.domain.unitgoals.UnitGoal;
+import lv.k2611a.domain.unitgoals.*;
 import lv.k2611a.util.Point;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Unit {
+
+    private static final Logger log = LoggerFactory.getLogger(Unit.class);
+
     private int id;
     private int x;
     private int y;
@@ -73,20 +77,31 @@ public class Unit {
         goals.add(0, goal);
     }
 
+    public void addDefaultGoal() {
+        goals.add(0, new Guard());
+    }
+
     public void setGoal(UnitGoal goal) {
         UnitGoal currentGoal = getCurrentGoal();
         this.goals = new ArrayList<UnitGoal>();
+        addDefaultGoal();
+        insertGoalBeforeCurrent(goal);
 
-        // finish current move.
+        // finish current unit goal if it has already started.
         if (currentGoal != null) {
-            if (currentGoal instanceof Move) {
+            if (currentGoal instanceof Move || currentGoal instanceof Chase) {
                 if (ticksSpentOnCurrentGoal > 0) {
                     Move move = new Move(viewDirection.apply(new Point(x, y)));
-                    goals.add(move);
+                    insertGoalBeforeCurrent(move);
+                }
+            }
+            if (currentGoal instanceof Turn) {
+                if (ticksSpentOnCurrentGoal > 0) {
+                    Turn turn = new Turn(((Turn) currentGoal).getGoalDirection());
+                    insertGoalBeforeCurrent(turn);
                 }
             }
         }
-        goals.add(goal);
     }
 
     public int getTicksSpentOnCurrentGoal() {

@@ -1,5 +1,6 @@
 package lv.k2611a.domain.buildinggoals;
 
+import lv.k2611a.domain.unitgoals.Guard;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,6 +77,7 @@ public class CreateUnit implements BuildingGoal {
         unit.setY(freeTile.getY());
         unit.setUnitType(unitType);
         unit.setViewDirection(ViewDirection.BOTTOM);
+        unit.addDefaultGoal();
         map.addUnit(unit);
 
         return true;

@@ -1,17 +1,19 @@
 package lv.k2611a.domain;
 
 import lv.k2611a.util.Point;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Tile {
 
     public static final int TICKS_IN_SPICE_TILE = 100;
+    private static final Logger log = LoggerFactory.getLogger(Tile.class);
 
     private int x;
     private int y;
     private int usedBy;
     private TileType tileType;
     private int spiceRemainingTicks = TICKS_IN_SPICE_TILE;
-    private int passableSegmentNumber = 0;
 
     public Tile(int x, int y) {
         this.x = x;
@@ -49,14 +51,14 @@ public class Tile {
     }
 
     public boolean isPassable() {
-        if (usedBy == -2) {
+        if (usedBy <= -Map.ID_OFFSET) {
             return false;
         }
         return true;
     }
 
     public boolean isUsedByUnit() {
-        return usedBy >= 0;
+        return usedBy >= Map.ID_OFFSET;
     }
 
     public int getUsedBy() {
@@ -77,13 +79,5 @@ public class Tile {
 
     public void setSpiceRemainingTicks(int spiceRemainingTicks) {
         this.spiceRemainingTicks = spiceRemainingTicks;
-    }
-
-    public int getPassableSegmentNumber() {
-        return passableSegmentNumber;
-    }
-
-    public void setPassableSegmentNumber(int passableSegmentNumber) {
-        this.passableSegmentNumber = passableSegmentNumber;
     }
 }

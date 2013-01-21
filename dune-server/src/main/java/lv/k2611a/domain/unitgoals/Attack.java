@@ -53,6 +53,7 @@ public class Attack implements UnitGoal {
             unit.removeGoal(this);
         }
     }
+
     private void attackTarget(Unit unit, Point targetPoint, Map map, GameServiceImpl gameService) {
         if (targetInAttackRange(unit, targetPoint)) {
             // unit.setViewDirection(ViewDirection.getDirection(unit.getPoint(), closestBuildingPoint));

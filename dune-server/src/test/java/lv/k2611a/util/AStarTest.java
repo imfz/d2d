@@ -14,7 +14,7 @@ public class AStarTest {
         Map map = new Map(50,50);
 
         Unit unit = new Unit();
-        unit.setUnitType(UnitType.BATTLE_TANK);
+        unit.setUnitType(UnitType.HARVESTER);
         unit.setOwnerId(1);
         unit.setX(49);
         unit.setY(49);
@@ -32,8 +32,7 @@ public class AStarTest {
     }
 
     private int getPathLengthTo(Unit unit, Map map, int toX, int toY) {
-        map.clearUsageFlag();
-        return new AStar().calcPathEvenIfBlocked(unit, map, toX, toY, 0).size();
+        return new AStar().calcPathHarvester(unit, map, toX, toY).size();
     }
 
     @Test
@@ -55,13 +54,15 @@ public class AStarTest {
         long endTime = System.currentTimeMillis();
         long delta = endTime - startTime;
         double timeForIteration = (double)delta / iterationCount;
-        System.out.println("A star time for iteration " + timeForIteration + " ms " + " total move count " + totalMoveCount);
+        System.out.println("calcPathEvenIfBlocked time "
+                + timeForIteration + " ms. average move count " + totalMoveCount / iterationCount);
     }
 
     @Test
     public void testAStarPerformanceHarvesters() {
         Map map = new Map(256,256);
         long startTime = System.currentTimeMillis();
+        int travelCoordinate = 133;
         int iterationCount = 100;
         int totalMoveCount = 0;
         Unit unit = new Unit();
@@ -71,12 +72,13 @@ public class AStarTest {
         unit.setY(0);
         map.addUnit(unit);
         for (int i = 0; i < iterationCount; i++) {
-            int result = new AStar().calcPathHarvester(unit, map, 255, 255).size();
+            int result = new AStar().calcPathHarvester(unit, map, travelCoordinate, travelCoordinate).size();
             totalMoveCount += result;
         }
         long endTime = System.currentTimeMillis();
         long delta = endTime - startTime;
         double timeForIteration = (double)delta / iterationCount;
-        System.out.println("A star time for iteration " + timeForIteration + " ms " + " total move count " + totalMoveCount);
+        System.out.println("calcPathHarvester time for " + travelCoordinate + " tiles "
+                + timeForIteration + " ms. average move count " + totalMoveCount / iterationCount);
     }
 }

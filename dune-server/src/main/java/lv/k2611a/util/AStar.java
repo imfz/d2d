@@ -18,11 +18,11 @@ public class AStar {
     private SortedSet<Node> openSet;
 
     public static double UNIT_HEURISTICS = 3.0;
-    public static double OCCUPIED_TILE_COST = 5.0 * UNIT_HEURISTICS;
-    public static double PATH_LENGTH = 10.0 * UNIT_HEURISTICS;
+    public static double OCCUPIED_TILE_COST = 5 * UNIT_HEURISTICS;
+    public static int PATH_LENGTH = 20;
     public static double HARVESTER_HEURISTICS = 2.0;
 
-    public List<Node> calcPathEvenIfBlocked(Unit unit, Map map, int toX, int toY, int goalRadius) {
+    public List<Node> calcPathEvenIfBlocked(Unit unit, Map map, int toX, int toY, int requiredRangeToGoal) {
 
         if ((unit.getX() == toX) && (unit.getY() == toY)) {
             return new ArrayList<Node>();
@@ -37,15 +37,15 @@ public class AStar {
 
         start.setDistanceFromStart(0);
         start.setHeuristicDistanceFromGoal(UNIT_HEURISTICS * Map.getDistanceBetween(start, goal));
-        double minimalDistanceToReachGoalRadius = UNIT_HEURISTICS * goalRadius;
-        double minimalDistanceToReachAStarRange = start.getHeuristicDistanceFromGoal() - PATH_LENGTH;
-        double requiredDistanceToGoal = Math.max(minimalDistanceToReachGoalRadius, minimalDistanceToReachAStarRange);
+
+        double expectedTravelDistance = Map.getDistanceBetween(start, goal) - PATH_LENGTH;
+        double requiredDistanceToGoal = Math.max(requiredRangeToGoal, expectedTravelDistance);
 
         openSet.add(start);
         while (!openSet.isEmpty()) {
             Node current = openSet.first();
 
-            if (current.getHeuristicDistanceFromGoal() <= requiredDistanceToGoal) {
+            if (Map.getDistanceBetween(current, goal) <= requiredDistanceToGoal) {
                 return reconstructPath(current);
             }
 
@@ -55,6 +55,7 @@ public class AStar {
             // 150 iterations should be enough, as we will return the found path for the units even if we ran out of nodes.
             if (closedSet.size() >= 150) {
                 log.warn("AStar maximum iteration count reached");
+                Node note = getBestNode(closedSet);
                 return reconstructPath(getBestNode(closedSet));
             }
             if(current.getPreviousNode() != null) {
@@ -113,12 +114,11 @@ public class AStar {
         openSet = createSortedNodeSet();
 
         start.setDistanceFromStart(0);
-        start.setHeuristicDistanceFromGoal(Map.getDistanceBetween(start, goal) * unit.getUnitType().getSpeed());
+        start.setHeuristicDistanceFromGoal(HARVESTER_HEURISTICS * Map.getDistanceBetween(start, goal) * unit.getUnitType().getSpeed());
 
         openSet.add(start);
         while (!openSet.isEmpty()) {
             Node current = openSet.first();
-
 
             if (current.equals(goal)) {
                 return reconstructPath(current);

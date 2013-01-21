@@ -80,7 +80,7 @@ public class MoveTest {
 
         // Test that units travelled the map horizontally
         for (int horizontalLineNumber = 0; horizontalLineNumber < mapHeight; horizontalLineNumber++) {
-            Unit unit = gameService.getMap().getUnit(horizontalLineNumber);
+            Unit unit = gameService.getMap().getUnit(horizontalLineNumber + Map.ID_OFFSET);
             assertEquals(horizontalLineNumber, unit.getY());
             assertEquals(mapWidth-2, unit.getX());
         }
@@ -90,7 +90,7 @@ public class MoveTest {
         gameService.tick();
 
         for (int horizontalLineNumber = 0; horizontalLineNumber < mapHeight; horizontalLineNumber++) {
-            Unit unit = gameService.getMap().getUnit(horizontalLineNumber);
+            Unit unit = gameService.getMap().getUnit(horizontalLineNumber + Map.ID_OFFSET);
             assertEquals(horizontalLineNumber, unit.getY());
             assertEquals(mapWidth-1, unit.getX());
         }
@@ -123,7 +123,7 @@ public class MoveTest {
 
         // Test that units travelled the map horizontally, Unit should not yet reach the final cell
         for (int verticalLineNumber = 0; verticalLineNumber < mapHeight; verticalLineNumber++) {
-            Unit unit = gameService.getMap().getUnit(verticalLineNumber);
+            Unit unit = gameService.getMap().getUnit(verticalLineNumber + Map.ID_OFFSET);
             assertEquals(verticalLineNumber, unit.getX());
             assertEquals(mapHeight-2, unit.getY());
         }
@@ -132,7 +132,7 @@ public class MoveTest {
         gameService.tick();
 
         for (int verticalLineNumber = 0; verticalLineNumber < mapHeight; verticalLineNumber++) {
-            Unit unit = gameService.getMap().getUnit(verticalLineNumber);
+            Unit unit = gameService.getMap().getUnit(verticalLineNumber + Map.ID_OFFSET);
             assertEquals(verticalLineNumber, unit.getX());
             assertEquals(mapHeight-1, unit.getY());
         }

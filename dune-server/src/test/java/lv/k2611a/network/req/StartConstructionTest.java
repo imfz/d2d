@@ -167,7 +167,7 @@ public class StartConstructionTest {
 
         // remove blocking turret
         Point lastTurretPosition = map.getBuilding(lastTurretId).getPoint();
-        map.removeBuilding(lastTurretId);
+        map.removeBuilding(map.getBuilding(lastTurretId));
 
         // unit should be built now, because turret is no longer blocking the exit
         gameService.tick();

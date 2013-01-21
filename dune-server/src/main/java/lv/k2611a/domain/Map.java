@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -18,6 +17,7 @@ import lv.k2611a.util.Point;
 public class Map {
 
     private static final Logger log = LoggerFactory.getLogger(Map.class);
+    public static final int ID_OFFSET = 2;
 
     private Tile[][] tiles;
     private Player[] players;
@@ -32,14 +32,13 @@ public class Map {
 
     public Map(int width, int height) {
         this(width, height, TileType.SAND);
+        this.clearUsageFlag();
     }
 
 
     public Map(int width, int height, TileType tileType) {
         this(width,height,tileType,8);
     }
-
-
 
     public Map(int width, int height, TileType tileType, int playerCount) {
         this.width = width;
@@ -118,14 +117,14 @@ public class Map {
 
     public int addUnit(Unit unit) {
         units.add(unit);
-        unit.setId(units.size() - 1);
+        unit.setId(units.size() + ID_OFFSET - 1);
         setUsed(unit.getX(),unit.getY(),unit.getId());
         return unit.getId();
     }
 
     public int addBuilding(Building building) {
         buildings.add(building);
-        building.setId(buildings.size() - 1);
+        building.setId(buildings.size() + ID_OFFSET - 1);
         return building.getId();
     }
 
@@ -497,35 +496,34 @@ public class Map {
     }
 
 
-    public void setUsed(int x, int y, int unitId) {
+    public void setUsed(int x, int y, int id) {
         Tile tile = getTile(x, y);
         if (tile == null) {
             return;
         }
-        tile.setUsed(unitId);
+        tile.setUsed(id);
     }
 
     public void clearUsageFlag() {
         for (Tile[] tile : tiles) {
             for (Tile tile1 : tile) {
                 tile1.setUsed(-1);
-                tile1.setPassableSegmentNumber(-1);
             }
         }
     }
 
     public Unit getUnit(int id) {
-        if (id >= units.size()) {
+        if (id >= units.size() + ID_OFFSET) {
             return null;
         }
-        return units.get(id);
+        return units.get(id - ID_OFFSET);
     }
 
     public Building getBuilding(int id) {
-        if (id >= buildings.size()) {
+        if (id >= buildings.size() + ID_OFFSET) {
             return null;
         }
-        return buildings.get(id);
+        return buildings.get(id - ID_OFFSET);
     }
 
     public Player getPlayerById(int id) {
@@ -563,6 +561,19 @@ public class Map {
         return null;
     }
 
+    public List<Integer> getTargetsInRange(int minX, int maxX, int minY, int maxY, Map map) {
+        List<Integer> targets = new ArrayList<Integer>();
+        Tile tile;
+           for (int targetX = minX; targetX <= maxX; targetX++) {
+            for (int targetY = minY; targetY <= maxY; targetY++) {
+                tile = map.getTile(targetX, targetY);
+                if (tile != null) {
+                    targets.add(tile.getUsedBy());
+                }
+            }
+        }
+        return targets;
+    }
 
     public Point getRandomFreeTile(Point near, int distanceFrom, int distanceTo) {
         Random r = new Random();
@@ -585,47 +596,12 @@ public class Map {
         return refineryEntranceList;
     }
 
-    // precache simultaneously impassable segments, to avoid AStars worse-case scenario calculations. Like moving 100 units to impassable area.
-    public void buildPassableSegmentCache() {
-        int segmentNumber = 0;
-        boolean found;
-        do {
-            found = false;
-            for (Tile[] tile : tiles) {
-                for (Tile tile1 : tile) {
-                    if (tile1.isUnoccupied()) {
-                        if (tile1.getPassableSegmentNumber() == -1) {
-                            segmentNumber++;
-                            spreadSegment(segmentNumber, tile1);
-                            found = true;
-                        }
-                    }
-                }
-            }
-        } while (found);
-    }
-
-    private void spreadSegment(int segmentNumber, Tile tile) {
-        tile.setPassableSegmentNumber(segmentNumber);
-        for (Tile neighbour : getTileNeighbours(tile.getX(), tile.getY())) {
-            if (neighbour.isUnoccupied()) {
-                if (neighbour.getPassableSegmentNumber() == -1) {
-                    spreadSegment(segmentNumber, neighbour);
-                }
-            }
-        }
-    }
-
     public void removeUnit(Unit unit) {
-        this.units.set(unit.getId(), null);
+        this.units.set(unit.getId()-ID_OFFSET, null);
     }
 
     public void removeBuilding(Building building) {
-        this.buildings.set(building.getId(), null);
-    }
-
-    public void removeBuilding(int id) {
-        this.buildings.set(id, null);
+        this.buildings.set(building.getId()-ID_OFFSET, null);
     }
 
     public void removeBullet(Bullet bullet) {

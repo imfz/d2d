@@ -6,13 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
-import lv.k2611a.domain.Building;
-import lv.k2611a.domain.Map;
-import lv.k2611a.domain.Player;
-import lv.k2611a.domain.RefineryEntrance;
-import lv.k2611a.domain.Unit;
-import lv.k2611a.domain.UnitType;
-import lv.k2611a.domain.ViewDirection;
+import lv.k2611a.domain.*;
 import lv.k2611a.network.UnitDTO;
 import lv.k2611a.service.game.GameServiceImpl;
 import lv.k2611a.util.AStar;
@@ -22,6 +16,7 @@ public class ReturnToBase implements UnitGoal {
 
     public static int TICKS_COLLECTING_UNLOADED_PER_TICK = 4;
     public static final int MONEY_PER_TICK = 40;
+    private boolean enrouteToBase = false;
 
     private Point targetRefinery;
     private int targetRefineryId;
@@ -47,10 +42,16 @@ public class ReturnToBase implements UnitGoal {
 
     @Override
     public void process(Unit unit, Map map, GameServiceImpl gameService) {
+        RefineryEntrance refineryEntrance = map.getRefineryEntranceList().get(new Tile(unit.getX(), unit.getY()));
+        if (enrouteToBase && refineryEntrance == null) {
+            ticksToWait = 20 + new Random().nextInt(10);
+            enrouteToBase = false;
+        }
         if (ticksToWait > 0) {
             ticksToWait--;
             return;
         }
+        enrouteToBase = false;
         if (unit.getUnitType() != UnitType.HARVESTER) {
             unit.removeGoal(this);
             return;
@@ -100,6 +101,7 @@ public class ReturnToBase implements UnitGoal {
             targetRefinery = null;
             targetRefineryId = 0;
         } else {
+            enrouteToBase = true;
             unit.insertGoalBeforeCurrent(new Move(targetRefinery));
             unit.getCurrentGoal().process(unit, map, gameService);
         }
@@ -165,7 +167,6 @@ public class ReturnToBase implements UnitGoal {
         }
         targetRefinery = null;
         targetRefineryId = 0;
-        ticksToWait = 10 + new Random().nextInt(40);
     }
 
 

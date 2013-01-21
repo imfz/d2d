@@ -15,6 +15,10 @@ public class Turn implements UnitGoal {
         this.goalDirection = goalDirection;
     }
 
+    public ViewDirection getGoalDirection() {
+        return goalDirection;
+    }
+
     @Override
     public void reserveTiles(Unit unit, Map map) {
         map.setUsed(unit.getX(), unit.getY(), unit.getId());

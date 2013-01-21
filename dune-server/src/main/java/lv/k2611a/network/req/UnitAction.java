@@ -14,8 +14,12 @@ import lv.k2611a.domain.Unit;
 import lv.k2611a.domain.UnitType;
 import lv.k2611a.domain.unitgoals.*;
 import lv.k2611a.util.Point;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class UnitAction extends AbstractGameStateChanger {
+
+    private static final Logger log = LoggerFactory.getLogger(UnitAction.class);
 
     private int x;
     private int y;

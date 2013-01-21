@@ -28,8 +28,6 @@ public class Move implements UnitGoal {
     private int goalUnblockMinimumDistance = 10;
     private int ticksToWait = 5 + new Random().nextInt(10);
 
-
-
     public Move(int goalX, int goalY) {
         this.goalX = goalX;
         this.goalY = goalY;
@@ -100,9 +98,10 @@ public class Move implements UnitGoal {
                 map.setUsed(next.getX(), next.getY(), unit.getId());
             } else {
                 // If we cannot start moving to next tile, wait and decrease waiting timer.
-                // Harvesters re-calculate path immediately.
+                // Harvesters fail immediately.
                 if (unit.getUnitType() == UnitType.HARVESTER) {
-                    path = aStarCache.calcPathHarvester(unit, map, goalX, goalY);
+                    unit.removeGoal(this);
+                    return;
                 } else {
                     ticksToWait--;
                 }
@@ -117,6 +116,10 @@ public class Move implements UnitGoal {
             unit.setX(next.getX());
             unit.setY(next.getY());
             path.remove(next);
+            // If we have successfully moved the last planned move, attempt to recalculate the path next tick.
+            if (path.isEmpty()) {
+                path = null;
+            }
         }
         // If we could not move to the next tile for the past X ticks, attempt to recalculate the path
         // If we are in vicinity of the goal, try to deduct if the goal is reachable or we should stop a step further.
