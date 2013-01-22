@@ -29,13 +29,13 @@
                 <artifactId>maven-resources-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>copy-appCtx</id>
+                        <id>copy resources</id>
                         <phase>generate-resources</phase>
                         <goals>
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${project.build.directory}/classes/web/</outputDirectory>
+                            <outputDirectory>${project.build.directory}/web/</outputDirectory>
                             <overwrite>true</overwrite>
                             <resources>
                                 <resource>
@@ -47,23 +47,26 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>com.dasberg.maven.plugins</groupId>
-                <artifactId>maven-closure-compiler-plugin</artifactId>
+                <groupId>com.github.mcheely</groupId>
+                <artifactId>requirejs-maven-plugin</artifactId>
                 <version>1.0.0</version>
                 <executions>
                     <execution>
-                        <id>closure-compiler</id>
-                        <phase>generate-resources</phase>
+                        <id>requirejs</id>
+                        <phase>compile</phase>
                         <goals>
-                            <goal>compile</goal>
+                            <goal>optimize</goal>
                         </goals>
-                        <configuration>
-                            <compilation_level>SIMPLE_OPTIMIZATIONS</compilation_level>
-                            <js_dir>../dune-client/resources/js</js_dir>
-                            <js_output_dir>${project.build.directory}/classes/web/js</js_output_dir>
-                        </configuration>
                     </execution>
                 </executions>
+                <configuration>
+                    <configFile>
+                        ${project.build.directory}/classes/build.js
+                    </configFile>
+                    <skip>
+                        false
+                    </skip>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

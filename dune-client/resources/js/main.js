@@ -29,7 +29,7 @@ require(
             "handler",
             "rightmenu",
             "moneytab",
-            "startup"
+            "main"
         ], function ($) {
             var thing = { plugin: 'jquery-json', version: 2.4 };
 
