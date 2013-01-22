@@ -10,7 +10,7 @@ public class Guard implements UnitGoal {
 
     @Override
     public void reserveTiles(Unit unit, Map map) {
-        map.setUsed(unit.getX(), unit.getY(), unit.getId());
+        map.setUsedByUnit(unit.getX(), unit.getY(), unit.getId());
     }
 
     @Override
@@ -18,6 +18,11 @@ public class Guard implements UnitGoal {
         if (unit.getUnitType() == UnitType.HARVESTER) {
             return;
         }
+        int maximumTargetRange = unit.getUnitType().getAttackRange();
+        int minX = unit.getX() - maximumTargetRange;
+        int maxX = unit.getX() + maximumTargetRange;
+        int minY = unit.getY() - maximumTargetRange;
+        int maxY = unit.getY() + maximumTargetRange;
     }
 
     @Override

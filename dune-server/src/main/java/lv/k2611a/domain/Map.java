@@ -17,7 +17,6 @@ import lv.k2611a.util.Point;
 public class Map {
 
     private static final Logger log = LoggerFactory.getLogger(Map.class);
-    public static final int ID_OFFSET = 2;
 
     private Tile[][] tiles;
     private Player[] players;
@@ -117,14 +116,14 @@ public class Map {
 
     public int addUnit(Unit unit) {
         units.add(unit);
-        unit.setId(units.size() + ID_OFFSET - 1);
-        setUsed(unit.getX(),unit.getY(),unit.getId());
+        unit.setId(units.size() - 1);
+        setUsedByUnit(unit.getX(),unit.getY(),unit.getId());
         return unit.getId();
     }
 
     public int addBuilding(Building building) {
         buildings.add(building);
-        building.setId(buildings.size() + ID_OFFSET - 1);
+        building.setId(buildings.size() - 1);
         return building.getId();
     }
 
@@ -132,7 +131,7 @@ public class Map {
         List<Unit> result = new ArrayList<Unit>();
         for (Unit unit : units) {
             if (unit != null) {
-                if (unit.getUnitType() == UnitType.HARVESTER) {
+                if (unit.getUnitType() == unitType) {
                     result.add(unit);
                 }
             }
@@ -320,22 +319,20 @@ public class Map {
     }
 
     public Unit getUnitAt(int x, int y) {
-        for (Unit unit : units) {
-            if (unit != null) {
-                if ((unit.getX() == x) && (unit.getY() == y)) {
-                    return unit;
-                }
+        Tile tile = getTile(x, y);
+        if (tile != null) {
+            if (tile.isUsedByUnit()) {
+                return getUnit(tile.getUsedByUnit());
             }
         }
         return null;
     }
 
     public Building getBuildingAt(int x, int y) {
-        for (Building building : filterNonNulls(buildings)) {
-            if (building.getX() <= x && building.getX() + building.getType().getWidth() - 1 >= x) {
-                if (building.getY() <= y && building.getY() + building.getType().getHeight() - 1 >= y) {
-                    return building;
-                }
+        Tile tile = getTile(x, y);
+        if (tile != null) {
+            if (tile.isUsedByBuilding()) {
+                return getBuilding(tile.getUsedByBuilding());
             }
         }
         return null;
@@ -496,34 +493,42 @@ public class Map {
     }
 
 
-    public void setUsed(int x, int y, int id) {
+    public void setUsedByUnit(int x, int y, int id) {
         Tile tile = getTile(x, y);
         if (tile == null) {
             return;
         }
-        tile.setUsed(id);
+        tile.setUsedByUnit(id);
+    }
+
+    public void setUsedByBuilding(int x, int y, int id) {
+        Tile tile = getTile(x, y);
+        if (tile == null) {
+            return;
+        }
+        tile.setUsedByBuilding(id);
     }
 
     public void clearUsageFlag() {
         for (Tile[] tile : tiles) {
             for (Tile tile1 : tile) {
-                tile1.setUsed(-1);
+                tile1.setUsedClear();
             }
         }
     }
 
     public Unit getUnit(int id) {
-        if (id >= units.size() + ID_OFFSET) {
+        if (id >= units.size()) {
             return null;
         }
-        return units.get(id - ID_OFFSET);
+        return units.get(id);
     }
 
     public Building getBuilding(int id) {
-        if (id >= buildings.size() + ID_OFFSET) {
+        if (id >= buildings.size()) {
             return null;
         }
-        return buildings.get(id - ID_OFFSET);
+        return buildings.get(id);
     }
 
     public Player getPlayerById(int id) {
@@ -561,14 +566,16 @@ public class Map {
         return null;
     }
 
-    public List<Integer> getTargetsInRange(int minX, int maxX, int minY, int maxY, Map map) {
+    public List<Integer> getUnitsInRange(int minX, int maxX, int minY, int maxY, Map map) {
         List<Integer> targets = new ArrayList<Integer>();
         Tile tile;
            for (int targetX = minX; targetX <= maxX; targetX++) {
             for (int targetY = minY; targetY <= maxY; targetY++) {
                 tile = map.getTile(targetX, targetY);
                 if (tile != null) {
-                    targets.add(tile.getUsedBy());
+                    if (tile.isUsedByUnit()) {
+                        targets.add(tile.getUsedByUnit());
+                    }
                 }
             }
         }
@@ -597,11 +604,11 @@ public class Map {
     }
 
     public void removeUnit(Unit unit) {
-        this.units.set(unit.getId()-ID_OFFSET, null);
+        this.units.set(unit.getId(), null);
     }
 
     public void removeBuilding(Building building) {
-        this.buildings.set(building.getId()-ID_OFFSET, null);
+        this.buildings.set(building.getId(), null);
     }
 
     public void removeBullet(Bullet bullet) {

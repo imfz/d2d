@@ -18,7 +18,7 @@ public class AStar {
     private SortedSet<Node> openSet;
 
     public static double UNIT_HEURISTICS = 3.0;
-    public static double OCCUPIED_TILE_COST = 5 * UNIT_HEURISTICS;
+    public static double OCCUPIED_TILE_COST = 3.5;
     public static int PATH_LENGTH = 20;
     public static double HARVESTER_HEURISTICS = 2.0;
 
@@ -30,6 +30,10 @@ public class AStar {
 
         Node start = new Node(unit.getX(), unit.getY());
         Node goal = new Node(toX, toY);
+
+        if (!map.isPassable(toX, toY)) {
+            return new ArrayList<Node>();
+        }
 
         int currentDirection;
         closedSet = new HashSet<Node>();
@@ -54,8 +58,10 @@ public class AStar {
 
             // 150 iterations should be enough, as we will return the found path for the units even if we ran out of nodes.
             if (closedSet.size() >= 150) {
-                log.warn("AStar maximum iteration count reached");
-                Node note = getBestNode(closedSet);
+                Node bestNode = getBestNode(closedSet);
+                if (bestNode.getHeuristicDistanceFromGoal() > start.getHeuristicDistanceFromGoal()) {
+                    return null;
+                }
                 return reconstructPath(getBestNode(closedSet));
             }
             if(current.getPreviousNode() != null) {

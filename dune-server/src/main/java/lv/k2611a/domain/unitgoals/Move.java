@@ -24,8 +24,9 @@ public class Move implements UnitGoal {
     private int goalY;
     private List<Node> path;
     private AStar aStarCache = new AStar();
-    private int goalUnblockCheckDepth = 3;
     private int goalUnblockMinimumDistance = 10;
+    private int goalUnblockCheckDepth = 7;
+    private int goalUnblockBlockCountMinimum = 4;
     private int ticksToWait = 5 + new Random().nextInt(10);
 
     public Move(int goalX, int goalY) {
@@ -54,13 +55,13 @@ public class Move implements UnitGoal {
     public void reserveTiles(Unit unit, Map map) {
         int ticksToFreeCurrentCell = unit.getUnitType().getSpeed()/2;
         if (unit.getTicksSpentOnCurrentGoal() <= ticksToFreeCurrentCell) {
-            map.setUsed(unit.getX(), unit.getY(), unit.getId());
+            map.setUsedByUnit(unit.getX(), unit.getY(), unit.getId());
         }
         if (unit.getTicksSpentOnCurrentGoal() > 0) {
             if (path != null) {
                 if (!path.isEmpty()) {
                     Node next = path.get(0);
-                    map.setUsed(next.getX(), next.getY(), unit.getId());
+                    map.setUsedByUnit(next.getX(), next.getY(), unit.getId());
                 }
             }
         }
@@ -72,7 +73,8 @@ public class Move implements UnitGoal {
             calcPath(unit, map);
         }
         if (path == null) {
-            log.warn("Recalculated path, but still null");
+            unit.removeGoal(this);
+            unit.setTicksSpentOnCurrentGoal(0);
             return;
         }
         if (path.isEmpty()) {
@@ -95,7 +97,7 @@ public class Move implements UnitGoal {
             if (map.isUnoccupied(next, unit)) {
                 // Start moving to the next tile. Reserve the tile. First come first serve.
                 unit.setTicksSpentOnCurrentGoal(unit.getTicksSpentOnCurrentGoal() + 1);
-                map.setUsed(next.getX(), next.getY(), unit.getId());
+                map.setUsedByUnit(next.getX(), next.getY(), unit.getId());
             } else {
                 // If we cannot start moving to next tile, wait and decrease waiting timer.
                 // Harvesters fail immediately.
@@ -122,20 +124,24 @@ public class Move implements UnitGoal {
             }
         }
         // If we could not move to the next tile for the past X ticks, attempt to recalculate the path
-        // If we are in vicinity of the goal, try to deduct if the goal is reachable or we should stop a step further.
         if (ticksToWait <= 0) {
             resetTicksToWait();
             calcPath(unit, map);
+            // If we are closer than goalUnblockMinimumDistance to the goal and met an unpassable tile,
+            // we check if the goal is reachable.
+            // For that, we check tileCount amount of path elements and see if blockCount amount of tiles are blocked.
+            // If they are, we change our goal 1 step closer to us, in order to unwind the blocking.
             double distanceToGoal = Map.getDistanceBetween(unit.getPoint(), new Point(goalX,goalY));
             if (distanceToGoal <= goalUnblockMinimumDistance) {
-                int checkElementCount = Math.min(goalUnblockCheckDepth, path.size());
+                int tileCount = Math.min(goalUnblockCheckDepth, path.size());
+                int blockCount = Math.min(goalUnblockBlockCountMinimum, path.size());
                 int pathBlockedTileCount = 0;
-                for (int pathElementID = path.size()-1; pathElementID >= path.size() - checkElementCount; pathElementID--) {
+                for (int pathElementID = path.size()-1; pathElementID >= path.size() - tileCount; pathElementID--) {
                     if (!map.isUnoccupied(path.get(pathElementID), unit)) {
                         pathBlockedTileCount++;
                     }
                 }
-                if (pathBlockedTileCount >=checkElementCount) {
+                if (pathBlockedTileCount >=blockCount) {
                     if (path.size() > 1) {
                         Node newGoal = path.get(path.size()-2);
                         setGoalX(newGoal.getX());

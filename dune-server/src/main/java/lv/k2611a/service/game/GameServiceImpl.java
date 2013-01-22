@@ -517,7 +517,7 @@ public class GameServiceImpl implements GameService {
         for (Building building : map.getBuildings()) {
             for (int x = 0; x < building.getType().getWidth(); x++) {
                 for (int y = 0; y < building.getType().getHeight(); y++) {
-                    map.setUsed(x + building.getX(), y + building.getY(), -building.getId());
+                    map.setUsedByBuilding(x + building.getX(), y + building.getY(), building.getId());
                 }
             }
         }

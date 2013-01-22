@@ -8,6 +8,7 @@ public class Tile {
 
     public static final int TICKS_IN_SPICE_TILE = 100;
     private static final Logger log = LoggerFactory.getLogger(Tile.class);
+    public static final int ID_OFFSET = 2;
 
     private int x;
     private int y;
@@ -36,6 +37,7 @@ public class Tile {
         return y;
     }
 
+    // Check if the tile is completely free
     public boolean isUnoccupied() {
         if (usedBy == -1) {
             return true;
@@ -43,30 +45,50 @@ public class Tile {
         return false;
     }
 
+    // Check if the tile is not occupied by someone other than current unit
     public boolean isUnoccupied(long myId) {
         if (usedBy == -1) {
             return true;
         }
-        return myId == usedBy;
+        return myId == (usedBy - ID_OFFSET);
     }
 
+    // Check if the tile contains no buildings, which means it can be passed,
+    // while it might currently be occupied by another unit.
     public boolean isPassable() {
-        if (usedBy <= -Map.ID_OFFSET) {
+        if (usedBy <= -ID_OFFSET) {
             return false;
         }
         return true;
     }
 
     public boolean isUsedByUnit() {
-        return usedBy >= Map.ID_OFFSET;
+        return usedBy >= ID_OFFSET;
     }
 
-    public int getUsedBy() {
-        return usedBy;
+    public boolean isUsedByBuilding() {
+        return usedBy <= -ID_OFFSET;
     }
 
-    public void setUsed(int used) {
-        this.usedBy = used;
+    public int getUsedByUnit() {
+        return usedBy - ID_OFFSET;
+    }
+
+    public int getUsedByBuilding() {
+        return -usedBy + ID_OFFSET;
+    }
+
+    public void setUsedClear() {
+        this.usedBy = -1;
+    }
+
+
+    public void setUsedByUnit(int id) {
+        this.usedBy = id + ID_OFFSET;
+    }
+
+    public void setUsedByBuilding(int id) {
+        this.usedBy = -id - ID_OFFSET;
     }
 
     public Point getPoint() {

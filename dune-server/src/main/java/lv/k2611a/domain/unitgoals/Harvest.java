@@ -35,7 +35,7 @@ public class Harvest implements UnitGoal {
 
     @Override
     public void reserveTiles(Unit unit, Map map) {
-        map.setUsed(unit.getX(), unit.getY(), unit.getId());
+        map.setUsedByUnit(unit.getX(), unit.getY(), unit.getId());
     }
 
     @Override

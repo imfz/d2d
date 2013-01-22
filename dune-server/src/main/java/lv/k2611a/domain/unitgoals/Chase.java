@@ -40,13 +40,13 @@ public class Chase implements UnitGoal {
     public void reserveTiles(Unit unit, Map map) {
         int ticksToFreeCurrentCell = unit.getUnitType().getSpeed()/2;
         if (unit.getTicksSpentOnCurrentGoal() <= ticksToFreeCurrentCell) {
-            map.setUsed(unit.getX(), unit.getY(), unit.getId());
+            map.setUsedByUnit(unit.getX(), unit.getY(), unit.getId());
         }
         if (unit.getTicksSpentOnCurrentGoal() > 0) {
             if (path != null) {
                 if (!path.isEmpty()) {
                     Node next = path.get(0);
-                    map.setUsed(next.getX(), next.getY(), unit.getId());
+                    map.setUsedByUnit(next.getX(), next.getY(), unit.getId());
                 }
             }
         }
@@ -120,7 +120,7 @@ public class Chase implements UnitGoal {
             if (map.isUnoccupied(next, unit)) {
                 // Start moving to the next tile. Reserve the tile. First come first serve.
                 unit.setTicksSpentOnCurrentGoal(unit.getTicksSpentOnCurrentGoal() + 1);
-                map.setUsed(next.getX(), next.getY(), unit.getId());
+                map.setUsedByUnit(next.getX(), next.getY(), unit.getId());
             } else {
                 // If we cannot start moving to next tile, wait and decrease waiting timer.
                 ticksToWait--;
