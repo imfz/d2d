@@ -75,7 +75,7 @@ public class Tile {
     }
 
     public int getUsedByBuilding() {
-        return -usedBy + ID_OFFSET;
+        return -usedBy - ID_OFFSET;
     }
 
     public void setUsedClear() {

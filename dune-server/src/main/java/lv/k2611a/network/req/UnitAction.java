@@ -82,8 +82,8 @@ public class UnitAction extends AbstractGameStateChanger {
             if (building != null) {
                 if (building.getOwnerId() != unit.getOwnerId()) {
                     unit.setGoal(new Attack(Entity.BUILDING, building.getId()));
-                    return;
                 }
+                 return;
             }
             unit.setGoal(new Move(x, y));
         }

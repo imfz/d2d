@@ -97,9 +97,10 @@ public class Chase implements UnitGoal {
         }
 
         if (path == null) {
-            log.warn("Recalculated path to target is null");
+            unit.removeGoal(this);
             return;
         }
+
         if (path.isEmpty()) {
             unit.removeGoal(this);
             unit.setTicksSpentOnCurrentGoal(0);

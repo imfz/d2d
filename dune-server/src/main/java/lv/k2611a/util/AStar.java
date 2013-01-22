@@ -31,10 +31,6 @@ public class AStar {
         Node start = new Node(unit.getX(), unit.getY());
         Node goal = new Node(toX, toY);
 
-        if (!map.isPassable(toX, toY)) {
-            return new ArrayList<Node>();
-        }
-
         int currentDirection;
         closedSet = new HashSet<Node>();
         openSet = createSortedNodeSet();
@@ -58,6 +54,7 @@ public class AStar {
 
             // 150 iterations should be enough, as we will return the found path for the units even if we ran out of nodes.
             if (closedSet.size() >= 150) {
+                log.warn("Maximum AStar iteration count reached for a unit");
                 Node bestNode = getBestNode(closedSet);
                 if (bestNode.getHeuristicDistanceFromGoal() > start.getHeuristicDistanceFromGoal()) {
                     return null;

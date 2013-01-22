@@ -61,6 +61,7 @@ public class Attack implements UnitGoal {
                 fire(unit, map, targetPoint);
             }
         } else {
+            log.warn("Chase " + targetId + " " + targetPoint);
             unit.insertGoalBeforeCurrent(new Chase(targetEntity, targetId, targetPoint));
             unit.getCurrentGoal().process(unit, map, gameService);
         }
