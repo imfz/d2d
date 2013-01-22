@@ -47,6 +47,25 @@
                 </executions>
             </plugin>
             <plugin>
+                <groupId>com.dasberg.maven.plugins</groupId>
+                <artifactId>maven-closure-compiler-plugin</artifactId>
+                <version>1.0.0</version>
+                <executions>
+                    <execution>
+                        <id>closure-compiler</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                        <configuration>
+                            <compilation_level>SIMPLE_OPTIMIZATIONS</compilation_level>
+                            <js_dir>../dune-client/resources/js</js_dir>
+                            <js_output_dir>${project.build.directory}/classes/web/js</js_output_dir>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>1.7.1</version>
