@@ -44,6 +44,11 @@ public class GameServlet extends HttpServlet {
     }
 
     @Override
+    public void destroy() {
+        log.info("Destroying game servlet");
+    }
+
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         if (_wsFactory.acceptWebSocket(request, response)) {
             return;
