@@ -8,8 +8,7 @@ function NetworkConnection() {
 NetworkConnection.prototype.start = function (name, host) {
     this._username = name;
     this._connEstablished = false;
-    var location = host;
-    this._ws = new WebSocket(location, "chat");
+    this._ws = new WebSocket(host, "chat");
     this._ws.binaryType = "arraybuffer";
     this._ws.onopen = this.onopen;
     this._ws.onmessage = this.onmessage;
@@ -29,80 +28,89 @@ NetworkConnection.prototype.onopen = function () {
 };
 
 NetworkConnection.prototype.sendJoin = function (username) {
-    var joinRequest = new Object();
+    var joinRequest = {};
     joinRequest.nickname = username;
     this.sendNetworkRequest("Join", joinRequest);
 };
 
 NetworkConnection.prototype.sendChatMessage = function (message) {
-    var chatMessage = new Object();
+    var chatMessage = {};
     chatMessage.message = message;
     this.sendNetworkRequest("ChatMessage", chatMessage);
 };
 
 NetworkConnection.prototype.sendUnitAction = function (ids, x, y) {
-    var unitAction = new Object();
+    var unitAction = {};
     unitAction.ids = ids;
     unitAction.x = x;
     unitAction.y = y;
     this.sendNetworkRequest("UnitAction", unitAction);
 };
 
+
+NetworkConnection.prototype.sendAttackMove = function (ids, x, y) {
+    var unitAttackMove = {};
+    unitAttackMove.ids = ids;
+    unitAttackMove.x = x;
+    unitAttackMove.y = y;
+    this.sendNetworkRequest("UnitAttackMove", unitAttackMove);
+};
+
 NetworkConnection.prototype.sendUnitStop = function (ids) {
-    var unitStop = new Object();
+    var unitStop = {};
     unitStop.ids = ids;
     this.sendNetworkRequest("UnitStop", unitStop);
 };
 
 NetworkConnection.prototype.sendCreateGame = function () {
-    var createNewGame = new Object();
+    var createNewGame = {};
     createNewGame.height = 64;
     createNewGame.width = 64;
     this.sendNetworkRequest("CreateNewGame", createNewGame);
 };
 
 NetworkConnection.prototype.sendStartGame = function () {
-    var startGame = new Object();
+    var startGame = {};
     this.sendNetworkRequest("StartGame", startGame);
 };
 
 NetworkConnection.prototype.sendJoinGame = function (id) {
-    var joinGame = new Object();
+    var joinGame = {};
     joinGame.id = id;
     this.sendNetworkRequest("JoinGame", joinGame);
 };
 
 NetworkConnection.prototype.sendLeaveGame = function () {
-    var leaveGame = new Object();
+    var leaveGame = {};
     this.sendNetworkRequest("LeaveGame", leaveGame);
 };
 
 NetworkConnection.prototype.moveToPlayers = function (username) {
-    var moveToPlayers = new Object();
+    var moveToPlayers = {};
     moveToPlayers.username = username;
     this.sendNetworkRequest("MoveToPlayers", moveToPlayers);
 };
 
 NetworkConnection.prototype.moveToObservers = function (username) {
-    var moveToObservers = new Object();
+    var moveToObservers = {};
     moveToObservers.username = username;
     this.sendNetworkRequest("MoveToObservers", moveToObservers);
 };
 
 NetworkConnection.prototype.sendBuildingSelection = function (id) {
-    var selectBuilding = new Object();
+    var selectBuilding = {};
     selectBuilding.selectedId = id;
     this.sendNetworkRequest("SelectBuilding", selectBuilding);
 };
 
 NetworkConnection.prototype.sendCancelConstruction = function (builderId) {
-    var cancelConstruction = new Object();
+    var cancelConstruction = {};
     cancelConstruction.builderId = builderId;
     this.sendNetworkRequest("CancelConstruction", cancelConstruction);
 };
 
 NetworkConnection.prototype.sendBuildingPlacement = function (x, y, builderId) {
-    var placeBuilding = new Object();
+    var placeBuilding = {};
     placeBuilding.x = x;
     placeBuilding.y = y;
     placeBuilding.builderId = builderId;
@@ -110,7 +118,7 @@ NetworkConnection.prototype.sendBuildingPlacement = function (x, y, builderId) {
 };
 
 NetworkConnection.prototype.sendStartConstruction = function (builderId, entityToBuildId) {
-    var startConstruction = new Object();
+    var startConstruction = {};
     startConstruction.builderId = builderId;
     startConstruction.entityToBuildId = entityToBuildId;
     this.sendNetworkRequest("StartConstruction", startConstruction);
@@ -122,7 +130,7 @@ NetworkConnection.prototype.sendNetworkRequest = function (messageName, messageO
         Utils.showError("Disconnected");
         return;
     }
-    var networkPacket = new Object();
+    var networkPacket = {};
     networkPacket.messageName = messageName;
     networkPacket.payload = $.toJSON(messageObj);
     if (this._ws) {

@@ -146,7 +146,7 @@ GameEngine.prototype.bindEvents = function () {
             break;
         }
 
-
+       return true;
     };
     $(window).keydown(onKeyDown);
 
@@ -167,6 +167,10 @@ GameEngine.prototype.bindEvents = function () {
     $(this.canvas).mouseup(function (event) {
         switch (event.which) {
         case 1:
+            if (that.attackMovePressed === true) {
+                that.attackMovePressed = false;
+                return;
+            }
             var x = Math.floor((event.pageX - $(that.canvas).offset().left) * engine.scale);
             var y = Math.floor((event.pageY - $(that.canvas).offset().top) * engine.scale);
             var x2 = that.xMouseDown;
@@ -224,12 +228,24 @@ GameEngine.prototype.bindEvents = function () {
         var x = Math.floor((event.pageX - $(that.canvas).offset().left) * engine.scale);
         var y = Math.floor((event.pageY - $(that.canvas).offset().top) * engine.scale);
         switch (event.which) {
-        case 1:
-            // remember mousedown for rectangle selection
-            that.xMouseDown = x;
-            that.yMouseDown = y;
-            break;
-        case 3:
+        case 1: // left button
+            if (event.ctrlKey) {
+                that.attackMovePressed = true;
+                if (that.placementEnabled) {
+                    that.placementEnabled = false;
+                    return false;
+                }
+                var targetX = Math.floor((x / TILE_WIDTH) + that.x);
+                var targetY = Math.floor((y / TILE_HEIGHT) + that.y);
+                connection.sendAttackMove(that.selectedUnitId, targetX, targetY);
+                break;
+            } else {
+                // remember mousedown for rectangle selection
+                that.xMouseDown = x;
+                that.yMouseDown = y;
+                break;
+            }
+        case 3: // right button
             if (that.placementEnabled) {
                 that.placementEnabled = false;
                 return false;
@@ -342,14 +358,14 @@ GameEngine.prototype.bindEvents = function () {
     }
 };
 
-GameEngine.prototype.enablePlacement = function() {
+GameEngine.prototype.enablePlacement = function () {
     var building = this.map.getBuildingById(this.selectedBuilding);
     if (!building) {
         return;
     }
-	if (building.type != BUILDING_TYPE_CONSTRUCTION_YARD) {
-		return;
-	}
+    if (building.type != BUILDING_TYPE_CONSTRUCTION_YARD) {
+        return;
+    }
     var buildingConfig = this.getBuildingPlacementConfig(building.entityBuiltId);
     if (!buildingConfig) {
         return;
@@ -573,13 +589,13 @@ GameEngine.prototype.render = function () {
 
 requestAnimFrame = (function () {
     return window.requestAnimationFrame ||
-        window.webkitRequestAnimationFrame ||
-        window.mozRequestAnimationFrame ||
-        window.oRequestAnimationFrame ||
-        window.msRequestAnimationFrame ||
-        function (/* function FrameRequestCallback */ callback, /* DOMElement Element */ element) {
-            window.setTimeout(callback, 1000 / 60);
-        };
+            window.webkitRequestAnimationFrame ||
+            window.mozRequestAnimationFrame ||
+            window.oRequestAnimationFrame ||
+            window.msRequestAnimationFrame ||
+            function (/* function FrameRequestCallback */ callback, /* DOMElement Element */ element) {
+                window.setTimeout(callback, 1000 / 60);
+            };
 })();
 
 GameEngine.prototype.renderTiles = function () {
@@ -631,15 +647,15 @@ GameEngine.prototype.renderBuildingPlacement = function (units, buildings) {
                     switch (tileStateForBuilding) {
                     case CELL_OK:
                         foundGoodTile = true;
-                        tileColors.push({x:x - this.x, y:y - this.y, type:CELL_OK});
+                        tileColors.push({x: x - this.x, y: y - this.y, type: CELL_OK});
                         break;
                     case CELL_OK_FAR:
                         foundGoodFarTile = true;
-                        tileColors.push({x:x - this.x, y:y - this.y, type:CELL_OK_FAR});
+                        tileColors.push({x: x - this.x, y: y - this.y, type: CELL_OK_FAR});
                         break;
                     case CELL_BAD:
                         foundBadTile = true;
-                        tileColors.push({x:x - this.x, y:y - this.y, type:CELL_BAD});
+                        tileColors.push({x: x - this.x, y: y - this.y, type: CELL_BAD});
                         break;
                     }
                 }
@@ -700,12 +716,12 @@ GameEngine.prototype.renderBuildings = function (buildings) {
         // construction complete image
         if (building.constructionComplete && okButtonEnabled) {
             context.drawImage(sprites.okButtonSprite,
-                0,
-                0,
-                sprites.okButtonSprite.width, sprites.okButtonSprite.height,
-                xToDrawTo + TILE_WIDTH - sprites.okButtonSprite.width / 2,
-                yToDrawTo + TILE_HEIGHT - sprites.okButtonSprite.height / 2,
-                sprites.okButtonSprite.width, sprites.okButtonSprite.height
+                    0,
+                    0,
+                    sprites.okButtonSprite.width, sprites.okButtonSprite.height,
+                    xToDrawTo + TILE_WIDTH - sprites.okButtonSprite.width / 2,
+                    yToDrawTo + TILE_HEIGHT - sprites.okButtonSprite.height / 2,
+                    sprites.okButtonSprite.width, sprites.okButtonSprite.height
             );
         }
         if (building.ownerId == connection._playerId) {
@@ -756,7 +772,7 @@ GameEngine.prototype.renderUnits = function (units) {
             var yToDrawTo = (unit.y - this.y) * TILE_HEIGHT;
             var movingCoord = this.shiftMovingUnit(xToDrawTo, yToDrawTo, unit.travelledPercents, unit.viewDirection);
             context.drawImage(unitConfig.sprite, unitConfig.x, unitConfig.y, unitConfig.width, unitConfig.height,
-                movingCoord.x + unitConfig.xOffset, movingCoord.y + unitConfig.yOffset, unitConfig.width, unitConfig.height);
+                    movingCoord.x + unitConfig.xOffset, movingCoord.y + unitConfig.yOffset, unitConfig.width, unitConfig.height);
 
             if ($.inArray(unit.id, this.selectedUnitId) >= 0) {
                 // draw green border near selected unit
