@@ -21,6 +21,7 @@ import lv.k2611a.network.resp.Left;
 import lv.k2611a.network.resp.Response;
 import lv.k2611a.service.connection.ConnectionState;
 import lv.k2611a.service.game.GameService;
+import lv.k2611a.service.game.GameSessionsService;
 import lv.k2611a.service.global.GlobalSessionService;
 import lv.k2611a.service.global.GlobalUsernameService;
 import lv.k2611a.service.global.LobbyService;
@@ -39,6 +40,9 @@ public class ClientConnection implements WebSocket.OnTextMessage, Runnable {
 
     @Autowired
     private GlobalSessionService globalSessionService;
+
+    @Autowired
+    private GameSessionsService gameSessionsService;
 
     @Autowired
     private GlobalUsernameService globalUsernameService;
@@ -129,7 +133,7 @@ public class ClientConnection implements WebSocket.OnTextMessage, Runnable {
             lobbyService.removeUserFromAllGames(username);
             Left left = new Left();
             left.setNickname(username);
-            globalSessionService.sendUpdate(left);
+            gameSessionsService.sendUpdate(left);
         }
 
         log.info("Connection closed. Id : " + connectionKey);
