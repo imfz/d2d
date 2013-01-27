@@ -40,16 +40,16 @@ Handler.prototype.handleUpdatePlayerId =function(data) {
 Handler.prototype.handleUpdateMap = function (data) {
 
     if (typeof data.map.units === "undefined") {
-        data.map.units = new Array();
+        data.map.units = [];
     }
     if (typeof data.map.buildings === "undefined") {
-        data.map.buildings = new Array();
+        data.map.buildings = [];
     }
     if (typeof data.map.tiles === "undefined") {
-        data.map.tiles = new Array();
+        data.map.tiles = [];
     }
     if (typeof data.map.bullets === "undefined") {
-        data.map.bullets = new Array();
+        data.map.bullets = [];
     }
 
     windows.openGame();
@@ -94,26 +94,26 @@ Handler.prototype.processSavedUpdates = function () {
             var update = this.updates[i];
             this.processUpdate(update);
         }
-        this.updates = new Array();
+        this.updates = [];
     }
 };
 
 Handler.prototype.processUpdate = function (update) {
 
     if (typeof update.changedTiles === "undefined") {
-        update.changedTiles = new Array();
+        update.changedTiles = [];
     }
 
     if (typeof update.buildings === "undefined") {
-        update.buildings = new Array();
+        update.buildings = [];
     }
 
     if (typeof update.units === "undefined") {
-        update.units = new Array();
+        update.units = [];
     }
 
     if (typeof update.bullets === "undefined") {
-        update.bullets = new Array();
+        update.bullets = [];
     }
 
     if (update.tickCount == this.map.tickCount + 1) {
@@ -125,6 +125,7 @@ Handler.prototype.processUpdate = function (update) {
     this.map.setUnits(update.units);
     this.map.setBuildings(update.buildings);
     this.map.setBullets(update.bullets);
+    this.map.addExplosions(update.explosions);
     for (var i = 0; i < update.changedTiles.length; i++) {
         var tile = update.changedTiles[i];
         this.map.setTile(tile.x, tile.y, tile);
@@ -133,7 +134,7 @@ Handler.prototype.processUpdate = function (update) {
 
 Handler.prototype.storeUpdateForFutureUse = function (data) {
     if (!this.updates) {
-        this.updates = new Array();
+        this.updates = [];
     }
     this.updates.push(data);
 };
@@ -194,7 +195,7 @@ Handler.prototype.handleGameClosed = function(data) {
 Handler.prototype.handleUpdateConstructionOptions = function (data) {
 
     if (typeof data.options === "undefined") {
-        data.options = new Array();
+        data.options = [];
     }
 
     // reset building mouse cursor here, after building

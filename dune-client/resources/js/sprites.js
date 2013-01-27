@@ -49,6 +49,13 @@ Sprites.prototype.fillWithLines = function (canvasEl, fillStyle) {
     }
 };
 
+Sprites.prototype.getExplosionTTL = function(explosionType) {
+    if (explosionType == EXPLOSION_TYPE_BIG) {
+        return 1 * 1000;
+    }
+    return 0;
+};
+
 Sprites.prototype.getTileConfig = function (targetTileX, targetTileY, map) {
     if (targetTileX >= map.getWidth()) {
         return null;
@@ -184,6 +191,10 @@ Sprites.prototype.setMainSprite = function (mainSprite) {
 
 Sprites.prototype.setBuildingsSprite = function (buildingsSprite) {
     this.buildingsSprite = buildingsSprite;
+};
+
+Sprites.prototype.setBlastSprite = function (blastSprite) {
+    this.blastSprite = blastSprite;
 };
 
 Sprites.prototype.setOkButton = function (okButtonSprite) {
@@ -423,6 +434,38 @@ Sprites.prototype.getBulletConfig = function (bullet) {
     result.y = 0;
     result.width = 10;
     result.height = 10;
+    return result;
+
+};
+
+
+Sprites.prototype.getExplosionConfig = function (explosion, percentPassed) {
+    var sprite = this.blastSprite;
+
+    var x = 0;
+
+    if (percentPassed > 0.25) {
+        x = 1;
+    }
+
+    if (percentPassed > 0.5) {
+        x = 2;
+    }
+
+    if (percentPassed > 0.75) {
+        x = 3;
+    }
+
+    var result = {};
+
+
+    result.sprite = sprite;
+    result.x = x * 26;
+    result.y = 0;
+    result.width = 26;
+    result.height = 26;
+
+
     return result;
 
 };

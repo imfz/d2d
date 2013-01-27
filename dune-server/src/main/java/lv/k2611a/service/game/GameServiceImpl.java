@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -12,9 +13,8 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PreDestroy;
 
-import lv.k2611a.domain.unitgoals.Chase;
+import lv.k2611a.domain.Explosion;
 import lv.k2611a.domain.unitgoals.Guard;
-import lv.k2611a.domain.unitgoals.Move;
 import lv.k2611a.domain.unitgoals.UnitGoal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +42,7 @@ import lv.k2611a.domain.buildinggoals.CreateUnit;
 import lv.k2611a.jmx.ServerMonitor;
 import lv.k2611a.network.BuildingDTO;
 import lv.k2611a.network.BulletDTO;
+import lv.k2611a.network.ExplosionDTO;
 import lv.k2611a.network.MapDTO;
 import lv.k2611a.network.OptionDTO;
 import lv.k2611a.network.TileDTO;
@@ -220,6 +221,7 @@ public class GameServiceImpl implements GameService {
 
         changedTiles = new HashSet<Point>();
 
+        cleanExplosions(map);
         fillPlayerBuildingTypes();
         mapFillTileUsage(map);
         updatePlayerElectricity();
@@ -246,6 +248,10 @@ public class GameServiceImpl implements GameService {
 
     }
 
+    private void cleanExplosions(Map map) {
+        map.getExplosions().clear();
+    }
+
     private void processPlayerStatus(Map map) {
         for (Player player : map.getPlayers()) {
             if (!player.hasLost()) {
@@ -270,6 +276,8 @@ public class GameServiceImpl implements GameService {
                     unit.setHp(unit.getHp() - bullet.getDamageToDeal());
                     if (unit.getHp() <= 0) {
                         map.removeUnit(unit);
+                        Explosion explosion = new Explosion(unit.getX(), unit.getY());
+                        map.addExplosion(explosion);
                     }
                 } else {
                     Building building = map.getBuildingAt(bullet.getGoalX(), bullet.getGoalY());
@@ -485,9 +493,20 @@ public class GameServiceImpl implements GameService {
         List<BulletDTO> bulletDTOList = getBullets();
         update.setBullets(bulletDTOList.toArray(new BulletDTO[bulletDTOList.size()]));
 
+        List<ExplosionDTO> explosionDTOList = getExplosions();
+        update.setExplosions(explosionDTOList.toArray(new ExplosionDTO[explosionDTOList.size()]));
+
         update.setTickCount(tickCount);
         gameSessionsService.sendUpdate(update);
 
+    }
+
+    private List<ExplosionDTO> getExplosions() {
+        List<ExplosionDTO> result = new ArrayList<ExplosionDTO>();
+        for (Explosion explosion : this.map.getExplosions()) {
+            result.add(ExplosionDTO.fromExplosion(explosion));
+        }
+        return result;
     }
 
     private List<TileWithCoordinatesDTO> getChangedTiles() {

@@ -3,10 +3,11 @@ var CELL_OK = 2;
 var CELL_OK_FAR = 3;
 
 function GameMap() {
-    this.tiles = new Array();
-    this.units = new Array();
-    this.buildings = new Array();
-    this.bullets = new Array();
+    this.tiles = [];
+    this.units = [];
+    this.buildings = [];
+    this.bullets = [];
+    this.explosions = [];
     console.log("Map created");
     this.width = 0;
     this.height = 0;
@@ -34,14 +35,14 @@ GameMap.prototype.setTickCount = function (tickCount) {
 
 GameMap.prototype.setTile = function (x, y, tile) {
     if (!this.tiles[x]) {
-        this.tiles[x] = new Array();
+        this.tiles[x] = [];
     }
     this.tiles[x][y] = tile;
 };
 
 GameMap.prototype.getTile = function (x, y) {
     if (!this.tiles[x]) {
-        this.tiles[x] = new Array();
+        this.tiles[x] = [];
     }
     return this.tiles[x][y];
 };
@@ -58,13 +59,51 @@ GameMap.prototype.setBullets = function (bullets) {
     this.bullets = bullets;
 };
 
+GameMap.prototype.setSprites = function (sprites) {
+    this.sprites = sprites;
+};
+
+GameMap.prototype.addExplosions = function (explosions) {
+    var currentTime = new Date().getTime();
+    for (var i = 0; i < explosions.length; i++)  {
+        var explosion = explosions[i];
+        explosion.timeStarted = currentTime;
+        explosion.timeToExpire = currentTime + this.sprites.getExplosionTTL(explosion.type);
+
+    }
+    this.explosions = this.explosions.concat(explosions);
+};
+
+GameMap.prototype.expireExplosions = function() {
+   var currentTime = new Date().getTime();
+   var explosionsSurvived = [];
+   for (var i = 0; i < this.explosions.length; i++) {
+       var explosion = this.explosions[i];
+       if (explosion.timeToExpire >= currentTime) {
+           explosionsSurvived.push(explosion);
+       }
+   }
+    this.explosions = explosionsSurvived;
+};
+
 GameMap.prototype.getUnits = function (x, y, x2, y2) {
-    var result = new Array();
+    var result = [];
     for (var i = 0; i < this.units.length; i++) {
         var unit = this.units[i];
         if ((unit.x >= x) && (unit.x <= x2) && (unit.y >= y) && (unit.y <= y2)) {
             result.push(unit);
         }
+    }
+    return result;
+};
+
+GameMap.prototype.getExplosions = function (x, y, x2, y2) {
+    var result = [];
+    for (var i = 0; i < this.explosions.length; i++) {
+        var explosion = this.explosions[i];
+        //if ((explosion.x >= x) && (explosion.x <= x2) && (explosion.y >= y) && (explosion.y <= y2)) {
+            result.push(explosion);
+        //}
     }
     return result;
 };

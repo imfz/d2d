@@ -563,6 +563,7 @@ GameEngine.prototype.render = function () {
     var currentTime = new Date().getTime();
     this.frameCount++;
     var fps = this.frameCount / (currentTime - this.startTime) * 1000;
+    this.map.expireExplosions();
 
     //console.log("Rendering frame " + this.frameCount + " with fps " + fps + " x : " + this.x + " y : " + this.y );
     var context = this.canvas.getContext("2d");
@@ -571,11 +572,13 @@ GameEngine.prototype.render = function () {
     var buildings = this.map.getBuildings(this.x - 1, this.y - 1, this.x + this.widthInTiles + 1, this.y + this.heightInTiles + 1);
     var bullets = this.map.getBullets(this.x - 1, this.y - 1, this.x + this.widthInTiles + 1, this.y + this.heightInTiles + 1);
     var units = this.map.getUnits(this.x - 1, this.y - 1, this.x + this.widthInTiles, this.y + this.heightInTiles);
+    var explosions = this.map.getExplosions(this.x - 1, this.y - 1, this.x + this.widthInTiles, this.y + this.heightInTiles);
 
     this.renderTiles();
     this.renderBuildings(buildings);
     this.renderBuildingPlacement(units, buildings);
     this.renderUnits(units);
+    this.renderExplosions(explosions);
     this.renderBullets(bullets);
     this.renderRectangle();
 
@@ -826,6 +829,33 @@ GameEngine.prototype.renderBullets = function (bullets) {
 
             context.drawImage(bulletConfig.sprite, bulletConfig.x, bulletConfig.y, bulletConfig.width, bulletConfig.height,
                     xToDrawTo, yToDrawTo, bulletConfig.width, bulletConfig.height);
+
+
+        }
+    }
+};
+
+GameEngine.prototype.renderExplosions = function (explosions) {
+    var currentTime = new Date().getTime();
+    var context = this.canvas.getContext("2d");
+    for (var i = 0; i < explosions.length; i++) {
+        var explosion = explosions[i];
+        var timePassed = (currentTime - explosion.timeStarted) / (explosion.timeToExpire - explosion.timeStarted);
+        var explosionConfig = sprites.getExplosionConfig(explosion,timePassed);
+        if (explosionConfig) {
+            var xToDrawTo = explosion.x;
+            xToDrawTo -= this.x;
+            xToDrawTo = xToDrawTo * TILE_WIDTH;
+
+            var yToDrawTo = explosion.y;
+            yToDrawTo -= this.y;
+            yToDrawTo = yToDrawTo * TILE_HEIGHT;
+
+            xToDrawTo += (TILE_WIDTH - explosionConfig.width) / 2;
+            yToDrawTo += (TILE_HEIGHT - explosionConfig.height) / 2;
+
+            context.drawImage(explosionConfig.sprite, explosionConfig.x, explosionConfig.y, explosionConfig.width, explosionConfig.height,
+                    xToDrawTo, yToDrawTo, explosionConfig.width, explosionConfig.height);
 
 
         }

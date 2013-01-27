@@ -4,6 +4,7 @@ import lv.k2611a.domain.AbstractSerializationTest;
 import lv.k2611a.domain.EntityFactory;
 import lv.k2611a.network.BuildingDTO;
 import lv.k2611a.network.BulletDTO;
+import lv.k2611a.network.ExplosionDTO;
 import lv.k2611a.network.TileWithCoordinatesDTO;
 import lv.k2611a.network.UnitDTO;
 
@@ -15,7 +16,22 @@ public class UpdateMapIncrementalTest extends AbstractSerializationTest<UpdateMa
         updateMapIncremental.setChangedTiles(createChangedTiles());
         updateMapIncremental.setUnits(createUnits());
         updateMapIncremental.setBullets(createBullets());
+        updateMapIncremental.setExplosions(createExplosions());
         return updateMapIncremental;
+    }
+
+    private ExplosionDTO[] createExplosions() {
+        ExplosionDTO dto = new ExplosionDTO();
+        dto.setExplosionType((byte) 0);
+        dto.setX((short) 0);
+        dto.setY((short) 0);
+
+        ExplosionDTO dto2 = new ExplosionDTO();
+        dto2.setExplosionType((byte) 0);
+        dto2.setX((short) 0);
+        dto2.setY((short) 0);
+
+        return new ExplosionDTO[]{dto,dto2};
     }
 
     private UnitDTO[] createUnits() {

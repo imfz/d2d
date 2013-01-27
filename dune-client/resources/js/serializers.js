@@ -1,60 +1,69 @@
-var Serializers = new Array();
+var Serializers = [];
 
 Serializers[1] = function (payload) {
-    var result = new Array();
+    var result = [];
     result.money = getIntAt(payload, 0);
     result.electricity = getIntAt(payload, 4);
     return ["UpdateMoney", result];
 };
 
 Serializers[2] = function (payload) {
-    var result = new Array();
+    var result = [];
     var position = 0;
 
-    var units = new Array();
+    var units = [];
     var unitsLength = getIntAt(payload, position);
     position += 4;
     for (var i = 0; i < unitsLength; i++) {
-        var unitDTO = new Array();
+        var unitDTO = [];
         position = readUnitDTO(unitDTO, payload, position);
         units.push(unitDTO);
     }
     result["units"] = units;
 
 
-    var buildings = new Array();
+    var buildings = [];
     var buildingsLength = getIntAt(payload, position);
     position += 4;
     for (i = 0; i < buildingsLength; i++) {
-        var buildingDTO = new Array();
+        var buildingDTO = [];
         position = readBuildingDTO(buildingDTO, payload, position);
         buildings.push(buildingDTO);
     }
     result["buildings"] = buildings;
 
-    var bullets = new Array();
+    var bullets = [];
     var bulletsLength = getIntAt(payload, position);
     position += 4;
     for (i = 0; i < bulletsLength; i++) {
-        var bulletDTO = new Array();
+        var bulletDTO = [];
         position = readBulletDTO(bulletDTO, payload, position);
         bullets.push(bulletDTO);
     }
     result["bullets"] = bullets;
 
-    var changedTiles = new Array();
+    var changedTiles = [];
     var changedTilesLength = getIntAt(payload, position);
     position += 4;
     for (i = 0; i < changedTilesLength; i++) {
-        var changedTileDTO = new Array();
+        var changedTileDTO = [];
         position = readChangedTileDTO(changedTileDTO, payload, position);
         changedTiles.push(changedTileDTO);
     }
     result["changedTiles"] = changedTiles;
 
+    var explosions = [];
+    var explosionsLength = getIntAt(payload, position);
+    position += 4;
+    for (i = 0; i < explosionsLength; i++) {
+        var explosionDTO = [];
+        position = readExplosionDTO(explosionDTO, payload, position);
+        explosions.push(explosionDTO);
+    }
+    result["explosions"] = explosions;
+
     result["tickCount"] = getLongAt(payload,position);
     position+=8;
-
 
     if (position != payload.length) {
         console.log("Read " + position + " bytes from payloads " + payload.length);
@@ -65,10 +74,10 @@ Serializers[2] = function (payload) {
 
 
 Serializers[3] = function (payload) {
-    var result = new Array();
+    var result = [];
     var position = 0;
 
-    var mapDTO = new Array();
+    var mapDTO = [];
     result["map"] = mapDTO;
 
     position = readMapDTO(mapDTO, payload, position);
@@ -85,14 +94,14 @@ Serializers[3] = function (payload) {
 
 
 Serializers[4] = function (payload) {
-    var result = new Array();
+    var result = [];
     var position = 0;
 
-    var options = new Array();
+    var options = [];
     var optionsDTOLength = getIntAt(payload, position);
     position += 4;
     for (i = 0; i < optionsDTOLength; i++) {
-        var optionDTO = new Array();
+        var optionDTO = [];
         position = readOptionDTO(optionDTO, payload, position);
         options.push(optionDTO);
     }
@@ -122,42 +131,42 @@ Serializers[4] = function (payload) {
 };
 
 function readMapDTO(dto, payload, position) {
-    var units = new Array();
+    var units = [];
     var unitsLength = getIntAt(payload, position);
     position += 4;
     for (var i = 0; i < unitsLength; i++) {
-        var unitDTO = new Array();
+        var unitDTO = [];
         position = readUnitDTO(unitDTO, payload, position);
         units.push(unitDTO);
     }
     dto["units"] = units;
 
 
-    var buildings = new Array();
+    var buildings = [];
     var buildingsLength = getIntAt(payload, position);
     position += 4;
     for (i = 0; i < buildingsLength; i++) {
-        var buildingDTO = new Array();
+        var buildingDTO = [];
         position = readBuildingDTO(buildingDTO, payload, position);
         buildings.push(buildingDTO);
     }
     dto["buildings"] = buildings;
 
-    var tiles = new Array();
+    var tiles = [];
     var tileLength = getIntAt(payload, position);
     position += 4;
     for (i = 0; i < tileLength; i++) {
-        var tileDTO = new Array();
+        var tileDTO = [];
         position = readTileDTO(tileDTO, payload, position);
         tiles.push(tileDTO);
     }
     dto["tiles"] = tiles;
 
-    var bullets = new Array();
+    var bullets = [];
     var bulletsLength = getIntAt(payload, position);
     position += 4;
     for (i = 0; i < bulletsLength; i++) {
-        var bulletDTO = new Array();
+        var bulletDTO = [];
         position = readBulletDTO(bulletDTO, payload, position);
         bullets.push(bulletDTO);
     }
@@ -255,6 +264,18 @@ function readBulletDTO(dto, payload, position) {
     position++;
 
     return position;
+}
+
+function readExplosionDTO(dto, payload, position) {
+    dto["x"] = getShortAt(payload,position);
+    position+=2;
+    dto["y"] = getShortAt(payload,position);
+    position+=2;
+    dto["type"] = payload[position];
+    position++;
+
+    return position;
+
 }
 
 

@@ -25,6 +25,7 @@ public class Map {
     private List<Unit> units;
     private List<Building> buildings;
     private List<Bullet> bullets;
+    private List<Explosion> explosions;
     private int lastBulletId = 0;
 
     private HashMap<Point, RefineryEntrance> refineryEntranceList = new HashMap<Point, RefineryEntrance>();
@@ -55,6 +56,7 @@ public class Map {
         units = new ArrayList<Unit>();
         buildings = new ArrayList<Building>();
         bullets = new ArrayList<Bullet>();
+        explosions = new ArrayList<Explosion>();
         players = new Player[playerCount];
         for (int i = 0; i < playerCount; i++) {
             Player player = new Player();
@@ -607,6 +609,10 @@ public class Map {
         this.units.set(unit.getId(), null);
     }
 
+    public void addExplosion(Explosion explosion) {
+        this.explosions.add(explosion);
+    }
+
     public void removeBuilding(Building building) {
         this.buildings.set(building.getId(), null);
     }
@@ -630,4 +636,7 @@ public class Map {
         return Collections.unmodifiableList(bullets);
     }
 
+    public List<Explosion> getExplosions() {
+        return explosions;
+    }
 }
