@@ -366,6 +366,9 @@ GameEngine.prototype.enablePlacement = function () {
     if (building.type != BUILDING_TYPE_CONSTRUCTION_YARD) {
         return;
     }
+    if (!building.constructionComplete) {
+        return;
+    }
     var buildingConfig = this.getBuildingPlacementConfig(building.entityBuiltId);
     if (!buildingConfig) {
         return;
@@ -523,7 +526,7 @@ GameEngine.prototype.shiftMovingUnit = function (x, y, travelledPercents, viewDi
         newY += TILE_HEIGHT * travelledPercents / 100;
     }
 
-    var result = new Object();
+    var result = {};
     result.x = newX;
     result.y = newY;
     return result;
@@ -728,7 +731,7 @@ GameEngine.prototype.renderBuildings = function (buildings) {
             );
         }
         if (building.ownerId == connection._playerId) {
-            var shownBuildingInfo = new Object();
+            var shownBuildingInfo = {};
             shownBuildingInfo.id = building.id;
             shownBuildingInfo.x = xToDrawTo;
             shownBuildingInfo.y = yToDrawTo;
