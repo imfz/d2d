@@ -580,4 +580,13 @@ public class GameServiceImpl implements GameService {
     public synchronized List<Player> getPlayers() {
         return Arrays.asList(map.getPlayers());
     }
+
+    @Override
+    public synchronized boolean hasLost(int playerId) {
+        Player player = map.getPlayerById(playerId);
+        if (player == null) {
+            return true;
+        }
+        return player.hasLost();
+    }
 }

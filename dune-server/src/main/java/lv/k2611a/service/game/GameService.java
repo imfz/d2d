@@ -27,4 +27,6 @@ public interface GameService {
     void start(Map map);
 
     List<Player> getPlayers();
+
+    boolean hasLost(int playerId);
 }
