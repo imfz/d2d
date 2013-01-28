@@ -29,36 +29,36 @@ public abstract class FireGoal implements UnitGoal {
         if (unit.getUnitType() == UnitType.LAUNCHER) {
             switch (new Random().nextInt(20)) {
                 case 0:
-                    bullet.setGoalX(unit.getX()+1);
-                    bullet.setGoalY(unit.getY());
+                    bullet.setGoalX(target.getPoint().getX()+1);
+                    bullet.setGoalY(target.getPoint().getY());
                     break;
                 case 1:
-                    bullet.setGoalX(unit.getX()-1);
-                    bullet.setGoalY(unit.getY());
+                    bullet.setGoalX(target.getPoint().getX()-1);
+                    bullet.setGoalY(target.getPoint().getY());
                     break;
                 case 2:
-                    bullet.setGoalX(unit.getX());
-                    bullet.setGoalY(unit.getY()+1);
+                    bullet.setGoalX(target.getPoint().getX());
+                    bullet.setGoalY(target.getPoint().getY()+1);
                     break;
                 case 3:
-                    bullet.setGoalX(unit.getX());
-                    bullet.setGoalY(unit.getY()-1);
+                    bullet.setGoalX(target.getPoint().getX());
+                    bullet.setGoalY(target.getPoint().getY()-1);
                     break;
                 case 4:
-                    bullet.setGoalX(unit.getX()-1);
-                    bullet.setGoalY(unit.getY()-1);
+                    bullet.setGoalX(target.getPoint().getX()-1);
+                    bullet.setGoalY(target.getPoint().getY()-1);
                     break;
                 case 5:
-                    bullet.setGoalX(unit.getX()+1);
-                    bullet.setGoalY(unit.getY()-1);
+                    bullet.setGoalX(target.getPoint().getX()+1);
+                    bullet.setGoalY(target.getPoint().getY()-1);
                     break;
                 case 6:
-                    bullet.setGoalX(unit.getX()-1);
-                    bullet.setGoalY(unit.getY()+1);
+                    bullet.setGoalX(target.getPoint().getX()-1);
+                    bullet.setGoalY(target.getPoint().getY()+1);
                     break;
                 case 7:
-                    bullet.setGoalX(unit.getX()+1);
-                    bullet.setGoalY(unit.getY()+1);
+                    bullet.setGoalX(target.getPoint().getX()+1);
+                    bullet.setGoalY(target.getPoint().getY()+1);
                     break;
             }
         }
