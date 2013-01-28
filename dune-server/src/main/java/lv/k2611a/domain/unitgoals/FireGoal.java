@@ -2,10 +2,8 @@ package lv.k2611a.domain.unitgoals;
 
 import lv.k2611a.domain.*;
 import lv.k2611a.service.game.GameServiceImpl;
-import lv.k2611a.util.Point;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Random;
 
 public abstract class FireGoal implements UnitGoal {
 
@@ -28,6 +26,26 @@ public abstract class FireGoal implements UnitGoal {
         bullet.setStartY(unit.getY());
         bullet.setGoalX(target.getPoint().getX());
         bullet.setGoalY(target.getPoint().getY());
+        if (unit.getUnitType() == UnitType.LAUNCHER) {
+            switch (new Random().nextInt(10)) {
+                case 0:
+                    bullet.setStartX(unit.getX()+1);
+                    bullet.setStartY(unit.getY());
+                    break;
+                case 1:
+                    bullet.setStartX(unit.getX()-1);
+                    bullet.setStartY(unit.getY());
+                    break;
+                case 2:
+                    bullet.setStartX(unit.getX());
+                    bullet.setStartY(unit.getY()+1);
+                    break;
+                case 3:
+                    bullet.setStartX(unit.getX());
+                    bullet.setStartY(unit.getY()-1);
+                    break;
+            }
+        }
         int bulletTicksToMove = (int) Math.round(unit.getUnitType().getBulletSpeed() * Map.getDistanceBetween(unit.getPoint(), target.getPoint()));
 
         bullet.setTicksToMove(bulletTicksToMove);

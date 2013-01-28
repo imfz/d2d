@@ -5,9 +5,7 @@ import lv.k2611a.network.UnitDTO;
 import lv.k2611a.service.game.GameServiceImpl;
 import lv.k2611a.util.AStar;
 import lv.k2611a.util.Node;
-import lv.k2611a.util.Point;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
