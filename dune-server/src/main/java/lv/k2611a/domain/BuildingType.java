@@ -6,21 +6,24 @@ import java.util.Set;
 
 public enum BuildingType implements EntityType {
 
-    POWERPLANT((byte)2,2,2,50,10, 10, +100, null),
-    SILO((byte)1,2,2,50,50, 10, -5, new BuildingType[]{BuildingType.POWERPLANT}),
-    AIRBASE((byte)9,2,2,50,100, 10, -20, new BuildingType[]{BuildingType.POWERPLANT}),
+    // id width height hp ticksToBuild costPerTick electricity prerequisites
+    POWERPLANT((byte)2,2,2,500,50, 20, +100, null),
+    SILO((byte)1,2,2,50,500, 30, -5, new BuildingType[]{BuildingType.POWERPLANT}),
+    AIRBASE((byte)9,2,2,500,100, 10, -20, new BuildingType[]{BuildingType.POWERPLANT}),
     WALL((byte)14,1,1,50,100, 10, 0, new BuildingType[]{BuildingType.POWERPLANT}),
     REPAIRSHOP((byte)3,3,2,50,100, 10, -15, new BuildingType[]{BuildingType.POWERPLANT}),
     TURRET((byte)10,1,1,50,100, 10, -5, new BuildingType[]{BuildingType.POWERPLANT}),
     ROCKET_TURRET((byte)13,1,1,50,100, 10, -20, new BuildingType[]{BuildingType.POWERPLANT}),
     RADAR((byte)5,2,2,50,100, 10, -15, new BuildingType[]{BuildingType.POWERPLANT}),
     CONCRETE((byte)11,2,2,50,100, 10, 0, new BuildingType[]{BuildingType.POWERPLANT}),
-    REFINERY((byte)12,3,2,50,30, 10, -25, new BuildingType[]{BuildingType.POWERPLANT}),
-    FACTORY((byte)8,3,2,50,10, 10, -25, new BuildingType[]{BuildingType.POWERPLANT}) {
+    REFINERY((byte)12,3,2,500,100, 20, -25, new BuildingType[]{BuildingType.POWERPLANT}),
+    FACTORY((byte)8,3,2,500,100, 20, -25, new BuildingType[]{BuildingType.POWERPLANT}) {
         @Override
         public EnumSet<ConstructionOption> getConstructionOptions() {
             EnumSet<ConstructionOption> constructionOptions = EnumSet.of(
-                    ConstructionOption.TANK
+                    ConstructionOption.TANK,
+                    ConstructionOption.SIEGE_TANK,
+                    ConstructionOption.LAUNCHER
             );
             return constructionOptions;
         }
