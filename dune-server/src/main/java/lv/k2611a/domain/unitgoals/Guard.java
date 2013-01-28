@@ -36,7 +36,12 @@ public class Guard extends FireGoal implements UnitGoal  {
                 // If it failed(target dead or outside of attack range), forget about it
                 target = null;
             }
-            List<Target> targetList = map.getTargetsInRange(unit.getPoint(), unit.getUnitType().getAttackRange(), map);
+            List<Target> targetList;
+            if (unit.getUnitType() == UnitType.LAUNCHER) {
+                targetList = map.getTargetsInRangeDiapason(unit.getPoint(), unit.getUnitType().getAttackRange(), 4, map);
+            } else {
+                targetList = map.getTargetsInRange(unit.getPoint(), unit.getUnitType().getAttackRange(), map);
+            }
             // If we have found at least one target in range, check if there are any enemies among these and pick a target
             if (!targetList.isEmpty()) {
                 target = findBestTarget(unit, map, targetList);

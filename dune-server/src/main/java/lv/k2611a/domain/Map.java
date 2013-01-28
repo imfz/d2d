@@ -591,6 +591,33 @@ public class Map {
         return targetList;
     }
 
+    public List<Target> getTargetsInRangeDiapason(Point startPoint, int maxRadius, int minRadius, Map map) {
+        List<Target> targetList = new ArrayList<Target>();
+        Tile targetTile;
+
+        for (int targetX = startPoint.getX() - maxRadius; targetX <= startPoint.getX() + maxRadius; targetX++) {
+            for (int targetY = startPoint.getY() - maxRadius; targetY <= startPoint.getY() + maxRadius; targetY++) {
+                double targetDistance = getDistanceBetween(startPoint, new Point(targetX,targetY));
+                if (targetDistance <= maxRadius && targetDistance >= minRadius) {
+                    targetTile = getTile(targetX, targetY);
+                    if (targetTile != null) {
+                        if (targetTile.isUsedByUnit()) {
+                            Unit targetUnit = map.getUnitAt(targetX,targetY);
+                            // Check if the unit is standing in that tile(to avoid ghosts for units that are moving)
+                            if (targetTile.getPoint().getX() == targetUnit.getPoint().getX()
+                                    && targetTile.getPoint().getY() == targetUnit.getPoint().getY()) {
+                                targetList.add(new Target(Entity.UNIT, targetUnit.getId(), targetUnit.getPoint()));
+                            }
+                        } else if (targetTile.isUsedByBuilding()) {
+                            targetList.add(new Target(Entity.BUILDING, targetTile.getUsedByBuilding(), targetTile.getPoint()));
+                        }
+                    }
+                }
+            }
+        }
+        return targetList;
+    }
+
     public Point getClosestPoint(Building building, Unit unit) {
         List<Point> points = new ArrayList<Point>();
         points.add(building.getPoint());

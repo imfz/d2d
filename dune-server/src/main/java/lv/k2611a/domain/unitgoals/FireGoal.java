@@ -27,22 +27,38 @@ public abstract class FireGoal implements UnitGoal {
         bullet.setGoalX(target.getPoint().getX());
         bullet.setGoalY(target.getPoint().getY());
         if (unit.getUnitType() == UnitType.LAUNCHER) {
-            switch (new Random().nextInt(10)) {
+            switch (new Random().nextInt(20)) {
                 case 0:
-                    bullet.setStartX(unit.getX()+1);
-                    bullet.setStartY(unit.getY());
+                    bullet.setGoalX(unit.getX()+1);
+                    bullet.setGoalY(unit.getY());
                     break;
                 case 1:
-                    bullet.setStartX(unit.getX()-1);
-                    bullet.setStartY(unit.getY());
+                    bullet.setGoalX(unit.getX()-1);
+                    bullet.setGoalY(unit.getY());
                     break;
                 case 2:
-                    bullet.setStartX(unit.getX());
-                    bullet.setStartY(unit.getY()+1);
+                    bullet.setGoalX(unit.getX());
+                    bullet.setGoalY(unit.getY()+1);
                     break;
                 case 3:
-                    bullet.setStartX(unit.getX());
-                    bullet.setStartY(unit.getY()-1);
+                    bullet.setGoalX(unit.getX());
+                    bullet.setGoalY(unit.getY()-1);
+                    break;
+                case 4:
+                    bullet.setGoalX(unit.getX()-1);
+                    bullet.setGoalY(unit.getY()-1);
+                    break;
+                case 5:
+                    bullet.setGoalX(unit.getX()+1);
+                    bullet.setGoalY(unit.getY()-1);
+                    break;
+                case 6:
+                    bullet.setGoalX(unit.getX()-1);
+                    bullet.setGoalY(unit.getY()+1);
+                    break;
+                case 7:
+                    bullet.setGoalX(unit.getX()+1);
+                    bullet.setGoalY(unit.getY()+1);
                     break;
             }
         }
