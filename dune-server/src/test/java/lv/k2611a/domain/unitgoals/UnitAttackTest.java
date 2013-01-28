@@ -1,5 +1,6 @@
 package lv.k2611a.domain.unitgoals;
 
+import lv.k2611a.domain.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -7,12 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import lv.k2611a.domain.Building;
-import lv.k2611a.domain.BuildingType;
-import lv.k2611a.domain.Entity;
-import lv.k2611a.domain.Map;
-import lv.k2611a.domain.Unit;
-import lv.k2611a.domain.UnitType;
 import lv.k2611a.service.game.GameServiceImpl;
 
 import static org.junit.Assert.assertEquals;
@@ -44,7 +39,7 @@ public class UnitAttackTest {
 
         Unit tank = new Unit();
         tank.setUnitType(UnitType.BATTLE_TANK);
-        tank.setGoal(new Attack(Entity.BUILDING,buildingId));
+        tank.setGoal(new Attack(new Target(Entity.BUILDING, building.getId(), building.getPoint())));
         tank.setOwnerId(2);
         tank.setX(20);
         tank.setY(20);
@@ -83,8 +78,8 @@ public class UnitAttackTest {
         tank2.setY(20);
         int tank2Id = map.addUnit(tank2);
 
-        tank2.setGoal(new Attack(Entity.UNIT, tank1Id));
-        tank1.setGoal(new Attack(Entity.UNIT, tank2Id));
+        tank2.setGoal(new Attack(new Target(Entity.UNIT, map.getUnit(tank1Id).getId(), map.getUnit(tank1Id).getPoint())));
+        tank1.setGoal(new Attack(new Target(Entity.UNIT, map.getUnit(tank2Id).getId(), map.getUnit(tank2Id).getPoint())));
 
         gameService.setMap(map);
         gameService.tick();
@@ -116,26 +111,26 @@ public class UnitAttackTest {
         Unit tank2 = new Unit();
         tank2.setUnitType(UnitType.BATTLE_TANK);
         tank2.setOwnerId(2);
-        tank2.setGoal(new Attack(Entity.UNIT, tankVictim));
+        tank2.setGoal(new Attack(new Target(Entity.UNIT, tankVictim, map.getUnit(tankVictim).getPoint())));
         tank2.setX(0);
         tank2.setY(3);
-        int tankPursuit1 = map.addUnit(tank2);
+        map.addUnit(tank2);
 
-        tank2 = new Unit();
-        tank2.setUnitType(UnitType.BATTLE_TANK);
-        tank2.setOwnerId(2);
-        tank2.setGoal(new Attack(Entity.UNIT, tankVictim));
-        tank2.setX(0);
-        tank2.setY(4);
-        int tankPursuit2 = map.addUnit(tank2);
+        Unit tank3 = new Unit();
+        tank3.setUnitType(UnitType.BATTLE_TANK);
+        tank3.setOwnerId(2);
+        tank3.setGoal(new Attack(new Target(Entity.UNIT, tankVictim, map.getUnit(tankVictim).getPoint())));
+        tank3.setX(0);
+        tank3.setY(4);
+        map.addUnit(tank3);
 
-        tank2 = new Unit();
-        tank2.setUnitType(UnitType.BATTLE_TANK);
-        tank2.setOwnerId(2);
-        tank2.setGoal(new Attack(Entity.UNIT, tankVictim));
-        tank2.setX(0);
-        tank2.setY(5);
-        int tankPursuit3 = map.addUnit(tank2);
+        Unit tank4 = new Unit();
+        tank4.setUnitType(UnitType.BATTLE_TANK);
+        tank4.setOwnerId(2);
+        tank4.setGoal(new Attack(new Target(Entity.UNIT, tankVictim, map.getUnit(tankVictim).getPoint())));
+        tank4.setX(0);
+        tank4.setY(5);
+        map.addUnit(tank4);
 
         gameService.setMap(map);
         gameService.tick();
@@ -167,26 +162,26 @@ public class UnitAttackTest {
         Unit tank2 = new Unit();
         tank2.setUnitType(UnitType.BATTLE_TANK);
         tank2.setOwnerId(2);
-        tank2.setGoal(new Attack(Entity.UNIT, tankVictim));
+        tank2.setGoal(new Attack(new Target(Entity.UNIT, map.getUnit(tankVictim).getId(), map.getUnit(tankVictim).getPoint())));
         tank2.setX(0);
         tank2.setY(3);
-        int tankPursuit1 = map.addUnit(tank2);
+        map.addUnit(tank2);
 
         tank2 = new Unit();
         tank2.setUnitType(UnitType.BATTLE_TANK);
         tank2.setOwnerId(2);
-        tank2.setGoal(new Attack(Entity.UNIT, tankVictim));
+        tank2.setGoal(new Attack(new Target(Entity.UNIT, map.getUnit(tankVictim).getId(), map.getUnit(tankVictim).getPoint())));
         tank2.setX(0);
         tank2.setY(4);
-        int tankPursuit2 = map.addUnit(tank2);
+        map.addUnit(tank2);
 
         tank2 = new Unit();
         tank2.setUnitType(UnitType.BATTLE_TANK);
         tank2.setOwnerId(2);
-        tank2.setGoal(new Attack(Entity.UNIT, tankVictim));
+        tank2.setGoal(new Attack(new Target(Entity.UNIT, map.getUnit(tankVictim).getId(), map.getUnit(tankVictim).getPoint())));
         tank2.setX(0);
         tank2.setY(5);
-        int tankPursuit3 = map.addUnit(tank2);
+        map.addUnit(tank2);
 
         gameService.setMap(map);
         gameService.tick();

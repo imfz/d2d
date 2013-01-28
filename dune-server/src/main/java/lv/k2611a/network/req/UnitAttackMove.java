@@ -7,6 +7,7 @@ import java.util.Set;
 import lv.k2611a.domain.Map;
 import lv.k2611a.domain.Tile;
 import lv.k2611a.domain.Unit;
+import lv.k2611a.domain.unitgoals.AttackMove;
 import lv.k2611a.domain.unitgoals.Move;
 
 public class UnitAttackMove extends AbstractGameStateChanger {
@@ -58,7 +59,7 @@ public class UnitAttackMove extends AbstractGameStateChanger {
     }
 
     private void processUnit(Map map, Tile tile, Unit unit) {
-        unit.setGoal(new Move(x, y));
+        unit.setGoal(new AttackMove(x, y));
     }
 
     @Override

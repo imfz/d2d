@@ -65,6 +65,7 @@ public enum BuildingType implements EntityType {
     private int costPerTick;
     private final int electricityDelta;
     private final BuildingType[] prerequisites;
+    private final int costEffectiveness;
 
     private BuildingType(byte idOnJS, int width, int height, int hp, int ticksToBuild, int costPerTick, int electricityDelta, BuildingType[] prerequisites) {
         this.idOnJS = idOnJS;
@@ -79,6 +80,7 @@ public enum BuildingType implements EntityType {
         } else {
             this.prerequisites = prerequisites;
         }
+        this.costEffectiveness = hp / ticksToBuild;
     }
 
     @Override
@@ -123,6 +125,10 @@ public enum BuildingType implements EntityType {
     @Override
     public int getCost() {
         return costPerTick * ticksToBuild;
+    }
+
+    public int getCostEffectiveness() {
+        return costEffectiveness;
     }
 
     public void setCostPerTick(int costPerTick) {

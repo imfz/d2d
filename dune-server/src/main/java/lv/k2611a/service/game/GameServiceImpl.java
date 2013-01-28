@@ -554,7 +554,7 @@ public class GameServiceImpl implements GameService {
         for (Unit unit : map.getUnits()) {
             UnitGoal unitGoal = unit.getCurrentGoal();
             if (unitGoal == null) {
-                log.error("WE HAEV NO GOAL!");
+                log.warn("WE HAVE NO DEFAULT GOAL SET! This is OK for tests-only");
                 unit.insertGoalBeforeCurrent(new Guard());
             }
             unit.getCurrentGoal().reserveTiles(unit, map);

@@ -119,7 +119,7 @@ public class Map {
     public int addUnit(Unit unit) {
         units.add(unit);
         unit.setId(units.size() - 1);
-        setUsedByUnit(unit.getX(),unit.getY(),unit.getId());
+        setUsedByUnit(unit.getX(), unit.getY(), unit.getId());
         return unit.getId();
     }
 
@@ -181,7 +181,7 @@ public class Map {
         List<Building> result = new ArrayList<Building>();
         for (Building building : filterNonNulls(buildings)) {
             if (building.getType() == buildingType) {
-                if (building.getOwnerId() == ownerId) {
+                if (DiplomacyUtil.isAlly(building.getOwnerId(), ownerId)) {
                     result.add(building);
                 }
             }
@@ -193,7 +193,7 @@ public class Map {
     public List<Building> getBuildingsByOwner(int ownerId) {
         List<Building> result = new ArrayList<Building>();
         for (Building building : filterNonNulls(buildings)) {
-            if (building.getOwnerId() == ownerId) {
+            if (DiplomacyUtil.isAlly(building.getOwnerId(), ownerId)) {
                 result.add(building);
             }
         }
@@ -444,14 +444,14 @@ public class Map {
 
 
     // Check if the tile contains no buildings or units. Used only for Harvester pathfinding in AStar.
-    public boolean isUnoccupiedAStar(Node start, Node neighbor, Unit unit) {
-        if (unit.getUnitType() == UnitType.HARVESTER && refineryEntranceCheck(neighbor.getPoint(), start.getPoint(), unit)) {
+    public boolean isUnoccupiedAStar(RefineryEntrance startIsRefineryEntrance, Node neighbor, Unit unit) {
+        if (unit.getUnitType() == UnitType.HARVESTER && refineryEntranceCheck(neighbor.getPoint(), startIsRefineryEntrance, unit)) {
             return true;
         }
         return getTile(neighbor.getX(), neighbor.getY()).isUnoccupied(unit.getId());
     }
 
-    private boolean refineryEntranceCheck(Point tile, Point startTile, Unit harvester) {
+    private boolean refineryEntranceCheck(Point tile, RefineryEntrance startIsRefineryEntrance, Unit harvester) {
         if (getTile(tile).isUsedByUnit()) {
             return false;
         }
@@ -463,12 +463,11 @@ public class Map {
             }
         }
         // This is a lookup for 3 upper tiles of refinery when we are planning to leave the refinery.
-        refineryEntrance = this.refineryEntranceList.get(startTile);
-        if (refineryEntrance != null && spiceAmount <= 0) {
-            if (refineryEntrance.getOwnerId() == harvester.getOwnerId()) {
-                if (tile.getY() == startTile.getY() - 1) {
+        if (startIsRefineryEntrance != null && spiceAmount <= 0) {
+            if (startIsRefineryEntrance.getOwnerId() == harvester.getOwnerId()) {
+                if (tile.getY() == startIsRefineryEntrance.getPoint().getY() - 1) {
                     for (int pointX = tile.getX() - 1; pointX < (tile.getX() + 2); pointX++) {
-                        if (pointX == startTile.getX()) {
+                        if (pointX == startIsRefineryEntrance.getPoint().getX()) {
                             return true;
                         }
                     }
@@ -480,35 +479,33 @@ public class Map {
 
     public boolean isUnoccupied(int x, int y) {
         Tile tile = getTile(x, y);
-        if (tile == null) {
-            return false;
+        if (tile != null) {
+            return tile.isUnoccupied();
         }
-        return tile.isUnoccupied();
+        return false;
     }
 
     public boolean isPassable(int x, int y) {
         Tile tile = getTile(x, y);
-        if (tile == null) {
-            return false;
+        if (tile != null) {
+            return tile.isPassable();
         }
-        return tile.isPassable();
+        return false;
     }
 
 
     public void setUsedByUnit(int x, int y, int id) {
         Tile tile = getTile(x, y);
-        if (tile == null) {
-            return;
+        if (tile != null) {
+            tile.setUsedByUnit(id);
         }
-        tile.setUsedByUnit(id);
     }
 
     public void setUsedByBuilding(int x, int y, int id) {
         Tile tile = getTile(x, y);
-        if (tile == null) {
-            return;
+        if (tile != null) {
+            tile.setUsedByBuilding(id);
         }
-        tile.setUsedByBuilding(id);
     }
 
     public void clearUsageFlag() {
@@ -568,20 +565,73 @@ public class Map {
         return null;
     }
 
-    public List<Integer> getUnitsInRange(int minX, int maxX, int minY, int maxY, Map map) {
-        List<Integer> targets = new ArrayList<Integer>();
-        Tile tile;
-           for (int targetX = minX; targetX <= maxX; targetX++) {
-            for (int targetY = minY; targetY <= maxY; targetY++) {
-                tile = map.getTile(targetX, targetY);
-                if (tile != null) {
-                    if (tile.isUsedByUnit()) {
-                        targets.add(tile.getUsedByUnit());
+    public List<Target> getTargetsInRange(Point startPoint, int radius, Map map) {
+        List<Target> targetList = new ArrayList<Target>();
+        Tile targetTile;
+
+        for (int targetX = startPoint.getX() - radius; targetX <= startPoint.getX() + radius; targetX++) {
+            for (int targetY = startPoint.getY() - radius; targetY <= startPoint.getY() + radius; targetY++) {
+                if (getDistanceBetween(startPoint, new Point(targetX,targetY)) <= radius) {
+                    targetTile = getTile(targetX, targetY);
+                    if (targetTile != null) {
+                        if (targetTile.isUsedByUnit()) {
+                            Unit targetUnit = map.getUnitAt(targetX,targetY);
+                            // Check if the unit is standing in that tile(to avoid ghosts for units that are moving)
+                            if (targetTile.getPoint().getX() == targetUnit.getPoint().getX()
+                             && targetTile.getPoint().getY() == targetUnit.getPoint().getY()) {
+                                targetList.add(new Target(Entity.UNIT, targetUnit.getId(), targetUnit.getPoint()));
+                            }
+                        } else if (targetTile.isUsedByBuilding()) {
+                            targetList.add(new Target(Entity.BUILDING, targetTile.getUsedByBuilding(), targetTile.getPoint()));
+                        }
                     }
                 }
             }
         }
-        return targets;
+        return targetList;
+    }
+
+    public Point getClosestPoint(Building building, Unit unit) {
+        List<Point> points = new ArrayList<Point>();
+        points.add(building.getPoint());
+        points.add(building.getPoint2());
+        points.add(building.getPoint3());
+        points.add(building.getPoint4());
+
+        return Map.getClosestNode(unit.getPoint(), points);
+    }
+
+    public boolean targetInAttackRange(Unit unit, Point targetPoint) {
+        return getDistanceBetween(unit.getPoint(), targetPoint) <= unit.getUnitType().getAttackRange();
+    }
+
+    public boolean enemiesPresentInAttackRange(Unit unit, Map map) {
+        int radius = unit.getUnitType().getAttackRange();
+        Tile targetTile;
+        for (int targetX = unit.getX() - radius; targetX <= unit.getX() + radius; targetX++) {
+            for (int targetY = unit.getY() - radius; targetY <= unit.getY() + radius; targetY++) {
+                if (getDistanceBetween(unit.getPoint(), new Point(targetX,targetY)) <= radius) {
+                    targetTile = getTile(targetX, targetY);
+                    if (targetTile != null) {
+                        if (targetTile.isUsedByUnit()) {
+                            Unit targetUnit = map.getUnitAt(targetX,targetY);
+                            if (targetTile.getPoint().getX() == targetUnit.getPoint().getX()
+                                    && targetTile.getPoint().getY() == targetUnit.getPoint().getY()) {
+                                if (!DiplomacyUtil.isAlly(unit.getOwnerId(), targetUnit.getOwnerId())) {
+                                    return true;
+                                }
+                            }
+                        } else if (targetTile.isUsedByBuilding()) {
+                            Building targetBuilding = map.getBuildingAt(targetX,targetY);
+                            if (!DiplomacyUtil.isAlly(unit.getOwnerId(), targetBuilding.getOwnerId())) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     public Point getRandomFreeTile(Point near, int distanceFrom, int distanceTo) {

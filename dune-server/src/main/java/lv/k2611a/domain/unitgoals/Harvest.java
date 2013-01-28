@@ -16,8 +16,12 @@ import lv.k2611a.service.game.GameService;
 import lv.k2611a.service.game.GameServiceImpl;
 import lv.k2611a.util.AStar;
 import lv.k2611a.util.Point;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Harvest implements UnitGoal {
+
+    private static final Logger log = LoggerFactory.getLogger(ReturnToBase.class);
 
     public static int TICKS_FOR_FULL = 200;
     private Point targetSpice;

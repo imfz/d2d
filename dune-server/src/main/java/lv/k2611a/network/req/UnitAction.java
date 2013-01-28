@@ -4,14 +4,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import lv.k2611a.domain.Building;
-import lv.k2611a.domain.Entity;
-import lv.k2611a.domain.Map;
-import lv.k2611a.domain.RefineryEntrance;
-import lv.k2611a.domain.Tile;
-import lv.k2611a.domain.TileType;
-import lv.k2611a.domain.Unit;
-import lv.k2611a.domain.UnitType;
+import lv.k2611a.domain.*;
 import lv.k2611a.domain.unitgoals.*;
 import lv.k2611a.util.Point;
 import org.slf4j.Logger;
@@ -74,14 +67,14 @@ public class UnitAction extends AbstractGameStateChanger {
             Unit target = map.getUnitAt(x, y);
             if (target != null) {
                 if (target.getOwnerId() != unit.getOwnerId()) {
-                    unit.setGoal(new Attack(Entity.UNIT, target.getId()));
+                    unit.setGoal(new Attack(new Target(Entity.UNIT, target.getId(), target.getPoint())));
                     return;
                 }
             }
             Building building = map.getBuildingAt(x, y);
             if (building != null) {
                 if (building.getOwnerId() != unit.getOwnerId()) {
-                    unit.setGoal(new Attack(Entity.BUILDING, building.getId()));
+                    unit.setGoal(new Attack(new Target(Entity.BUILDING, building.getId(), building.getPoint())));
                 }
                  return;
             }

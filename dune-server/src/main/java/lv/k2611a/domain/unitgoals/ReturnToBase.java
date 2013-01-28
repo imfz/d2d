@@ -11,8 +11,12 @@ import lv.k2611a.network.UnitDTO;
 import lv.k2611a.service.game.GameServiceImpl;
 import lv.k2611a.util.AStar;
 import lv.k2611a.util.Point;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ReturnToBase implements UnitGoal {
+
+    private static final Logger log = LoggerFactory.getLogger(ReturnToBase.class);
 
     public static int TICKS_COLLECTING_UNLOADED_PER_TICK = 4;
     public static final int MONEY_PER_TICK = 40;
@@ -42,7 +46,7 @@ public class ReturnToBase implements UnitGoal {
 
     @Override
     public void process(Unit unit, Map map, GameServiceImpl gameService) {
-        RefineryEntrance refineryEntrance = map.getRefineryEntranceList().get(new Tile(unit.getX(), unit.getY()));
+        RefineryEntrance refineryEntrance = map.getRefineryEntranceList().get(unit.getPoint());
         if (enrouteToBase && refineryEntrance == null) {
             ticksToWait = 20 + new Random().nextInt(10);
             enrouteToBase = false;

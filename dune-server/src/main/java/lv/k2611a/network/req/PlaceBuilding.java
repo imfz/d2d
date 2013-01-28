@@ -1,16 +1,10 @@
 package lv.k2611a.network.req;
 
+import lv.k2611a.domain.*;
+import lv.k2611a.util.Point;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import lv.k2611a.domain.Building;
-import lv.k2611a.domain.BuildingType;
-import lv.k2611a.domain.Map;
-import lv.k2611a.domain.Tile;
-import lv.k2611a.domain.TileType;
-import lv.k2611a.domain.Unit;
-import lv.k2611a.domain.UnitType;
-import lv.k2611a.domain.ViewDirection;
 import lv.k2611a.domain.unitgoals.Harvest;
 import lv.k2611a.util.MapUtils;
 
@@ -54,36 +48,27 @@ public class PlaceBuilding extends AbstractGameStateChanger {
         building.setY(y);
         building.setOwnerId(conYard.getOwnerId());
         map.addBuilding(building);
+        for (int x = 0; x < building.getType().getWidth(); x++) {
+            for (int y = 0; y < building.getType().getHeight(); y++) {
+                map.setUsedByBuilding(x + building.getX(), y + building.getY(), building.getId());
+            }
+        }
 
         conYard.setAwaitingClick(false);
         conYard.setTicksAccumulated(0);
         conYard.setBuildingTypeBuilt(null);
 
         if (buildingTypeBuilt == BuildingType.REFINERY) {
-
-            int newX = x+1;
-            int newY = y+1;
-            int entranceExitY = y+2;
-
-            if (!(map.isUnoccupied(x, entranceExitY)
-                  || map.isUnoccupied(x + 1, entranceExitY)
-                  || map.isUnoccupied(x + 2, entranceExitY))) {
-                Tile freeTile = map.getNearestFreeTile(x + 1, y + 1);
-                if (freeTile == null) {
-                    log.warn("Cannot place harvester, all tiles occupied");
-                    return;
-                }
-                newX = freeTile.getX();
-                newY = freeTile.getY();
-            }
-
+            Point point = new Point(building.getX()+1, building.getY()+1);
+            RefineryEntrance refineryEntrance = new RefineryEntrance(building.getOwnerId(), point, building.getId());
+            map.getRefineryEntranceList().put(point, refineryEntrance);
 
             Unit unit = new Unit();
             unit.setOwnerId(conYard.getOwnerId());
-            unit.setX(newX);
-            unit.setY(newY);
+            unit.setX(building.getX()+1);
+            unit.setY(building.getY()+1);
             unit.setUnitType(UnitType.HARVESTER);
-            unit.setViewDirection(ViewDirection.BOTTOM);
+            unit.setViewDirection(ViewDirection.TOP);
             unit.setGoal(new Harvest());
             map.addUnit(unit);
         }

@@ -108,6 +108,8 @@ public class AStar {
         Node start = new Node(unit.getX(), unit.getY());
         Node goal = new Node(toX, toY);
 
+        RefineryEntrance refineryEntrance = map.getRefineryEntranceList().get(start.getPoint());
+
         if (!map.isUnoccupied(goal, unit)) {
             return new ArrayList<Node>();
         }
@@ -148,7 +150,7 @@ public class AStar {
                 if (closedSet.contains(neighbor)) {
                     continue;
                 }
-                boolean isUnoccupied = map.isUnoccupiedAStar(start, neighbor, unit);
+                boolean isUnoccupied = map.isUnoccupiedAStar(refineryEntrance, neighbor, unit);
                 if (isUnoccupied) {
                     int neighborDirection = ViewDirection.getDirection(current.getPoint(), neighbor.getPoint()).getAngle();
                     double neighborDistanceFromStart = current.getDistanceFromStart()

@@ -89,7 +89,7 @@ public class Unit {
 
         // finish current unit goal if it has already started.
         if (currentGoal != null) {
-            if (currentGoal instanceof Move || currentGoal instanceof Chase) {
+            if (currentGoal instanceof Move || currentGoal instanceof Chase || currentGoal instanceof AttackMove) {
                 if (ticksSpentOnCurrentGoal > 0) {
                     Move move = new Move(viewDirection.apply(new Point(x, y)));
                     insertGoalBeforeCurrent(move);

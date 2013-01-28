@@ -1,5 +1,6 @@
 package lv.k2611a.domain.unitgoals;
 
+import lv.k2611a.domain.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -7,12 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import lv.k2611a.domain.Building;
-import lv.k2611a.domain.BuildingType;
-import lv.k2611a.domain.Entity;
-import lv.k2611a.domain.Map;
-import lv.k2611a.domain.Unit;
-import lv.k2611a.domain.UnitType;
 import lv.k2611a.service.game.GameServiceImpl;
 
 import static org.junit.Assert.assertEquals;
@@ -42,7 +37,7 @@ public class BuildingAttackTest {
 
         Unit tank = new Unit();
         tank.setUnitType(UnitType.BATTLE_TANK);
-        tank.setGoal(new Attack(Entity.BUILDING, building1));
+        tank.setGoal(new Attack(new Target(Entity.BUILDING, building1, map.getBuilding(building1).getPoint())));
         tank.setOwnerId(1);
         tank.setX(1);
         tank.setY(1);
@@ -52,12 +47,14 @@ public class BuildingAttackTest {
         gameService.tick();
 
         assertEquals(1,map.getUnits().size());
+        assertEquals(1,map.getBuildings().size());
 
         // should be enough ticks to destroy the other tank
         for (int i = 0; i < 5000; i++) {
             gameService.tick();
         }
 
+        assertEquals(1,map.getUnits().size());
         assertEquals(0,map.getBuildings().size());
     }
 }

@@ -14,7 +14,10 @@ public enum UnitType implements EntityType {
     TRIKE((byte)7, 100, 1, 200, 20, 5, 1, 5, 5, 3, BulletType.TANK_SHOT),
     SONIC_TANK((byte)8, 100, 1, 200, 40, 5, 20, 5, 5, 3, BulletType.TANK_SHOT),
     DEVIATOR((byte)9, 100, 1, 200, 50, 5, 20, 5, 5, 3, BulletType.TANK_SHOT),
-    MCV((byte)10, 100, 1, 200, 100, 5, 20, 5, 5, 3, BulletType.TANK_SHOT)
+    MCV((byte)10, 100, 1, 200, 100, 5, 20, 5, 5, 3, BulletType.TANK_SHOT),
+    TESTING_DUMMY_SLOW((byte)100, 50, 10, 1, 999, 999, 999, 1, 1, 10, BulletType.TANK_SHOT),
+    TESTING_DUMMY_FAST((byte)101, 1, 1, 1, 999, 999, 999, 1, 1, 10, BulletType.TANK_SHOT),
+    TESTING_DUMMY_MINIGUN((byte)102, 50, 50, 10000, 999, 999, 1, 10, 999, 3, BulletType.TANK_SHOT)
     ;
 
     private static UnitType[] indexByJsId;
@@ -47,6 +50,7 @@ public enum UnitType implements EntityType {
     private final int attackDamage;
     private final int bulletSpeed; // ticks for bullet to fly per cell
     private final BulletType bulletType;
+    private final int costEffectiveness;
 
     private UnitType(byte idOnJS, int speed, int turnSpeed, int hp, int ticksToBuild, int costPerTick,
                      int ticksToAttack, int attackRange, int attackDamage, int bulletSpeed, BulletType bulletType) {
@@ -61,6 +65,7 @@ public enum UnitType implements EntityType {
         this.attackDamage = attackDamage;
         this.bulletSpeed = bulletSpeed;
         this.bulletType = bulletType;
+        this.costEffectiveness = hp / ticksToBuild;
     }
 
     public byte getIdOnJS() {
@@ -116,6 +121,10 @@ public enum UnitType implements EntityType {
 
     public int getAttackDamage() {
         return attackDamage;
+    }
+
+    public int getCostEffectiveness() {
+        return costEffectiveness;
     }
 
     public int getBulletSpeed() {
