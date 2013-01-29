@@ -29,8 +29,8 @@ public class GameServlet extends HttpServlet {
 
             public WebSocket doWebSocketConnect(HttpServletRequest request, String protocol) {
                 if ("chat".equals(protocol)) {
-                    log.info("Connection established");
                     long id = connectionId.incrementAndGet();
+                    log.info("Connection established. Address " + request.getRemoteAddr() + " id " + id);
                     ClientConnection clientConnection = new ClientConnection(id);
                     App.autowireCapableBeanFactory.autowireBean(clientConnection);
                     return clientConnection;
