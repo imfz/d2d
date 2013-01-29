@@ -255,7 +255,7 @@ public class HarvesterTest {
         assertEquals(100000,map.getPlayerById(1).getMoney());
 
         // should be enough ticks to return to base
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 10000; i++) {
             gameService.tick();
         }
 
