@@ -7,39 +7,66 @@ import java.util.Set;
 public enum BuildingType implements EntityType {
 
     // id width height hp ticksToBuild costPerTick electricity prerequisites
-    POWERPLANT((byte)2,2,2,500,50, 20, +100, null),
-    SILO((byte)1,2,2,50,500, 30, -5, new BuildingType[]{BuildingType.POWERPLANT}),
-    AIRBASE((byte)9,2,2,500,100, 10, -20, new BuildingType[]{BuildingType.POWERPLANT}),
-    WALL((byte)14,1,1,50,100, 10, 0, new BuildingType[]{BuildingType.POWERPLANT}),
-    REPAIRSHOP((byte)3,3,2,50,100, 10, -15, new BuildingType[]{BuildingType.POWERPLANT}),
-    TURRET((byte)10,1,1,50,100, 10, -5, new BuildingType[]{BuildingType.POWERPLANT}),
-    ROCKET_TURRET((byte)13,1,1,50,100, 10, -20, new BuildingType[]{BuildingType.POWERPLANT}),
-    RADAR((byte)5,2,2,50,100, 10, -15, new BuildingType[]{BuildingType.POWERPLANT}),
-    CONCRETE((byte)11,2,2,50,100, 10, 0, new BuildingType[]{BuildingType.POWERPLANT}),
-    REFINERY((byte)12,3,2,500,100, 20, -25, new BuildingType[]{BuildingType.POWERPLANT}),
-    FACTORY((byte)8,3,2,500,100, 20, -25, new BuildingType[]{BuildingType.POWERPLANT}) {
-        @Override
-        public EnumSet<ConstructionOption> getConstructionOptions() {
-            EnumSet<ConstructionOption> constructionOptions = EnumSet.of(
-                    ConstructionOption.TANK,
-                    ConstructionOption.SIEGE_TANK,
-                    ConstructionOption.LAUNCHER
-            );
-            return constructionOptions;
-        }
-    },
-    CONSTRUCTIONYARD((byte)7,2,2,50,150, 10, 0, null) {
+    CONSTRUCTIONYARD((byte) 1,2,2,3500,999,999, 0, null) {
         @Override
         public EnumSet<ConstructionOption> getConstructionOptions() {
             EnumSet<ConstructionOption> constructionOptions = EnumSet.of(
                     ConstructionOption.REFINERY,
                     ConstructionOption.POWERPLANT,
                     ConstructionOption.SILO,
+                    ConstructionOption.RADAR,
+                    ConstructionOption.BARRACKS,
+                    ConstructionOption.LIGHT_FACTORY,
                     ConstructionOption.FACTORY
             );
             return constructionOptions;
         }
-    };
+    },
+    // Core T1 buildings
+    POWERPLANT(       (byte) 2,2,2,1000, 50, 15,+100, null),
+    REFINERY(         (byte) 3,3,2,1800, 90, 15, -25, new BuildingType[]{BuildingType.POWERPLANT}),
+    SILO(             (byte) 4,2,2,1200, 60, 10,  -5, new BuildingType[]{BuildingType.POWERPLANT, BuildingType.REFINERY}),
+    RADAR(            (byte) 5,2,2,1500, 75, 20, -15, new BuildingType[]{BuildingType.POWERPLANT, BuildingType.REFINERY}),
+    // Unit-producing buildings
+    BARRACKS(         (byte) 6,2,2,1500, 75, 10, -15, new BuildingType[]{BuildingType.POWERPLANT}) {
+        @Override
+        public EnumSet<ConstructionOption> getConstructionOptions() {
+            EnumSet<ConstructionOption> constructionOptions = EnumSet.of(
+                    ConstructionOption.INFANTRIES,
+                    ConstructionOption.ROCKET_TROOPERS
+            );
+            return constructionOptions;
+        }
+    },
+    LIGHT_FACTORY(    (byte) 7,3,2,2000,100, 15, -15, new BuildingType[]{BuildingType.POWERPLANT, BuildingType.REFINERY}) {
+        @Override
+        public EnumSet<ConstructionOption> getConstructionOptions() {
+            EnumSet<ConstructionOption> constructionOptions = EnumSet.of(
+                    ConstructionOption.TRIKE,
+                    ConstructionOption.QUAD
+            );
+            return constructionOptions;
+        }
+    },
+    FACTORY(          (byte) 8,3,2,2200,110, 25, -25, new BuildingType[]{BuildingType.POWERPLANT, BuildingType.RADAR}) {
+        @Override
+        public EnumSet<ConstructionOption> getConstructionOptions() {
+            EnumSet<ConstructionOption> constructionOptions = EnumSet.of(
+                    ConstructionOption.HARVESTER,
+                    ConstructionOption.BATTLE_TANK,
+                    ConstructionOption.SIEGE_TANK,
+                    ConstructionOption.LAUNCHER
+            );
+            return constructionOptions;
+        }
+    },
+    REPAIRSHOP(       (byte) 9,3,2,2000,100, 25,-15, new BuildingType[]{BuildingType.POWERPLANT, BuildingType.FACTORY}),
+    AIRBASE(          (byte)10,2,2,2500,125, 30,-20, new BuildingType[]{BuildingType.POWERPLANT, BuildingType.REPAIRSHOP}),
+    // Other buildings
+    CONCRETE(         (byte)11,2,2, 200, 10, 10,  0, null),
+    WALL(             (byte)12,1,1,1000, 20, 15,  0, null),
+    TURRET(           (byte)13,1,1,1200, 60, 15, -5, new BuildingType[]{BuildingType.POWERPLANT, BuildingType.RADAR}),
+    ROCKET_TURRET(    (byte)14,1,1,2000,100, 20,-20, new BuildingType[]{BuildingType.POWERPLANT, BuildingType.FACTORY});
 
     private static BuildingType[] indexByJsId;
 

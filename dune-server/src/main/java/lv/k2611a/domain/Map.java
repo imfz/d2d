@@ -565,12 +565,12 @@ public class Map {
         return null;
     }
 
-    public List<Target> getTargetsInRange(Point startPoint, int radius, Map map) {
+    public List<Target> getTargetsInRange(Point startPoint, double radius, Map map) {
         List<Target> targetList = new ArrayList<Target>();
         Tile targetTile;
 
-        for (int targetX = startPoint.getX() - radius; targetX <= startPoint.getX() + radius; targetX++) {
-            for (int targetY = startPoint.getY() - radius; targetY <= startPoint.getY() + radius; targetY++) {
+        for (int targetX = startPoint.getX() - (int)radius; targetX <= startPoint.getX() + radius; targetX++) {
+            for (int targetY = startPoint.getY() - (int)radius; targetY <= startPoint.getY() + radius; targetY++) {
                 if (getDistanceBetween(startPoint, new Point(targetX,targetY)) <= radius) {
                     targetTile = getTile(targetX, targetY);
                     if (targetTile != null) {
@@ -591,14 +591,14 @@ public class Map {
         return targetList;
     }
 
-    public List<Target> getTargetsInRangeDiapason(Point startPoint, int maxRadius, int minRadius, Map map) {
+    public List<Target> getTargetsInRangeOfLauncher(Point startPoint, double maxRadius, Map map) {
         List<Target> targetList = new ArrayList<Target>();
         Tile targetTile;
 
-        for (int targetX = startPoint.getX() - maxRadius; targetX <= startPoint.getX() + maxRadius; targetX++) {
-            for (int targetY = startPoint.getY() - maxRadius; targetY <= startPoint.getY() + maxRadius; targetY++) {
+        for (int targetX = startPoint.getX() - (int)maxRadius; targetX <= startPoint.getX() + maxRadius; targetX++) {
+            for (int targetY = startPoint.getY() - (int)maxRadius; targetY <= startPoint.getY() + maxRadius; targetY++) {
                 double targetDistance = getDistanceBetween(startPoint, new Point(targetX,targetY));
-                if (targetDistance <= maxRadius && targetDistance >= minRadius) {
+                if (targetDistance <= maxRadius && targetDistance >= UnitType.launcherMinimumAttackRange) {
                     targetTile = getTile(targetX, targetY);
                     if (targetTile != null) {
                         if (targetTile.isUsedByUnit()) {
@@ -632,11 +632,15 @@ public class Map {
         return getDistanceBetween(unit.getPoint(), targetPoint) <= unit.getUnitType().getAttackRange();
     }
 
+    public boolean targetTooCloseToLauncher(Unit unit, Point targetPoint) {
+        return getDistanceBetween(unit.getPoint(), targetPoint) >= UnitType.launcherMinimumAttackRange;
+    }
+
     public boolean enemiesPresentInAttackRange(Unit unit, Map map) {
-        int radius = unit.getUnitType().getAttackRange();
+        double radius = unit.getUnitType().getAttackRange();
         Tile targetTile;
-        for (int targetX = unit.getX() - radius; targetX <= unit.getX() + radius; targetX++) {
-            for (int targetY = unit.getY() - radius; targetY <= unit.getY() + radius; targetY++) {
+        for (int targetX = unit.getX() - (int)radius; targetX <= unit.getX() + radius; targetX++) {
+            for (int targetY = unit.getY() - (int)radius; targetY <= unit.getY() + radius; targetY++) {
                 if (getDistanceBetween(unit.getPoint(), new Point(targetX,targetY)) <= radius) {
                     targetTile = getTile(targetX, targetY);
                     if (targetTile != null) {

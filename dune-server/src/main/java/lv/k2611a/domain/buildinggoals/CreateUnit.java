@@ -1,6 +1,7 @@
 package lv.k2611a.domain.buildinggoals;
 
 import lv.k2611a.domain.unitgoals.Guard;
+import lv.k2611a.domain.unitgoals.Harvest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,8 +77,14 @@ public class CreateUnit implements BuildingGoal {
         unit.setX(freeTile.getX());
         unit.setY(freeTile.getY());
         unit.setUnitType(unitType);
-        unit.setViewDirection(ViewDirection.BOTTOM);
-        unit.addDefaultGoal();
+        ViewDirection unitDirection = ViewDirection.getDirection(unit.getPoint(), map.getClosestPoint(building, unit));
+        unit.setViewDirection(ViewDirection.getDirectionByAngle(unitDirection.getAngle()+180));
+
+        if (unit.getUnitType() == UnitType.HARVESTER) {
+            unit.setGoal(new Harvest());
+        } else {
+            unit.addDefaultGoal();
+        }
         map.addUnit(unit);
 
         return true;

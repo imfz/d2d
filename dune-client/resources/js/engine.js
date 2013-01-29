@@ -533,29 +533,68 @@ GameEngine.prototype.shiftMovingUnit = function (x, y, travelledPercents, viewDi
 };
 
 GameEngine.prototype.getBuildingPlacementConfig = function (buildingTypeBuilt) {
-    var width = 2;
-    var height = 2;
-    if (buildingTypeBuilt == BUILDING_TYPE_FACTORY) {
-        width = 3;
-    }
-    if (buildingTypeBuilt == BUILDING_TYPE_REPAIRSHOP) {
-        width = 3;
-    }
-    if (buildingTypeBuilt == BUILDING_TYPE_TURRET) {
-        width = 1;
-        height = 1;
-    }
-    if (buildingTypeBuilt == BUILDING_TYPE_ROCKET_TURRET) {
-        width = 1;
-        height = 1;
-    }
-    if (buildingTypeBuilt == BUILDING_TYPE_REFINERY) {
-        width = 3;
-        height = 2;
-    }
     var result = {};
-    result.width = width;
-    result.height = height;
+    switch (buildingTypeBuilt) {
+        case BUILDING_TYPE_CONSTRUCTION_YARD:
+            result.width = 2;
+            result.height = 2;
+            return result;
+        case BUILDING_TYPE_POWERPLANT:
+            result.width = 2;
+            result.height = 2;
+            return result;
+        case BUILDING_TYPE_REFINERY:
+            result.width = 3;
+            result.height = 2;
+            return result;
+        case BUILDING_TYPE_SILO:
+            result.width = 2;
+            result.height = 2;
+            return result;
+        case BUILDING_TYPE_RADAR:
+            result.width = 2;
+            result.height = 2;
+            return result;
+        case BUILDING_TYPE_BARRACKS:
+            result.width = 2;
+            result.height = 2;
+            return result;
+        case BUILDING_TYPE_LIGHTFACTORY:
+            result.width = 3;
+            result.height = 2;
+            return result;
+        case BUILDING_TYPE_FACTORY:
+            result.width = 3;
+            result.height = 2;
+            return result;
+        case BUILDING_TYPE_REPAIRSHOP:
+            result.width = 3;
+            result.height = 2;
+            return result;
+        case BUILDING_TYPE_AIRBASE:
+            result.width = 2;
+            result.height = 2;
+            return result;
+        case BUILDING_TYPE_CONCRETE:
+            result.width = 1;
+            result.height = 1;
+            return result;
+        case BUILDING_TYPE_WALL:
+            result.width = 1;
+            result.height = 1;
+            return result;
+        case BUILDING_TYPE_TURRET:
+            result.width = 1;
+            result.height = 1;
+            return result;
+        case BUILDING_TYPE_ROCKET_TURRET:
+            result.width = 1;
+            result.height = 1;
+            return result;
+    }
+    result.width = 2;
+    result.height = 2;
+    console.log("Unknown building type: " + buildingTypeBuilt);
     return result;
 };
 

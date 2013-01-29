@@ -5,22 +5,32 @@ import java.util.Set;
 
 public enum UnitType implements EntityType {
     // id speed turnSpeed hp ticksToBuild costPerTick ticksToAttack attackRange attackDamage bulletSpeed bulletType
-    BATTLE_TANK((byte)1, 30, 10, 100, 60, 5, 20, 5, 5, 3, BulletType.TANK_SHOT),
-    SIEGE_TANK((byte)2, 45, 15, 200, 120, 7, 30, 6, 12, 4, BulletType.TANK_SHOT),
-    LAUNCHER((byte)3, 30, 10, 50, 150, 10, 40, 10, 20, 5, BulletType.TANK_SHOT),
-    DEVASTATOR((byte)4, 100, 1, 200, 200, 5, 1, 5, 5, 3, BulletType.TANK_SHOT),
-    HARVESTER((byte)5, 10, 3, 200, 150, 5, 1, 5, 5, 3, BulletType.TANK_SHOT),
-    JEEP((byte)6, 100, 1, 200, 50, 5, 1, 5, 5, 3, BulletType.TANK_SHOT),
-    TRIKE((byte)7, 100, 1, 200, 20, 5, 1, 5, 5, 3, BulletType.TANK_SHOT),
-    SONIC_TANK((byte)8, 100, 1, 200, 40, 5, 20, 5, 5, 3, BulletType.TANK_SHOT),
-    DEVIATOR((byte)9, 100, 1, 200, 50, 5, 20, 5, 5, 3, BulletType.TANK_SHOT),
-    MCV((byte)10, 100, 1, 200, 100, 5, 20, 5, 5, 3, BulletType.TANK_SHOT),
-    TESTING_DUMMY_SLOW((byte)100, 50, 10, 1, 999, 999, 999, 1, 1, 10, BulletType.TANK_SHOT),
-    TESTING_DUMMY_FAST((byte)101, 1, 1, 1, 999, 999, 999, 1, 1, 10, BulletType.TANK_SHOT),
-    TESTING_DUMMY_MINIGUN((byte)102, 50, 50, 10000, 999, 999, 1, 10, 999, 3, BulletType.TANK_SHOT)
+    // T1 Units
+    TRIKE(           (byte) 1, 15, 4, 130, 40, 4, 15, 2.5, 10, 3, BulletType.TANK_SHOT),
+    TRIKE_2(         (byte) 2, 12, 3, 150, 40, 4, 14, 2.5, 11, 3, BulletType.TANK_SHOT),
+    QUAD(            (byte) 3, 25, 4, 180, 50, 5, 25,   3, 25, 3, BulletType.TANK_SHOT),
+    INFANTRIES(      (byte) 4, 60, 1, 160, 40, 4, 15,   3, 16, 3, BulletType.TANK_SHOT),
+    ROCKET_TROOPERS( (byte) 5, 60, 1, 180, 50, 5, 25, 4.3, 30, 3, BulletType.TANK_SHOT),
+    // T2 Units
+    BATTLE_TANK(     (byte) 6, 30,10, 310, 70, 7, 30, 4.3, 45, 4, BulletType.TANK_SHOT),
+    // T3 Units
+    SIEGE_TANK(      (byte) 7, 45,15, 420, 90, 8, 40, 4.3, 80, 4, BulletType.TANK_SHOT),
+    LAUNCHER(        (byte) 8, 30,10, 160,100,10, 50, 7.2,120, 3, BulletType.TANK_SHOT),
+    // T4 Units
+    DEVASTATOR(      (byte) 9,100, 1, 650,150,14, 40,   5,120, 4, BulletType.TANK_SHOT),
+    DEVIATOR(        (byte)10,100, 1, 200,150,14, 50, 7.2,  1, 3, BulletType.TANK_SHOT),
+    SONIC_TANK(      (byte)11,100, 1, 330,150,14, 45, 5.7, 80, 3, BulletType.TANK_SHOT),
+    // Other Units
+    HARVESTER(       (byte)12, 15,10, 200,120,10,999,   1,  1, 1, BulletType.TANK_SHOT),
+    MCV(             (byte)13,100, 1, 200,150,14,999,   1,  1, 1, BulletType.TANK_SHOT),
+    // Test dummies
+    TESTING_DUMMY_SLOW(   (byte)100,50,10,    1, 999, 999, 999, 1,  1,10, BulletType.TANK_SHOT),
+    TESTING_DUMMY_FAST(   (byte)101, 1, 1,    1, 999, 999, 999, 1,  1,10, BulletType.TANK_SHOT),
+    TESTING_DUMMY_MINIGUN((byte)102,50,50,10000, 999, 999,   1,10,999, 3, BulletType.TANK_SHOT)
     ;
 
     private static UnitType[] indexByJsId;
+    public static double launcherMinimumAttackRange = 2.5;
 
     static {
         int maxJsId = 0;
@@ -46,14 +56,14 @@ public enum UnitType implements EntityType {
     private final int ticksToBuild;
     private final int costPerTick;
     private final int ticksToAttack;
-    private final int attackRange;
+    private final double attackRange;
     private final int attackDamage;
     private final int bulletSpeed; // ticks for bullet to fly per cell
     private final BulletType bulletType;
     private final int costEffectiveness;
 
     private UnitType(byte idOnJS, int speed, int turnSpeed, int hp, int ticksToBuild, int costPerTick,
-                     int ticksToAttack, int attackRange, int attackDamage, int bulletSpeed, BulletType bulletType) {
+                     int ticksToAttack, double attackRange, int attackDamage, int bulletSpeed, BulletType bulletType) {
         this.idOnJS = idOnJS;
         this.speed = speed;
         this.turnSpeed = turnSpeed;
@@ -115,7 +125,7 @@ public enum UnitType implements EntityType {
         return ticksToAttack;
     }
 
-    public int getAttackRange() {
+    public double getAttackRange() {
         return attackRange;
     }
 

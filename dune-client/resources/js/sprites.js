@@ -478,13 +478,16 @@ Sprites.prototype.getBuildingConfig = function (building) {
 
     var sprite = this.buildingsSprite;
 
-
-    if (building.type == BUILDING_TYPE_SILO) {
-        x = 4;
+    if (building.type == BUILDING_TYPE_CONSTRUCTION_YARD) {
+        x = 0;
         y = 0;
     }
     if (building.type == BUILDING_TYPE_POWERPLANT) {
         x = 2;
+        y = 0;
+    }
+    if (building.type == BUILDING_TYPE_SILO) {
+        x = 4;
         y = 0;
     }
     if (building.type == BUILDING_TYPE_BARRACKS) {
@@ -492,17 +495,13 @@ Sprites.prototype.getBuildingConfig = function (building) {
         y = 2;
     }
     if (building.type == BUILDING_TYPE_RADAR) {
-        x = 2;
-        y = 4;
+        x = 4;
+        y = 2;
     }
     if (building.type == BUILDING_TYPE_LIGHTFACTORY) {
         x = 0;
         y = 6;
         width = 3;
-    }
-    if (building.type == BUILDING_TYPE_CONSTRUCTION_YARD) {
-        x = 0;
-        y = 0;
     }
     if (building.type == BUILDING_TYPE_FACTORY) {
         x = 3;
@@ -573,31 +572,56 @@ Sprites.prototype.getUnitConfig = function (unit) {
     var x = 0;
     var y = 0;
 
+    if (unit.unitType == UNIT_TYPE_TRIKE) {
+        x = 3;
+        y = 1;
+    }
+    if (unit.unitType == UNIT_TYPE_TRIKE_2) {
+        x = 3;
+        y = 2;
+    }
+    if (unit.unitType == UNIT_TYPE_QUAD) {
+        x = 3;
+        y = 3;
+    }
     if (unit.unitType == UNIT_TYPE_BATTLE_TANK) {
         x = 2;
         y = 1;
-    }
-    if (unit.unitType == UNIT_TYPE_HARVESTER) {
-        y = 0;
-
-        if (unit.harvesting > 0) {
-            y = ((Math.floor((unit.harvesting / 3)) % 3) + 1);
-        }
-
-
-        x = 4;
-        y = 0;
     }
     if (unit.unitType == UNIT_TYPE_SIEGE_TANK) {
         x = 2;
         y = 2;
     }
+    if (unit.unitType == UNIT_TYPE_LAUNCHER) {
+        x = 1;
+        y = 3;
+    }
     if (unit.unitType == UNIT_TYPE_DEVASTATOR) {
         x = 2;
         y = 3;
     }
-    if (unit.unitType == UNIT_TYPE_LAUNCHER) {
-        x = 1;
+    if (unit.unitType == UNIT_TYPE_DEVIATOR) {
+        x = 2;
+        y = 0;
+    }
+    if (unit.unitType == UNIT_TYPE_SONIC_TANK) {
+        x = 3;
+        y = 0;
+    }
+    if (unit.unitType == UNIT_TYPE_HARVESTER) {
+        x = 4;
+        y = 0;
+    }
+    if (unit.unitType == UNIT_TYPE_MCV) {
+        x = 4;
+        y = 1;
+    }
+    if (unit.unitType == UNIT_TYPE_INFANTRIES) {
+        x = 0;
+        y = 2;
+    }
+    if (unit.unitType == UNIT_TYPE_ROCKET_TROOPERS) {
+        x = 0;
         y = 3;
     }
 

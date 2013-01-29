@@ -119,13 +119,13 @@ public class GuardTest {
         for (int coordY = killer.getY()-2; coordY <=killer.getY()+2; coordY+=2) {
             Building building = new Building();
             building.setType(BuildingType.FACTORY);
-            building.setX(killer.getX() - killer.getUnitType().getAttackRange());
+            building.setX(killer.getX() - (int)killer.getUnitType().getAttackRange());
             building.setY(coordY);
             building.setOwnerId(2);
             map.addBuilding(building);
             building = new Building();
             building.setType(BuildingType.FACTORY);
-            building.setX(killer.getX() - killer.getUnitType().getAttackRange() + 3);
+            building.setX(killer.getX() - (int)killer.getUnitType().getAttackRange() + 3);
             building.setY(coordY);
             building.setOwnerId(2);
             map.addBuilding(building);
@@ -206,13 +206,13 @@ public class GuardTest {
         for (int coordY = killer.getY()-2; coordY <=killer.getY()+2; coordY+=2) {
             Building building = new Building();
             building.setType(BuildingType.FACTORY);
-            building.setX(killer.getX() - killer.getUnitType().getAttackRange());
+            building.setX(killer.getX() - (int)killer.getUnitType().getAttackRange());
             building.setY(coordY);
             building.setOwnerId(1);
             map.addBuilding(building);
             building = new Building();
             building.setType(BuildingType.FACTORY);
-            building.setX(killer.getX() - killer.getUnitType().getAttackRange() + 3);
+            building.setX(killer.getX() - (int)killer.getUnitType().getAttackRange() + 3);
             building.setY(coordY);
             building.setOwnerId(2);
             map.addBuilding(building);

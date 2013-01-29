@@ -19,76 +19,90 @@ RightMenu.prototype.setEngine = function (engine) {
 };
 
 RightMenu.prototype.getBuyOptionConfig = function (type) {
-    var x = 0;
-    var y = 0;
-    if (type == BUY_OPTION_SIEGE_TANK) {
-        y = 3 * BUY_OPTION_HEIGHT;
-    }
-    if (type == BUY_OPTION_LAUNCHER) {
-        y = 19 * BUY_OPTION_HEIGHT;
-    }
-    if (type == BUY_OPTION_TANK) {
-        y = 8 * BUY_OPTION_HEIGHT;
-    }
-    if (type == BUY_OPTION_DEVASTATOR) {
-        y = 4 * BUY_OPTION_HEIGHT;
-    }
-
-    if (type == BUY_OPTION_POWERPLANT) {
-        y = 0 * BUY_OPTION_HEIGHT;
-    }
-    if (type == BUY_OPTION_HARVESTER) {
-        y = 1 * BUY_OPTION_HEIGHT;
-    }
-    if (type == BUY_OPTION_RADAR) {
-        y = 2 * BUY_OPTION_HEIGHT;
-    }
-    if (type == BUY_OPTION_CONCRETE) {
-        y = 5 * BUY_OPTION_HEIGHT;
-    }
-    if (type == BUY_OPTION_JEEP) {
-        y = 6 * BUY_OPTION_HEIGHT;
-    }
-    if (type == BUY_OPTION_DEVIATOR) {
-        y = 7 * BUY_OPTION_HEIGHT;
-    }
-    if (type == BUY_OPTION_REFINERY) {
-        y = 9 * BUY_OPTION_HEIGHT;
-    }
-    if (type == BUY_OPTION_FACTORY) {
-        y = 10 * BUY_OPTION_HEIGHT;
-    }
-    if (type == BUY_OPTION_ROCKET_TURRET) {
-        y = 11 * BUY_OPTION_HEIGHT;
-    }
-    if (type == BUY_OPTION_SILO) {
-        y = 12 * BUY_OPTION_HEIGHT;
-    }
-    if (type == BUY_OPTION_REPAIR_DEPO) {
-        y = 13 * BUY_OPTION_HEIGHT;
-    }
-    if (type == BUY_OPTION_AIRBASE) {
-        y = 14 * BUY_OPTION_HEIGHT;
-    }
-    if (type == BUY_OPTION_WALL) {
-        y = 15 * BUY_OPTION_HEIGHT;
-    }
-    if (type == BUY_OPTION_MCV) {
-        y = 16 * BUY_OPTION_HEIGHT;
-    }
-    if (type == BUY_OPTION_TURRET) {
-        y = 17 * BUY_OPTION_HEIGHT;
-    }
-    if (type == BUY_OPTION_SONIC_TANK) {
-        y = 18 * BUY_OPTION_HEIGHT;
-    }
-    if (type == BUY_OPTION_TRIKE) {
-        y = 20 * BUY_OPTION_HEIGHT;
-    }
-
     var result = new Object();
-    result.x = x;
-    result.y = y;
+    result.x = 0;
+    switch (type) {
+    case BUY_OPTION_POWERPLANT:
+        result.y = 0 * BUY_OPTION_HEIGHT;
+        return result;
+    case BUY_OPTION_HARVESTER:
+        result.y = 1 * BUY_OPTION_HEIGHT;
+        return result;
+    case BUY_OPTION_RADAR:
+        result.y = 2 * BUY_OPTION_HEIGHT;
+        return result;
+    case BUY_OPTION_SIEGE_TANK:
+        result.y = 3 * BUY_OPTION_HEIGHT;
+        return result;
+    case BUY_OPTION_DEVASTATOR:
+        result.y = 4 * BUY_OPTION_HEIGHT;
+        return result;
+    case BUY_OPTION_CONCRETE:
+        result.y = 5 * BUY_OPTION_HEIGHT;
+        return result;
+    case BUY_OPTION_QUAD:
+        result.y = 6 * BUY_OPTION_HEIGHT;
+        return result;
+    case BUY_OPTION_DEVIATOR:
+        result.y = 7 * BUY_OPTION_HEIGHT;
+        return result;
+    case BUY_OPTION_BATTLE_TANK:
+        result.y = 8 * BUY_OPTION_HEIGHT;
+        return result;
+    case BUY_OPTION_REFINERY:
+        result.y = 9 * BUY_OPTION_HEIGHT;
+        return result;
+    case BUY_OPTION_LIGHT_FACTORY:
+        result.y = 10 * BUY_OPTION_HEIGHT;
+        return result;
+    case BUY_OPTION_FACTORY:
+        result.y = 10 * BUY_OPTION_HEIGHT;
+        return result;
+    case BUY_OPTION_ROCKET_TURRET:
+        result.y = 11 * BUY_OPTION_HEIGHT;
+        return result;
+    case BUY_OPTION_SILO:
+        result.y = 12 * BUY_OPTION_HEIGHT;
+        return result;
+    case BUY_OPTION_REPAIR_DEPO:
+        result.y = 13 * BUY_OPTION_HEIGHT;
+        return result;
+    case BUY_OPTION_AIRBASE:
+        result.y = 14 * BUY_OPTION_HEIGHT;
+        return result;
+    case BUY_OPTION_WALL:
+        result.y = 15 * BUY_OPTION_HEIGHT;
+        return result;
+    case BUY_OPTION_MCV:
+        result.y = 16 * BUY_OPTION_HEIGHT;
+        return result;
+    case BUY_OPTION_TURRET:
+        result.y = 17 * BUY_OPTION_HEIGHT;
+        return result;
+    case BUY_OPTION_SONIC_TANK:
+        result.y = 18 * BUY_OPTION_HEIGHT;
+        return result;
+    case BUY_OPTION_LAUNCHER:
+        result.y = 19 * BUY_OPTION_HEIGHT;
+        return result;
+    case BUY_OPTION_TRIKE:
+        result.y = 20 * BUY_OPTION_HEIGHT;
+        return result;
+    case BUY_OPTION_TRIKE_2:
+        result.y = 20 * BUY_OPTION_HEIGHT;
+        return result;
+    case BUY_OPTION_BARRACKS:
+        result.y = 15 * BUY_OPTION_HEIGHT;
+        return result;
+    case BUY_OPTION_INFANTRIES:
+        result.y = 15 * BUY_OPTION_HEIGHT;
+        return result;
+    case BUY_OPTION_ROCKET_TROOPERS:
+        result.y = 15 * BUY_OPTION_HEIGHT;
+        return result;
+    }
+    console.log("Unknown build option type: " + type);
+    result.y = 0;
     return result;
 
 };
@@ -212,21 +226,61 @@ RightMenu.prototype.redraw = function () {
 
 function getConstructionOptionName(option) {
     switch (option.type) {
-    case BUY_OPTION_POWERPLANT:
-        return "Powerplant";
-    case BUY_OPTION_REFINERY:
-        return "Refinery";
-    case BUY_OPTION_FACTORY:
-        return "Factory";
-    case BUY_OPTION_SILO:
-        return "Silo";
-    case BUY_OPTION_SIEGE_TANK:
-        return "Siege tank";
-    case BUY_OPTION_TANK:
-        return "Tank";
+        case BUY_OPTION_TRIKE:
+            return "Trike"
+        case BUY_OPTION_TRIKE_2:
+            return "Ordos trike"
+        case BUY_OPTION_QUAD:
+            return "Quad"
+        case BUY_OPTION_INFANTRIES:
+            return "Infantries"
+        case BUY_OPTION_ROCKET_TROOPERS:
+            return "Rocket troopers"
+        case BUY_OPTION_HARVESTER:
+            return "Harvester"
+        case BUY_OPTION_BATTLE_TANK:
+            return "Battle tank"
+        case BUY_OPTION_MCV:
+            return "MCV"
+        case BUY_OPTION_LAUNCHER:
+            return "Launcher"
+        case BUY_OPTION_SIEGE_TANK:
+            return "Siege tank"
+        case BUY_OPTION_DEVASTATOR:
+            return "Devastator"
+        case BUY_OPTION_DEVIATOR:
+            return "Deviator"
+        case BUY_OPTION_SONIC_TANK:
+            return "Sonic tank"
+        case BUY_OPTION_POWERPLANT:
+            return "Powerplant"
+        case BUY_OPTION_REFINERY:
+            return "Refinery"
+        case BUY_OPTION_SILO:
+            return "Silo"
+        case BUY_OPTION_RADAR:
+            return "Radar"
+        case BUY_OPTION_BARRACKS:
+            return "Barracks"
+        case BUY_OPTION_LIGHT_FACTORY:
+            return "Light factory"
+        case BUY_OPTION_FACTORY:
+            return "Heavy factory"
+        case BUY_OPTION_REPAIR_DEPO:
+            return "Repair depot"
+        case BUY_OPTION_AIRBASE:
+            return "Airbase"
+        case BUY_OPTION_CONCRETE:
+            return "Concrete"
+        case BUY_OPTION_WALL:
+            return "Wall"
+        case BUY_OPTION_TURRET:
+            return "Turret"
+        case BUY_OPTION_ROCKET_TURRET:
+            return "Rocket turret"
     }
-
-    return "";
+    console.log("Unknown consctuction type: " + option.type);
+    return "Something";
 }
 
 function sendStartConnectionClosure(builderId, entityToBuildType) {

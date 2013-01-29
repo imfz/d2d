@@ -93,7 +93,7 @@ public class StartConstructionTest {
         StartConstruction startConstruction = new StartConstruction();
         startConstruction.setBuilderId(factoryId);
         startConstruction.setPlayerId(1);
-        startConstruction.setEntityToBuildId(ConstructionOption.TANK.getEntityToBuildIdOnJs());
+        startConstruction.setEntityToBuildId(ConstructionOption.BATTLE_TANK.getEntityToBuildIdOnJs());
 
         map.getPlayerById(1).setMoney(UnitType.BATTLE_TANK.getTicksToBuild() * UnitType.BATTLE_TANK.getCostPerTick());
 
@@ -144,7 +144,7 @@ public class StartConstructionTest {
         StartConstruction startConstruction = new StartConstruction();
         startConstruction.setBuilderId(factoryId);
         startConstruction.setPlayerId(1);
-        startConstruction.setEntityToBuildId(ConstructionOption.TANK.getEntityToBuildIdOnJs());
+        startConstruction.setEntityToBuildId(ConstructionOption.BATTLE_TANK.getEntityToBuildIdOnJs());
 
         map.getPlayerById(1).setMoney(UnitType.BATTLE_TANK.getTicksToBuild() * UnitType.BATTLE_TANK.getCostPerTick() + 100);
 
@@ -223,12 +223,12 @@ public class StartConstructionTest {
         StartConstruction startConstruction = new StartConstruction();
         startConstruction.setBuilderId(factoryId);
         startConstruction.setPlayerId(1);
-        startConstruction.setEntityToBuildId(ConstructionOption.TANK.getEntityToBuildIdOnJs());
+        startConstruction.setEntityToBuildId(ConstructionOption.BATTLE_TANK.getEntityToBuildIdOnJs());
 
         StartConstruction startConstruction2 = new StartConstruction();
         startConstruction2.setBuilderId(factoryId2);
         startConstruction2.setPlayerId(1);
-        startConstruction2.setEntityToBuildId(ConstructionOption.TANK.getEntityToBuildIdOnJs());
+        startConstruction2.setEntityToBuildId(ConstructionOption.BATTLE_TANK.getEntityToBuildIdOnJs());
 
         userActionService.registerAction(startConstruction);
         userActionService.registerAction(startConstruction2);

@@ -26,7 +26,7 @@ public class StartConstruction extends AbstractGameStateChanger {
             building.addGoal(createBuilding);
         }
 
-        if (building.getType() == BuildingType.FACTORY) {
+        if (building.getType() == BuildingType.FACTORY || building.getType() == BuildingType.LIGHT_FACTORY || building.getType() == BuildingType.BARRACKS) {
             CreateUnit createUnit = new CreateUnit();
             createUnit.setUnitType(UnitType.getByJsId(entityToBuildId));
             building.addGoal(createUnit);

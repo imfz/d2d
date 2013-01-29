@@ -5,29 +5,40 @@ import java.util.Set;
 
 public enum ConstructionOption {
 
-    DEVASTATOR((byte)1,UnitType.DEVASTATOR),
-    SIEGE_TANK((byte)2,UnitType.SIEGE_TANK),
-    TANK((byte)3,UnitType.BATTLE_TANK),
-    LAUNCHER((byte)4,UnitType.LAUNCHER),
-
-    POWERPLANT((byte)5,BuildingType.POWERPLANT),
-    HARVESTER((byte)6,UnitType.HARVESTER),
-    RADAR((byte)7,BuildingType.RADAR),
-    CONCRETE((byte)8, BuildingType.CONCRETE),
-    JEEP((byte)9, UnitType.JEEP),
-    DEVIATOR((byte)10, UnitType.DEVIATOR),
-    REFINERY((byte)11, BuildingType.REFINERY),
-    FACTORY((byte)12,BuildingType.FACTORY),
-    ROCKET_TURRET((byte)13, BuildingType.ROCKET_TURRET),
-    SILO((byte)14,BuildingType.SILO),
-    REPAIRSHOP((byte)15,BuildingType.REPAIRSHOP),
-    AIRBASE((byte)16,BuildingType.AIRBASE),
-    WALL((byte)17, BuildingType.WALL),
-    MCV((byte)18, UnitType.MCV),
-    TURRET((byte)19, BuildingType.TURRET),
-    SONIC_TANK((byte)20, UnitType.SONIC_TANK),
-    TRIKE((byte)21, UnitType.TRIKE);
-
+    // T1 Units
+    TRIKE((byte)11, UnitType.TRIKE),
+    TRIKE_2((byte)12, UnitType.TRIKE_2),
+    QUAD((byte)13, UnitType.QUAD),
+    INFANTRIES((byte)14, UnitType.INFANTRIES),
+    ROCKET_TROOPERS((byte)15, UnitType.ROCKET_TROOPERS),
+    // T2 Units
+    HARVESTER((byte)21,UnitType.HARVESTER),
+    BATTLE_TANK((byte)22,UnitType.BATTLE_TANK),
+    // T3 Units
+    MCV((byte)31, UnitType.MCV),
+    SIEGE_TANK((byte)32,UnitType.SIEGE_TANK),
+    LAUNCHER((byte)33,UnitType.LAUNCHER),
+    // T4 Units
+    DEVASTATOR((byte)41,UnitType.DEVASTATOR),
+    DEVIATOR((byte)42, UnitType.DEVIATOR),
+    SONIC_TANK((byte)43, UnitType.SONIC_TANK),
+    // Core T1 buildings
+    POWERPLANT((byte)101,BuildingType.POWERPLANT),
+    REFINERY((byte)102, BuildingType.REFINERY),
+    SILO((byte)103,BuildingType.SILO),
+    RADAR((byte)104,BuildingType.RADAR),
+    // Unit-producing buildings
+    BARRACKS((byte)105,BuildingType.BARRACKS),
+    LIGHT_FACTORY((byte)106,BuildingType.LIGHT_FACTORY),
+    FACTORY((byte)107,BuildingType.FACTORY),
+    REPAIRSHOP((byte)108,BuildingType.REPAIRSHOP),
+    AIRBASE((byte)109,BuildingType.AIRBASE),
+    // Other buildings
+    CONCRETE((byte)110, BuildingType.CONCRETE),
+    WALL((byte)111, BuildingType.WALL),
+    TURRET((byte)112, BuildingType.TURRET),
+    ROCKET_TURRET((byte)113, BuildingType.ROCKET_TURRET)
+    ;
 
     static {
         Set<Byte> idsOnJs = new HashSet<Byte>();

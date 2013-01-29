@@ -22,7 +22,7 @@ public class AStar {
     public static int PATH_LENGTH = 20;
     public static double HARVESTER_HEURISTICS = 2.0;
 
-    public List<Node> calcPathEvenIfBlocked(Unit unit, Map map, int toX, int toY, int requiredRangeToGoal) {
+    public List<Node> calcPathEvenIfBlocked(Unit unit, Map map, int toX, int toY, double requiredRangeToGoal) {
 
         if ((unit.getX() == toX) && (unit.getY() == toY)) {
             return new ArrayList<Node>();

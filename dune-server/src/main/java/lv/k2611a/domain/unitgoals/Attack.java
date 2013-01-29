@@ -47,6 +47,12 @@ public class Attack extends FireGoal implements UnitGoal {
 
     private void attackTarget(Unit unit, Map map, GameServiceImpl gameService) {
         if (map.targetInAttackRange(unit, target.getPoint())) {
+            // If target unit is too close to the launcher, remove attack goal.
+            if ((unit.getUnitType() == UnitType.LAUNCHER || unit.getUnitType() == UnitType.DEVIATOR)
+                    && map.targetTooCloseToLauncher(unit,target.getPoint())) {
+                unit.removeGoal(this);
+                return;
+            }
             if (!needToTurnToTarget(unit, map, gameService)) {
                 if (unit.getTicksReloading() == 0) {
                     fire(unit, map);

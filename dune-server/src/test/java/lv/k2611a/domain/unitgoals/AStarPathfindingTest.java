@@ -22,7 +22,7 @@ import static org.junit.Assert.assertEquals;
 public class AStarPathfindingTest {
     @Autowired
     private GameServiceImpl gameService;
-    private int extraTicksInCaseSomethingGoesWrong = 30;
+    private int extraTicksInCaseSomethingGoesWrong = 50;
     //TODO: fix tests to include turning
 
     @Before

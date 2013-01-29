@@ -37,8 +37,8 @@ public class Guard extends FireGoal implements UnitGoal  {
                 target = null;
             }
             List<Target> targetList;
-            if (unit.getUnitType() == UnitType.LAUNCHER) {
-                targetList = map.getTargetsInRangeDiapason(unit.getPoint(), unit.getUnitType().getAttackRange(), 4, map);
+            if (unit.getUnitType() == UnitType.LAUNCHER || unit.getUnitType() == UnitType.DEVIATOR) {
+                targetList = map.getTargetsInRangeOfLauncher(unit.getPoint(), unit.getUnitType().getAttackRange(), map);
             } else {
                 targetList = map.getTargetsInRange(unit.getPoint(), unit.getUnitType().getAttackRange(), map);
             }
