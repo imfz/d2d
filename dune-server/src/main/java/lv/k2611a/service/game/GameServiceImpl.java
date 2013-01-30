@@ -273,7 +273,10 @@ public class GameServiceImpl implements GameService {
             } else {
                 Unit unit = map.getUnitAt(bullet.getGoalX(), bullet.getGoalY());
                 if (unit != null) {
-                    unit.setHp(unit.getHp() - bullet.getDamageToDeal());
+                    int damageToDeal = bullet.getDamageToDeal();
+                    double damageCoeff = unit.getUnitType().getArmorType().getDamage(bullet.getDamageType());
+                    damageToDeal = (int) (damageToDeal * damageCoeff);
+                    unit.setHp(unit.getHp() - damageToDeal);
                     if (unit.getHp() <= 0) {
                         map.removeUnit(unit);
                         Explosion explosion = new Explosion(unit.getX(), unit.getY());
@@ -282,7 +285,10 @@ public class GameServiceImpl implements GameService {
                 } else {
                     Building building = map.getBuildingAt(bullet.getGoalX(), bullet.getGoalY());
                     if (building != null) {
-                        building.setHp(building.getHp() - bullet.getDamageToDeal());
+                        int damageToDeal = bullet.getDamageToDeal();
+                        double damageCoeff = building.getType().getArmorType().getDamage(bullet.getDamageType());
+                        damageToDeal = (int) (damageToDeal * damageCoeff);
+                        building.setHp(building.getHp() - damageToDeal);
                         if (building.getHp() <= 0) {
                             map.removeBuilding(building);
                         }

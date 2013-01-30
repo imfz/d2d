@@ -172,4 +172,8 @@ public enum BuildingType implements EntityType {
     public static BuildingType getByJsId(int idInIs) {
         return indexByJsId[idInIs];
     }
+
+    public ArmorType getArmorType() {
+        return ArmorType.BUILDING;
+    }
 }

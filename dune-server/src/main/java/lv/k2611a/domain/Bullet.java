@@ -10,6 +10,7 @@ public class Bullet {
     private int ticksToMove;
     private int ticksToMoveTotal;
     private int damageToDeal;
+    private DamageType damageType;
 
     public int getId() {
         return id;
@@ -81,5 +82,13 @@ public class Bullet {
 
     public void setBulletType(BulletType bulletType) {
         this.bulletType = bulletType;
+    }
+
+    public DamageType getDamageType() {
+        return damageType;
+    }
+
+    public void setDamageType(DamageType damageType) {
+        this.damageType = damageType;
     }
 }

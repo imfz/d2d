@@ -22,6 +22,7 @@ public abstract class FireGoal implements UnitGoal {
     protected void fire(Unit unit, Map map) {
         Bullet bullet = new Bullet();
         bullet.setDamageToDeal(unit.getUnitType().getAttackDamage());
+        bullet.setDamageType(unit.getUnitType().getDamageType());
         bullet.setStartX(unit.getX());
         bullet.setStartY(unit.getY());
         bullet.setGoalX(target.getPoint().getX());
